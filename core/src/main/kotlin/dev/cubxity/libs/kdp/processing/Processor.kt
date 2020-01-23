@@ -38,7 +38,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
 
         override fun install(pipeline: KDP, configure: Processor.() -> Unit): Processor {
             val feature = Processor(pipeline)
-            pipeline
+            pipeline.manager
                 .on<GuildMessageReceivedEvent>()
                 .subscribe { feature.processEvent(it) }
             return feature
