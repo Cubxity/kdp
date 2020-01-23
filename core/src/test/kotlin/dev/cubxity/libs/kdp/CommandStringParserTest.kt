@@ -27,6 +27,7 @@ import org.junit.jupiter.api.assertThrows
 class CommandStringParserTest {
     @Test
     fun parseEmptyTest() {
+        assert(true == false)
         assertThrows<IllegalStateException> { CommandStringParser.parse("") }
     }
 
