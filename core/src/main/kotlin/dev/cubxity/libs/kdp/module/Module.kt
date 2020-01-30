@@ -18,6 +18,7 @@
 
 package dev.cubxity.libs.kdp.module
 
+import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.command.CommandData
 import dev.cubxity.libs.kdp.command.SubCommandData
@@ -28,20 +29,21 @@ import dev.cubxity.libs.kdp.command.SubCommandData
  * @property name the name of the module, could be used in help menus and such.
  * @property description the description of the module, could be used in help menus and such.
  */
-open class Module(val name: String, val description: String = "No description provided.") {
+open class Module(val kdp: KDP, val name: String, val description: String = "No description provided.") {
     val commands = mutableListOf<Command>()
 
     /**
      * Operator function to construct the command or sub command command and configure it.
      */
-    inline operator fun <T : CommandData> T.invoke(opt: T.() -> Unit) {
+    inline operator fun <T : CommandData> T.invoke(opt: T.() -> Unit) =
         if (this is SubCommandData) {
             val cmd = commands.find { it.name == root.name } ?: root.build().also { commands += it }
             val subCommand = cmd.subCommands.find { it.name == name } ?: build().also { cmd.subCommands += it }
             opt(subCommand as T)
+            cmd
         } else {
             val cmd = commands.find { it.name == name } ?: build().also { commands += it }
             opt(cmd as T)
+            cmd
         }
-    }
 }

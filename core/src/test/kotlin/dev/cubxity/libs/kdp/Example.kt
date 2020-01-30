@@ -23,10 +23,11 @@ import dev.cubxity.libs.kdp.dsl.command
 import dev.cubxity.libs.kdp.dsl.sub
 import dev.cubxity.libs.kdp.module.Module
 import dev.cubxity.libs.kdp.module.ModuleInitializer
+import dev.cubxity.libs.kdp.processing.processing
 import net.dv8tion.jda.api.JDABuilder
 
-class ExampleModule : Module("example") {
-    companion object : ModuleInitializer<ExampleModule>({ ExampleModule() }) {
+class ExampleModule(kdp: KDP) : Module(kdp, "example") {
+    companion object : ModuleInitializer<ExampleModule>({ ExampleModule(it) }) {
         val help by command(description = "Show help menu")
         val cmdHelp by help.sub("cmd", "Show help for a command")
     }

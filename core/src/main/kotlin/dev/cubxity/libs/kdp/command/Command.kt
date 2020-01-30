@@ -18,10 +18,16 @@
 
 package dev.cubxity.libs.kdp.command
 
+import dev.cubxity.libs.kdp.processing.Processor
+
 open class Command(
     override val name: String,
     override val description: String?,
     override val aliases: List<String>
 ) : CommandData {
     val subCommands: MutableList<SubCommand> = mutableListOf()
+
+    operator fun unaryPlus() {
+
+    }
 }
