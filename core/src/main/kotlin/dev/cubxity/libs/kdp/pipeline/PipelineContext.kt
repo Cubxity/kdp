@@ -16,23 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp
+package dev.cubxity.libs.kdp.pipeline
 
-import club.minnced.jda.reactor.ReactiveEventManager
-import dev.cubxity.libs.kdp.module.Module
-import dev.cubxity.libs.kdp.module.ModuleInitializer
-import dev.cubxity.libs.kdp.module.ModuleManager
-import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
-import dev.cubxity.libs.kdp.respond.RespondPipeline
+class PipelineContext<TContext : Any>(val context: TContext) {
+    var isCancelled: Boolean = false
 
-class KDP : CommandProcessingPipeline() {
-    val manager = ReactiveEventManager()
-    val moduleManager = ModuleManager()
-    val respondPipeline = RespondPipeline()
-
-    fun <T : Module> ModuleInitializer<T>.register() {
-        moduleManager.register(this)
+    fun finish() {
+        isCancelled = true
     }
 }
-
-fun kdp(opt: KDP.() -> Unit) = KDP().apply(opt)

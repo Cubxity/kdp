@@ -18,12 +18,18 @@
 
 package dev.cubxity.libs.kdp.processing
 
+import dev.cubxity.libs.kdp.KDP
+import dev.cubxity.libs.kdp.respond.RespondContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
 
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class CommandProcessingContext(
+    val kdp: KDP,
+
     /**
      * The executor of this context
      */
@@ -56,15 +62,20 @@ class CommandProcessingContext(
     /**
      * Sends [message] to [channel]
      */
-    suspend fun send(message: String): Message = withContext(Dispatchers.IO) {
-        channel.sendMessage(message).complete()
-    }
+    suspend fun send(message: String): Message? = send(MessageBuilder(message))
 
     /**
      * Sends [message] to [channel]
      */
-    suspend fun send(message: MessageEmbed): Message = withContext(Dispatchers.IO) {
-        channel.sendMessage(message).complete()
+    suspend fun send(message: MessageEmbed): Message? = send(MessageBuilder(message))
+
+    /**
+     * Sends [message] to [channel]
+     */
+    suspend fun send(message: MessageBuilder): Message? = coroutineScope {
+        RespondContext(channel, message)
+            .also { kdp.respondPipeline.execute(it) }
+            .sentMessage
     }
 
     /**

@@ -18,8 +18,13 @@
 
 package dev.cubxity.libs.kdp.respond
 
+import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 
 data class RespondContext(
-    val target: MessageChannel
-)
+    val target: MessageChannel,
+    val message: MessageBuilder
+) {
+    var sentMessage: Message? = null
+}

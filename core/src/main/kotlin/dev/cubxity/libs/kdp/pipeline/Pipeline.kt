@@ -18,23 +18,29 @@
 
 package dev.cubxity.libs.kdp.pipeline
 
-open class Pipeline<TContext>(vararg phases: String) {
+open class Pipeline<TContext : Any>(vararg phases: String) {
     val features = mutableMapOf<String, Any>()
-    val phases = hashMapOf<String, MutableList<TContext.() -> Unit>>().apply { phases.forEach { put(it, mutableListOf()) } }
+    val phases = mutableMapOf<String, MutableList<suspend PipelineContext<TContext>.() -> Unit>>()
+        .apply { phases.forEach { put(it, mutableListOf()) } }
 
     /**
      * Intercepts the pipeline in the [phase], [opt] will be ran before the [phase] runs
      */
-    fun intercept(phase: String, opt: TContext.() -> Unit = {}) = phases[phase]?.add(opt)
-            ?: throw IllegalArgumentException("Invalid phase")
+    fun intercept(phase: String, opt: suspend PipelineContext<TContext>.() -> Unit = {}) = phases[phase]?.add(opt)
+        ?: throw IllegalArgumentException("Invalid phase")
 
     /**
      * Runs the pipeline phase with context [ctx]
      */
-    fun run(phase: String, ctx: TContext, opt: TContext.() -> Unit = {}) {
-        if (phases.containsKey(phase)) {
-            phases[phase]!!.forEach { it(ctx) }
-            opt(ctx)
-        } else throw IllegalArgumentException("Invalid phase")
+    @Suppress("UNCHECKED_CAST")
+    suspend fun execute(ctx: TContext) {
+        val pipelineContext = PipelineContext(ctx)
+        phases.forEach { (_, interceptors) ->
+            (interceptors as (List<suspend PipelineContext<TContext>. () -> Unit>))
+                .forEach { intercept ->
+                    intercept(pipelineContext)
+                    if (pipelineContext.isCancelled) return
+                }
+        }
     }
 }

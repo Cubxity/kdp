@@ -19,6 +19,8 @@
 package dev.cubxity.libs.kdp.respond
 
 import dev.cubxity.libs.kdp.pipeline.Pipeline
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 open class RespondPipeline : Pipeline<RespondContext>(PROCESS, MONITORING, SEND) {
     companion object {
@@ -36,5 +38,13 @@ open class RespondPipeline : Pipeline<RespondContext>(PROCESS, MONITORING, SEND)
          * Phase for sending the respond
          */
         const val SEND = "Send"
+    }
+
+    init {
+        intercept(SEND) {
+            with(context) {
+                sentMessage = withContext(Dispatchers.IO) { target.sendMessage(message.build()).complete() }
+            }
+        }
     }
 }
