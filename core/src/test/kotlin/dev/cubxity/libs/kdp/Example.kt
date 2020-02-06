@@ -18,7 +18,6 @@
 
 package dev.cubxity.libs.kdp
 
-import dev.cubxity.libs.kdp.command.CommandStringParser
 import dev.cubxity.libs.kdp.dsl.command
 import dev.cubxity.libs.kdp.dsl.sub
 import dev.cubxity.libs.kdp.module.Module
@@ -33,12 +32,11 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
     }
 
     init {
-        CommandStringParser.parse("c|a")
         help {
-
+            handler { send("You ain't getting any help.") }
         }
         cmdHelp {
-
+            handler { send("Hey, you have reached command help. You ain't getting any help tho.") }
         }
     }
 }
@@ -46,6 +44,12 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
 fun main() {
     val kdp = kdp {
         ExampleModule.register()
+
+        processing {
+            prefix = "^"
+        }
+
+        init()
     }
     JDABuilder()
         .setEventManager(kdp.manager)

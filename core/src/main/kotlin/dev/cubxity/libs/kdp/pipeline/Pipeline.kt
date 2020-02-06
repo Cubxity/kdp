@@ -18,7 +18,11 @@
 
 package dev.cubxity.libs.kdp.pipeline
 
+import org.slf4j.LoggerFactory
+
 open class Pipeline<TContext : Any>(vararg phases: String) {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     val features = mutableMapOf<String, Any>()
     val phases = mutableMapOf<String, MutableList<suspend PipelineContext<TContext>.() -> Unit>>()
         .apply { phases.forEach { put(it, mutableListOf()) } }
@@ -30,7 +34,7 @@ open class Pipeline<TContext : Any>(vararg phases: String) {
         ?: throw IllegalArgumentException("Invalid phase")
 
     /**
-     * Runs the pipeline phase with context [ctx]
+     * Runs the pipeline with context [ctx]
      */
     @Suppress("UNCHECKED_CAST")
     suspend fun execute(ctx: TContext) {
@@ -42,5 +46,24 @@ open class Pipeline<TContext : Any>(vararg phases: String) {
                     if (pipelineContext.isCancelled) return
                 }
         }
+    }
+
+    /**
+     * Runs the pipeline phase with context [ctx]
+     */
+    @Suppress("UNCHECKED_CAST")
+    suspend fun execute(ctx: TContext, phase: String) {
+        val interceptors = phases[phase] ?: error("Invalid phase $phase")
+        val pipelineContext = PipelineContext(ctx)
+        (interceptors as (List<suspend PipelineContext<TContext>. () -> Unit>))
+            .forEach { intercept ->
+                try {
+                    intercept(pipelineContext)
+                } catch (t: Throwable) {
+                    logger.error("Fatal error: pipeline failed on phase $phase", t)
+                    return
+                }
+                if (pipelineContext.isCancelled) return
+            }
     }
 }

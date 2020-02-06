@@ -20,24 +20,127 @@ package dev.cubxity.libs.kdp.processing
 
 import club.minnced.jda.reactor.on
 import dev.cubxity.libs.kdp.KDP
+import dev.cubxity.libs.kdp.command.SubCommand
 import dev.cubxity.libs.kdp.feature.KDPFeature
 import dev.cubxity.libs.kdp.feature.install
 import dev.cubxity.libs.kdp.module.Module
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
+import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.events.ReadyEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 
 class Processor(val kdp: KDP) : CoroutineScope {
     override val coroutineContext = Job() + Dispatchers.Default
+    private val ARGS_REGEX = "(\"([^\"]+)\"|[^ ]+)( ?)".toRegex()
 
-    fun processEvent(e: GuildMessageReceivedEvent) {
+    /**
+     * Only works if [prefixFactory] has not been changed
+     */
+    var prefix = "."
 
+    /**
+     * Factory to provide prefixes for the specified message event
+     */
+    var prefixFactory: PrefixFactory = MergedPrefixFactory { listOf(prefix) }
+
+    fun processEvent(e: MessageReceivedEvent) {
+        launch {
+            kdp.execute(CommandProcessingContext(kdp, e.author, e.channel, e.message, e))
+        }
     }
 
-    fun processEvent(e: GuildMessageUpdateEvent) {
+    fun processEvent(e: MessageUpdateEvent) {
+        launch {
+            kdp.execute(CommandProcessingContext(kdp, e.author, e.channel, e.message, e))
+        }
+    }
 
+    private fun processArguments(content: String, alias: String) =
+        ARGS_REGEX.findAll(content.removePrefix(alias))
+            .mapNotNull { it.groupValues.getOrNull(1) ?: it.groupValues.getOrNull(2) }
+            .toList()
+
+    init {
+        kdp.intercept(CommandProcessingPipeline.MATCH) {
+            with(context) {
+                try {
+                    val content = message.contentRaw
+                    if (content.isEmpty()) {
+                        finish()
+                        return@with
+                    }
+
+                    val prefixes = when (event) {
+                        is MessageReceivedEvent -> prefixFactory.get(event)
+                        is MessageUpdateEvent -> prefixFactory.get(event)
+                        else -> { // This should not happen
+                            finish()
+                            return@with
+                        }
+                    }
+                    val prefix = prefixes.find { content.startsWith(it) }
+                    if (prefix == null) {
+                        finish()
+                        return@with
+                    }
+
+                    var args = processArguments(content, prefix)
+                    if (args.isEmpty()) {
+                        finish()
+                        return@with
+                    }
+
+                    val cmdName = args[0]
+                    val cmd = kdp.moduleManager.modules.map { it.commands.find { c -> cmdName in c.aliases } }
+                        .firstOrNull()
+                    if (cmd == null) {
+                        finish()
+                        return@with
+                    }
+                    this.alias = cmdName
+                    args = args.subList(1, args.size)
+
+                    var subCommand: SubCommand? = null
+                    var depth = 0
+                    for (a in args) {
+                        val c = subCommand ?: cmd
+                        val sc = c.subCommands.find { a in it.aliases } ?: break
+                        subCommand = sc
+                        depth++
+                    }
+                    if (depth > 0) args = args.subList(depth, args.size)
+                    val effectiveCommand = subCommand ?: cmd
+
+                    this.command = effectiveCommand
+                    this.args = args
+                } catch (t: Throwable) {
+                    t.printStackTrace()
+                    exception = t
+                    finish()
+                    kdp.execute(this, CommandProcessingPipeline.ERROR)
+                }
+            }
+        }
+        kdp.intercept(CommandProcessingPipeline.PROCESS) {
+            with(context) {
+                try {
+                    val cmd = command
+                    if (cmd == null) {
+                        finish()
+                        return@with
+                    }
+
+                    cmd.handler?.invoke(this)
+                } catch (t: Throwable) {
+                    exception = t
+                    finish()
+                    kdp.execute(this, CommandProcessingPipeline.ERROR)
+                }
+            }
+        }
     }
 
     companion object Feature : KDPFeature<KDP, Processor, Processor> {
@@ -46,8 +149,8 @@ class Processor(val kdp: KDP) : CoroutineScope {
         override fun install(pipeline: KDP, configure: Processor.() -> Unit): Processor {
             val feature = Processor(pipeline)
             with(pipeline.manager) {
-                on<GuildMessageReceivedEvent>().subscribe { feature.processEvent(it) }
-                on<GuildMessageUpdateEvent>().subscribe { feature.processEvent(it) }
+                on<MessageReceivedEvent>().subscribe { feature.processEvent(it) }
+                on<MessageUpdateEvent>().subscribe { feature.processEvent(it) }
             }
             return feature
         }
@@ -57,5 +160,5 @@ class Processor(val kdp: KDP) : CoroutineScope {
 /**
  * Get or install [Processor] feature and run [opt] on it
  */
-fun Module.processing(opt: Processor.() -> Unit = {}): Processor = (kdp.features[Processor.key] as Processor?
-    ?: kdp.install(Processor)).apply(opt)
+fun KDP.processing(opt: Processor.() -> Unit = {}): Processor = (features[Processor.key] as Processor?
+    ?: install(Processor)).apply(opt)

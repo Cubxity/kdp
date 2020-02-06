@@ -22,15 +22,21 @@ import dev.cubxity.libs.kdp.pipeline.Pipeline
 
 open class CommandProcessingPipeline : Pipeline<CommandProcessingContext>(
     FILTER,
+    MATCH,
     MONITORING,
-    PROCESS
+    PROCESS,
+    ERROR
 ) {
     companion object {
         /**
-         * Phase for filtering commands
-         * Canceling works in this phase
+         * Phase for filtering messages
          */
         const val FILTER = "Filter"
+
+        /**
+         * Phase for processing arguments and matching command
+         */
+        const val MATCH = "Match"
 
         /**
          * Phase for tracing commands, useful for logging, metrics, etc..
@@ -41,5 +47,10 @@ open class CommandProcessingPipeline : Pipeline<CommandProcessingContext>(
          * Phase for processing command and sending a response
          */
         const val PROCESS = "Process"
+
+        /**
+         * Phase for handling exceptions under processing
+         */
+        const val ERROR = "Error"
     }
 }

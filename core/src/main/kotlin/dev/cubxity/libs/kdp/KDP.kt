@@ -24,14 +24,21 @@ import dev.cubxity.libs.kdp.module.ModuleInitializer
 import dev.cubxity.libs.kdp.module.ModuleManager
 import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 import dev.cubxity.libs.kdp.respond.RespondPipeline
+import kotlinx.coroutines.runBlocking
 
 class KDP : CommandProcessingPipeline() {
     val manager = ReactiveEventManager()
-    val moduleManager = ModuleManager()
+    val moduleManager = ModuleManager(this)
     val respondPipeline = RespondPipeline()
 
     fun <T : Module> ModuleInitializer<T>.register() {
         moduleManager.register(this)
+    }
+
+    fun init() {
+        runBlocking {
+            moduleManager.load()
+        }
     }
 }
 

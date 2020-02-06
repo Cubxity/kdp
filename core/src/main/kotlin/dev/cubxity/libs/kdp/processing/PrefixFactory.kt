@@ -16,20 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.command
+package dev.cubxity.libs.kdp.processing
 
-import dev.cubxity.libs.kdp.processing.CommandProcessingContext
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 
-open class Command(
-    override val name: String,
-    override val description: String?,
-    override val aliases: List<String>
-) : CommandData {
-    val subCommands: MutableList<SubCommand> = mutableListOf()
+interface PrefixFactory {
+    fun get(event: MessageReceivedEvent): List<String>
 
-    var handler: (suspend CommandProcessingContext.() -> Unit)? = null
-
-    fun handler(handler: suspend CommandProcessingContext.() -> Unit) {
-        this.handler = handler
-    }
+    fun get(event: MessageUpdateEvent): List<String>
 }

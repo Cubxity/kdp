@@ -18,10 +18,36 @@
 
 package dev.cubxity.libs.kdp.module
 
-class ModuleManager {
-    fun <T : Module> register(initializer: ModuleInitializer<T>) {
+import dev.cubxity.libs.kdp.KDP
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
+class ModuleManager(private val kdp: KDP) {
+    private val moduleInitializers = mutableListOf<ModuleInitializer<*>>()
+    val modules = mutableListOf<Module>()
+
+    fun <T : Module> register(vararg initializers: ModuleInitializer<T>) {
+        initializers.forEach { moduleInitializers += it }
     }
 
-    private val modules = mutableListOf<Module>()
+    fun <T : Module> unregister(initializer: ModuleInitializer<T>) {
+        moduleInitializers -= initializer
+    }
+
+    fun <T : Module> load(initializer: ModuleInitializer<T>) = initializer.initialize(kdp)
+
+    suspend fun load() = coroutineScope {
+        modules += moduleInitializers.map { async { load(it) } }.awaitAll()
+    }
+
+    suspend fun unload() = coroutineScope {
+        modules.map { async { it.dispose() } }.awaitAll()
+        modules.clear()
+    }
+
+    suspend fun reload() {
+        load()
+        unload()
+    }
 }

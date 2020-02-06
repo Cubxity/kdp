@@ -22,6 +22,7 @@ import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.command.CommandData
 import dev.cubxity.libs.kdp.command.SubCommandData
+import reactor.core.Disposable
 
 /**
  * Represents a module. A module may contain commands
@@ -31,19 +32,26 @@ import dev.cubxity.libs.kdp.command.SubCommandData
  */
 open class Module(val kdp: KDP, val name: String, val description: String = "No description provided.") {
     val commands = mutableListOf<Command>()
+    val listeners = mutableListOf<Disposable>()
 
     /**
      * Operator function to construct the command or sub command command and configure it.
      */
-    inline operator fun <T : CommandData> T.invoke(opt: T.() -> Unit) =
+    inline operator fun <T : CommandData> T.invoke(opt: Command.() -> Unit) =
         if (this is SubCommandData) {
             val cmd = commands.find { it.name == root.name } ?: root.build().also { commands += it }
             val subCommand = cmd.subCommands.find { it.name == name } ?: build().also { cmd.subCommands += it }
-            opt(subCommand as T)
+            opt(subCommand)
             cmd
         } else {
             val cmd = commands.find { it.name == name } ?: build().also { commands += it }
-            opt(cmd as T)
+            opt(cmd)
             cmd
         }
+
+    open suspend fun dispose() {
+        commands.clear()
+        listeners.forEach { it.dispose() }
+        listeners.clear()
+    }
 }

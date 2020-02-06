@@ -19,12 +19,14 @@
 package dev.cubxity.libs.kdp.processing
 
 import dev.cubxity.libs.kdp.KDP
+import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.respond.RespondContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.events.message.GenericMessageEvent
 
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class CommandProcessingContext(
@@ -47,17 +49,40 @@ class CommandProcessingContext(
     val message: Message,
 
     /**
-     * The alias used on invocation
+     * The event that the context originated from
      */
-    val alias: String,
+    val event: GenericMessageEvent
+) {
+    /**
+     * The prefix used on invocation
+     */
+    var prefix: String? = null
 
     /**
      * The parsed arguments, this may not match with [message]
      */
-    val args: Array<String>
-) {
+    var args: List<String>? = null
+
+    /**
+     * The alias used on invocation
+     */
+    var alias: String? = null
+
+    /**
+     * The matched command
+     */
+    var command: Command? = null
+
+    /**
+     * The guild associated with [message]
+     */
     val guild: Guild?
         get() = (channel as? TextChannel)?.guild
+
+    /**
+     * Caught [Throwable] under processing
+     */
+    var exception: Throwable? = null
 
     /**
      * Sends [message] to [channel]
