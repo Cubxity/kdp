@@ -68,11 +68,6 @@ class Processor(val kdp: KDP) : CoroutineScope {
         }
     }
 
-    private fun processArguments(content: String, alias: String) =
-        ARGS_REGEX.findAll(content.removePrefix(alias))
-            .mapNotNull { it.groupValues.getOrNull(1) ?: it.groupValues.getOrNull(2) }
-            .toList()
-
     init {
         kdp.intercept(CommandProcessingPipeline.MATCH) {
             with(context) {
@@ -152,6 +147,14 @@ class Processor(val kdp: KDP) : CoroutineScope {
             }
         }
     }
+
+    private fun processArguments(content: String, alias: String) =
+        ARGS_REGEX.findAll(content.removePrefix(alias))
+            .mapNotNull {
+                it.groupValues.getOrNull(2)?.let { s -> if (s.isEmpty()) it.groupValues.getOrNull(1) else s }
+                    ?: it.groupValues.getOrNull(1)
+            }
+            .toList()
 
     companion object Feature : KDPFeature<KDP, Processor, Processor> {
         override val key = "kdp.features.processor"
