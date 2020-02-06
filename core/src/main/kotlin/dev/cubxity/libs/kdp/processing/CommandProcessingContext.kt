@@ -18,5 +18,73 @@
 
 package dev.cubxity.libs.kdp.processing
 
-class CommandProcessingContext {
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import net.dv8tion.jda.api.entities.*
+
+@Suppress("UNUSED", "MemberVisibilityCanBePrivate")
+class CommandProcessingContext(
+    /**
+     * The executor of this context
+     */
+    val executor: User,
+
+    /**
+     * The channel the context originated from
+     */
+    val channel: MessageChannel,
+
+    /**
+     * The message the context originated from,
+     * you should NOT parse arguments from this message directly.
+     */
+    val message: Message,
+
+    /**
+     * The alias used on invocation
+     */
+    val alias: String,
+
+    /**
+     * The parsed arguments, this may not match with [message]
+     */
+    val args: Array<String>
+) {
+    val guild: Guild?
+        get() = (channel as? TextChannel)?.guild
+
+    /**
+     * Sends [message] to [channel]
+     */
+    suspend fun send(message: String): Message = withContext(Dispatchers.IO) {
+        channel.sendMessage(message).complete()
+    }
+
+    /**
+     * Sends [message] to [channel]
+     */
+    suspend fun send(message: MessageEmbed): Message = withContext(Dispatchers.IO) {
+        channel.sendMessage(message).complete()
+    }
+
+    /**
+     * React with [emote] on [message]
+     */
+    suspend fun react(emote: Emote) {
+        withContext(Dispatchers.IO) { message.addReaction(emote).complete() }
+    }
+
+    /**
+     * React with [unicode] on [message]
+     */
+    suspend fun react(unicode: String) {
+        withContext(Dispatchers.IO) { message.addReaction(unicode).complete() }
+    }
+
+    /**
+     * Deletes [message]
+     */
+    suspend fun delete() {
+        withContext(Dispatchers.IO) { message.delete().complete() }
+    }
 }
