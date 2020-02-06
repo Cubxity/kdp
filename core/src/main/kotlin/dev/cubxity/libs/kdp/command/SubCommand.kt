@@ -19,7 +19,7 @@
 package dev.cubxity.libs.kdp.command
 
 class SubCommand(
-    override val root: CommandData,
+    override val parent: CommandData,
     name: String,
     description: String?,
     aliases: List<String>

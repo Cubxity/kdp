@@ -23,12 +23,10 @@ import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.command.SubCommand
 import dev.cubxity.libs.kdp.feature.KDPFeature
 import dev.cubxity.libs.kdp.feature.install
-import dev.cubxity.libs.kdp.module.Module
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 
@@ -48,13 +46,25 @@ class Processor(val kdp: KDP) : CoroutineScope {
 
     fun processEvent(e: MessageReceivedEvent) {
         launch {
-            kdp.execute(CommandProcessingContext(kdp, e.author, e.channel, e.message, e))
+            kdp.execute(
+                CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
+                CommandProcessingPipeline.FILTER,
+                CommandProcessingPipeline.MATCH,
+                CommandProcessingPipeline.MONITORING,
+                CommandProcessingPipeline.PROCESS
+            )
         }
     }
 
     fun processEvent(e: MessageUpdateEvent) {
         launch {
-            kdp.execute(CommandProcessingContext(kdp, e.author, e.channel, e.message, e))
+            kdp.execute(
+                CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
+                CommandProcessingPipeline.FILTER,
+                CommandProcessingPipeline.MATCH,
+                CommandProcessingPipeline.MONITORING,
+                CommandProcessingPipeline.PROCESS
+            )
         }
     }
 

@@ -21,8 +21,10 @@ package dev.cubxity.libs.kdp.module
 import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.command.CommandData
+import dev.cubxity.libs.kdp.command.SubCommand
 import dev.cubxity.libs.kdp.command.SubCommandData
 import reactor.core.Disposable
+import kotlin.math.abs
 
 /**
  * Represents a module. A module may contain commands
@@ -39,9 +41,26 @@ open class Module(val kdp: KDP, val name: String, val description: String = "No 
      */
     inline operator fun <T : CommandData> T.invoke(opt: Command.() -> Unit) =
         if (this is SubCommandData) {
-            val cmd = commands.find { it.name == root.name } ?: root.build().also { commands += it }
-            val subCommand = cmd.subCommands.find { it.name == name } ?: build().also { cmd.subCommands += it }
-            opt(subCommand)
+            var absoluteParent: CommandData = parent
+            val subCommands = mutableListOf<SubCommandData>()
+            while (true) {
+                if (absoluteParent is SubCommandData) {
+                    subCommands += absoluteParent
+                    absoluteParent = absoluteParent.parent
+                } else break
+            }
+            subCommands.reverse() // Since it's going bottom up
+
+            val cmd = commands.find { it.name == absoluteParent.name } ?: parent.build().also { commands += it }
+            var currentSub: SubCommand? = null
+            subCommands.forEach {
+                val effectiveCommand = currentSub ?: cmd
+                currentSub = cmd.subCommands.find { sc -> sc.name == it.name }
+                    ?: it.build().also { sc -> effectiveCommand.subCommands += sc }
+            }
+            val effectiveCommand = currentSub ?: cmd
+            val sc = cmd.subCommands.find { it.name == name } ?: build().also { effectiveCommand.subCommands += it }
+            opt(sc)
             cmd
         } else {
             val cmd = commands.find { it.name == name } ?: build().also { commands += it }

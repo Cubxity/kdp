@@ -39,10 +39,15 @@ open class Pipeline<TContext : Any>(vararg phases: String) {
     @Suppress("UNCHECKED_CAST")
     suspend fun execute(ctx: TContext) {
         val pipelineContext = PipelineContext(ctx)
-        phases.forEach { (_, interceptors) ->
+        phases.forEach { (phase, interceptors) ->
             (interceptors as (List<suspend PipelineContext<TContext>. () -> Unit>))
                 .forEach { intercept ->
-                    intercept(pipelineContext)
+                    try {
+                        intercept(pipelineContext)
+                    } catch (t: Throwable) {
+                        logger.error("Fatal error: pipeline failed on phase $phase", t)
+                        return
+                    }
                     if (pipelineContext.isCancelled) return
                 }
         }
@@ -52,18 +57,20 @@ open class Pipeline<TContext : Any>(vararg phases: String) {
      * Runs the pipeline phase with context [ctx]
      */
     @Suppress("UNCHECKED_CAST")
-    suspend fun execute(ctx: TContext, phase: String) {
-        val interceptors = phases[phase] ?: error("Invalid phase $phase")
+    suspend fun execute(ctx: TContext, vararg phases: String) {
         val pipelineContext = PipelineContext(ctx)
-        (interceptors as (List<suspend PipelineContext<TContext>. () -> Unit>))
-            .forEach { intercept ->
-                try {
-                    intercept(pipelineContext)
-                } catch (t: Throwable) {
-                    logger.error("Fatal error: pipeline failed on phase $phase", t)
-                    return
-                }
-                if (pipelineContext.isCancelled) return
+        phases.map { it to (this.phases[it] ?: error("Invalid phase $it")) }
+            .forEach { (phase, interceptors) ->
+                (interceptors as (List<suspend PipelineContext<TContext>. () -> Unit>))
+                    .forEach { intercept ->
+                        try {
+                            intercept(pipelineContext)
+                        } catch (t: Throwable) {
+                            logger.error("Fatal error: pipeline failed on phase $phase", t)
+                            return
+                        }
+                        if (pipelineContext.isCancelled) return
+                    }
             }
     }
 }

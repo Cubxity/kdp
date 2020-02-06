@@ -22,21 +22,28 @@ import dev.cubxity.libs.kdp.dsl.command
 import dev.cubxity.libs.kdp.dsl.sub
 import dev.cubxity.libs.kdp.module.Module
 import dev.cubxity.libs.kdp.module.ModuleInitializer
+import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 import dev.cubxity.libs.kdp.processing.processing
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDABuilder
+import java.awt.Color
 
 class ExampleModule(kdp: KDP) : Module(kdp, "example") {
     companion object : ModuleInitializer<ExampleModule>({ ExampleModule(it) }) {
-        val help by command(description = "Show help menu")
-        val cmdHelp by help.sub("cmd", "Show help for a command")
+        val example by command(description = "Example command")
+        val error by example.sub(description = "Throws an error")
+        val not by error.sub(description = "It does not throw an error")
     }
 
     init {
-        help {
-            handler { send("You ain't getting any help.") }
+        example {
+            handler { send("Hello world!") }
         }
-        cmdHelp {
-            handler { send("Hey, you have reached command help. You ain't getting any help tho.") }
+        error {
+            handler { throw error("Omega lul") }
+        }
+        not {
+            handler { send("You are safe.") }
         }
     }
 }
@@ -47,6 +54,15 @@ fun main() {
 
         processing {
             prefix = "^"
+        }
+
+        intercept(CommandProcessingPipeline.ERROR) {
+            val embed = EmbedBuilder()
+                .setColor(Color.RED)
+                .setTitle("Error")
+                .setDescription(context.exception?.toString())
+                .build()
+            context.send(embed)
         }
 
         init()

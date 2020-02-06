@@ -19,11 +19,11 @@
 package dev.cubxity.libs.kdp.command
 
 interface SubCommandData : CommandData {
-    val root: CommandData
+    val parent: CommandData
 
     override val name: String
 
     override val description: String?
 
-    override fun build() = SubCommand(root, name, description, aliases)
+    override fun build() = SubCommand(parent, name, description, aliases)
 }

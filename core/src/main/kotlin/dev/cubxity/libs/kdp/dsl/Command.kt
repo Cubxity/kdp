@@ -47,7 +47,7 @@ fun command(name: String? = null, description: String? = null, vararg aliases: S
 fun CommandData.sub(name: String? = null, description: String? = null, vararg aliases: String = emptyArray()) =
     object : ReadOnlyProperty<Any, SubCommandData> {
         override fun getValue(thisRef: Any, property: KProperty<*>) = object : SubCommandData {
-            override val root = this@sub
+            override val parent = this@sub
             override val name: String = name ?: property.name
             override val aliases: List<String>
                 get() = if (aliases.isEmpty()) listOf(this.name) else aliases.toList()
