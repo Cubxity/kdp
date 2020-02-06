@@ -25,6 +25,8 @@ group = "dev.cubxity.libs.kdp"
 version = "1.0-SNAPSHOT"
 
 allprojects {
+    apply(plugin = "maven")
+
     repositories {
         mavenCentral()
         jcenter()
