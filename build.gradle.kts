@@ -37,9 +37,9 @@ subprojects {
     publishing {
         publications {
             create<MavenPublication>("lib") {
-                groupId = project.group.toString()
+                groupId = rootProject.group.toString()
                 artifactId = project.name
-                version = project.version.toString()
+                version = rootProject.version.toString()
 
                 from(components["java"])
             }
