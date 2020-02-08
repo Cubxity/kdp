@@ -2,6 +2,7 @@
 **K**otlin **D**iscord **P**rocessing library.
 
 ## Example
+View full example [here](example/src/main/kotlin/dev.cubxity.libs.kdp/)
 ```kotlin
 class ExampleModule(kdp: KDP) : Module(kdp, "example") {
     companion object {
@@ -20,18 +21,18 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
 
 fun main() {
     val kdp = kdp {
-        ExampleModule::class.register()
+        +ExampleModule::class
 
         processing {
             prefix = "^"
         }
 
         intercept(CommandProcessingPipeline.ERROR) {
-            val embed = EmbedBuilder()
-                .setColor(Color.RED)
-                .setTitle("Error")
-                .setDescription(context.exception?.toString())
-                .build()
+            val embed = embed {
+                color = Color.RED
+                title = "Error"
+                +context.exception?.toString()
+            }
             context.send(embed)
         }
 
