@@ -106,10 +106,36 @@ class CommandProcessingContext(
     }
 
     /**
+     * Sends [message] to the receiver
+     */
+    suspend fun MessageChannel.send(message: String): Message? = send(MessageBuilder(message))
+
+    /**
+     * Sends [message] to the receiver
+     */
+    suspend fun MessageChannel.send(message: MessageEmbed): Message? = send(MessageBuilder(message))
+
+    /**
+     * Sends [message] to the receiver
+     */
+    suspend fun MessageChannel.send(message: MessageBuilder): Message? = coroutineScope {
+        RespondContext(this@CommandProcessingContext, channel, message)
+            .also { kdp.respondPipeline.execute(it) }
+            .sentMessage
+    }
+
+    /**
      * React with [emote] on [message]
      */
     suspend fun react(emote: Emote) {
         withContext(Dispatchers.IO) { message.addReaction(emote).complete() }
+    }
+
+    /**
+     * React with [emote] on the receiver
+     */
+    suspend fun Message.react(emote: Emote) {
+        withContext(Dispatchers.IO) { addReaction(emote).complete() }
     }
 
     /**
@@ -120,10 +146,24 @@ class CommandProcessingContext(
     }
 
     /**
+     * React with [unicode] on the receiver
+     */
+    suspend fun Message.react(unicode: String) {
+        withContext(Dispatchers.IO) { addReaction(unicode).complete() }
+    }
+
+    /**
      * Deletes [message]
      */
     suspend fun delete() {
         withContext(Dispatchers.IO) { message.delete().complete() }
+    }
+
+    /**
+     * Send typing signal to [channel]
+     */
+    suspend fun sendTyping() {
+        withContext(Dispatchers.IO) { channel.sendTyping() }
     }
 
     @Throws(CommandException::class)

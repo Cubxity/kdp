@@ -19,7 +19,7 @@
 dependencies {
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
-    api("net.dv8tion:JDA:4.1.0_100")
+    api("net.dv8tion:JDA:4.1.1_107")
     api("club.minnced:jda-reactor:1.0.0")
     api("org.apache.commons:commons-text:1.8")
 
