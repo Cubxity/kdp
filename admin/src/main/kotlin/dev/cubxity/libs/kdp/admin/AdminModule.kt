@@ -29,7 +29,8 @@ import dev.cubxity.libs.kdp.utils.embed.embed
 class AdminModule(kdp: KDP) : Module(kdp, "admin") {
     companion object {
         val admin by command(description = "The root command for admin module")
-        val su by admin.sub("su <user> <command...>", "Runs a command on a specific user/member")
+        val su by admin.sub("su <user> <command...>", "Runs a command as a specific user/member")
+        val repeat by admin.sub("repeat <command...> <amount>", "Runs a command a specific amount of times")
     }
 
     init {
@@ -44,5 +45,6 @@ class AdminModule(kdp: KDP) : Module(kdp, "admin") {
             }
         }
         su()
+        repeat()
     }
 }

@@ -42,8 +42,7 @@ fun AdminModule.su() = AdminModule.su {
         )
     }
 }
-
-private fun CommandProcessingContext.createContext(user: User, command: String): CommandProcessingContext {
+ fun CommandProcessingContext.createContext(user: User, command: String): CommandProcessingContext {
     val ctx = CommandProcessingContext(kdp, user, channel, message, event)
     var args = processArguments(command)
 
