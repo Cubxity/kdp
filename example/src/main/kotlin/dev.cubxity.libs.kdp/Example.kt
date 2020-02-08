@@ -24,6 +24,8 @@ import dev.cubxity.libs.kdp.module.Module
 import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 import dev.cubxity.libs.kdp.processing.processing
 import dev.cubxity.libs.kdp.serialization.DefaultSerializationFactory
+import dev.cubxity.libs.kdp.utils.embed.embed
+import dev.cubxity.libs.kdp.utils.sanitize
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.User
@@ -31,9 +33,9 @@ import java.awt.Color
 
 class ExampleModule(kdp: KDP) : Module(kdp, "example") {
     companion object {
-        val example by command("example|ex <user>", "Example command")
-        val error by example.sub(description = "Throws an error")
-        val not by error.sub(description = "It does not throw an error")
+        val example by command("example|ex|e <user>", "Example command")
+        val sanitize by example.sub("sanitize|s <msg...>", "Echos a message back")
+        val embedCommand by example.sub("embed|e <msg...>", "Embed a message")
     }
 
     init {
@@ -43,11 +45,29 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
                 send("You are referring to ${user.asTag}!")
             }
         }
-        error {
-            handler { throw error("Omega lul") }
+        sanitize {
+            handler {
+                val msg: String = args["msg"]!!
+                val sanitized = msg.sanitize(this)
+                send("You said $sanitized!")
+            }
         }
-        not {
-            handler { send("You are safe.") }
+        embedCommand {
+            handler {
+                val msg: String = args["msg"]!!
+                val embed = embed {
+                    title = "Echo"
+
+                    field("Message") {
+                        +msg
+                    }
+
+                    field("Sent by") {
+                        +executor
+                    }
+                }
+                send(embed)
+            }
         }
     }
 }
@@ -58,6 +78,10 @@ fun main() {
 
         processing {
             prefix = "^"
+        }
+
+        intercept(CommandProcessingPipeline.FILTER) {
+            if (context.channel.id != "485175582854873132") finish()
         }
 
         intercept(CommandProcessingPipeline.ERROR) {

@@ -16,13 +16,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    kotlin("jvm")
-}
-
-group = "dev.cubxity.libs.kdp"
-version = "1.0-SNAPSHOT"
-
 dependencies {
     api(kotlin("stdlib-jdk8"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
@@ -31,19 +24,4 @@ dependencies {
     api("org.apache.commons:commons-text:1.8")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
-}
-
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    test {
-        useJUnitPlatform()
-        testLogging {
-            events("passed", "skipped", "failed")
-        }
-    }
 }

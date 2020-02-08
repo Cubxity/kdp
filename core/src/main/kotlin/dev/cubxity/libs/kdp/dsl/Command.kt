@@ -57,6 +57,25 @@ fun command(name: String? = null, description: String? = null, vararg aliases: S
         }
     }
 
+fun CommandData.sub(spec: String, description: String? = null) =
+    object : ReadOnlyProperty<Any, SubCommandData> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): SubCommandData {
+            val (aliases, args) = CommandSpecParser.parse(spec)
+            return object : SubCommandData {
+                override val parent
+                    get() = this@sub
+                override val name
+                    get() = aliases.first()
+                override val aliases: List<String>
+                    get() = if (aliases.isEmpty()) listOf(this.name) else aliases.toList()
+                override val description
+                    get() = description
+                override val args: List<CommandData.ParameterData>?
+                    get() = args
+            }
+        }
+    }
+
 /**
  * @param name the name of the sub command. If none provided, it will be using the property's name.
  * @param description the description of the command

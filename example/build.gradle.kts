@@ -16,7 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-rootProject.name = "kdp"
-include(":core")
-include(":utils")
-include(":example")
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(project(":core"))
+    implementation(project(":utils"))
+}

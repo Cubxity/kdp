@@ -1,4 +1,4 @@
-package dev.cubxity.libs.kdp.util
+package dev.cubxity.libs.kdp.utils
 
 @DslMarker
 annotation class BuilderTagMarker
