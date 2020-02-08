@@ -18,16 +18,32 @@
 
 plugins {
     kotlin("jvm") version "1.3.61"
+    id("maven-publish")
 }
 
 group = "dev.cubxity.libs.kdp"
 version = "1.0-SNAPSHOT"
 
-allprojects {
+subprojects {
+    apply(plugin = "maven-publish")
+    apply(plugin = "kotlin")
+
     repositories {
         mavenCentral()
         jcenter()
         maven { url = uri("https:/jitpack.io") }
+    }
+
+    publishing {
+        publications {
+            create<MavenPublication>("lib") {
+                groupId = rootProject.group.toString()
+                artifactId = project.name
+                version = rootProject.version.toString()
+
+                from(components["java"])
+            }
+        }
     }
 }
 
