@@ -163,7 +163,7 @@ class CommandProcessingContext(
      * Send typing signal to [channel]
      */
     suspend fun sendTyping() {
-        withContext(Dispatchers.IO) { channel.sendTyping() }
+        withContext(Dispatchers.IO) { channel.sendTyping().complete() }
     }
 
     @Throws(CommandException::class)

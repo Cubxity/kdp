@@ -42,7 +42,8 @@ fun AdminModule.su() = AdminModule.su {
         )
     }
 }
- fun CommandProcessingContext.createContext(user: User, command: String): CommandProcessingContext {
+
+fun CommandProcessingContext.createContext(user: User, command: String): CommandProcessingContext {
     val ctx = CommandProcessingContext(kdp, user, channel, message, event)
     var args = processArguments(command)
 
@@ -66,8 +67,9 @@ fun AdminModule.su() = AdminModule.su {
     if (depth > 0) args = args.subList(depth, args.size)
     val effectiveCommand = subCommand ?: cmd
 
-    val argSpec = effectiveCommand.args
-    if (argSpec != null && args.size < argSpec.size) throw MissingArgumentException(argSpec[args.size].name)
+    val requiredArgs = effectiveCommand.args?.filter { it.required }
+    if (requiredArgs != null && args.size < requiredArgs.size)
+        throw MissingArgumentException(requiredArgs[args.size].name)
 
     ctx.command = effectiveCommand
     ctx.rawArgs = args

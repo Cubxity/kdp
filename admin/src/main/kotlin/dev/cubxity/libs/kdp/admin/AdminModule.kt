@@ -31,6 +31,7 @@ class AdminModule(kdp: KDP) : Module(kdp, "admin") {
         val admin by command(description = "The root command for admin module")
         val su by admin.sub("su <user> <command...>", "Runs a command as a specific user/member")
         val repeat by admin.sub("repeat <amount> <command...>", "Runs a command a specific amount of times")
+        val eval by admin.sub("eval <code...>", "Evaluate a code expression")
     }
 
     init {
@@ -46,5 +47,6 @@ class AdminModule(kdp: KDP) : Module(kdp, "admin") {
         }
         su()
         repeat()
+        eval()
     }
 }

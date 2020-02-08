@@ -31,7 +31,11 @@ import dev.cubxity.libs.kdp.processing.MissingArgumentException
 import dev.cubxity.libs.kdp.processing.processing
 import dev.cubxity.libs.kdp.serialization.DefaultSerializationFactory
 import dev.cubxity.libs.kdp.utils.embed.bold
+import dev.cubxity.libs.kdp.utils.embed.buildEmbed
 import dev.cubxity.libs.kdp.utils.embed.embed
+import dev.cubxity.libs.kdp.utils.paginator.Paginator
+import dev.cubxity.libs.kdp.utils.paginator.PaginatorEmbedInterface
+import dev.cubxity.libs.kdp.utils.paginator.paginator
 import dev.cubxity.libs.kdp.utils.sanitize
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.Permission
@@ -43,6 +47,7 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
         val example by command("example|ex|e <user>", "Example command")
         val sanitize by example.sub("sanitize|s <msg...>", "Echos a message back")
         val embedCommand by example.sub("embed|e <msg...>", "Embed a message")
+        val paginate by example.sub("paginate", "Lorem ipsum")
         val ban by example.sub("ban", "Permission check for ban")
     }
 
@@ -70,6 +75,15 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
                     field("Sent by") { +executor }
                 }
                 send(embed)
+            }
+        }
+        paginate {
+            handler {
+                val embed = buildEmbed { title = "Lorem ipsum" }
+                val paginator = paginator {
+                    LOREM_IPSUM.lines().forEach { +it }
+                }
+                PaginatorEmbedInterface(paginator, embed).sendTo(this)
             }
         }
         ban {

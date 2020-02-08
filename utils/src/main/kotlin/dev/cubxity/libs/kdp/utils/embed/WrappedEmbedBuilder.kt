@@ -124,3 +124,11 @@ class WrappedEmbedBuilder : EmbedBuilder() {
 @BuilderTagMarker
 fun embed(opt: WrappedEmbedBuilder.() -> Unit = {}) =
     WrappedEmbedBuilder().apply(opt).build()
+
+/**
+ * Creates an [WrappedEmbedBuilder]
+ * @param opt callback to configure [WrappedEmbedBuilder]
+ */
+@BuilderTagMarker
+fun buildEmbed(opt: WrappedEmbedBuilder.() -> Unit = {}) =
+    WrappedEmbedBuilder().apply(opt)
