@@ -19,6 +19,7 @@
 package dev.cubxity.libs.kdp.command
 
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
+import dev.cubxity.libs.kdp.utils.BuilderTagMarker
 
 open class Command(
     override val name: String,
@@ -31,6 +32,7 @@ open class Command(
 
     var handler: (suspend CommandProcessingContext.() -> Unit)? = null
 
+    @BuilderTagMarker
     fun handler(handler: suspend CommandProcessingContext.() -> Unit) {
         this.handler = handler
     }

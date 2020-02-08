@@ -75,6 +75,17 @@ class WrappedEmbedBuilder : EmbedBuilder() {
      */
     operator fun MDString.unaryPlus() = appendDescription(toString())
 
+    operator fun List<MDString>.unaryPlus() {
+        var first = true
+        forEach {
+            if (first)
+                first = false
+            else
+                appendDescription(", ")
+            +it
+        }
+    }
+
     operator fun User.unaryPlus() {
         appendDescription(asMention)
     }

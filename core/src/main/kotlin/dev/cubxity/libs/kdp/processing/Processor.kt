@@ -48,8 +48,9 @@ class Processor(val kdp: KDP) : CoroutineScope {
         launch {
             kdp.execute(
                 CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
-                CommandProcessingPipeline.FILTER,
+                CommandProcessingPipeline.PRE_FILTER,
                 CommandProcessingPipeline.MATCH,
+                CommandProcessingPipeline.POST_FILTER,
                 CommandProcessingPipeline.MONITORING,
                 CommandProcessingPipeline.PROCESS
             )
@@ -60,8 +61,9 @@ class Processor(val kdp: KDP) : CoroutineScope {
         launch {
             kdp.execute(
                 CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
-                CommandProcessingPipeline.FILTER,
+                CommandProcessingPipeline.PRE_FILTER,
                 CommandProcessingPipeline.MATCH,
+                CommandProcessingPipeline.POST_FILTER,
                 CommandProcessingPipeline.MONITORING,
                 CommandProcessingPipeline.PROCESS
             )
@@ -99,7 +101,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
                     }
 
                     val cmdName = args[0]
-                    val cmd = kdp.moduleManager.modules.map { it.commands.find { c -> cmdName in c.aliases } }
+                    val cmd = kdp.moduleManager.modules.mapNotNull { it.commands.find { c -> cmdName in c.aliases } }
                         .firstOrNull()
                     if (cmd == null) {
                         finish()
@@ -164,7 +166,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
         override val key = "kdp.features.processor"
 
         override fun install(pipeline: KDP, configure: Processor.() -> Unit): Processor {
-            val feature = Processor(pipeline)
+            val feature = Processor(pipeline).apply(configure)
             with(pipeline.manager) {
                 on<MessageReceivedEvent>().subscribe { feature.processEvent(it) }
                 on<MessageUpdateEvent>().subscribe { feature.processEvent(it) }

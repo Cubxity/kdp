@@ -125,4 +125,7 @@ class CommandProcessingContext(
     suspend fun delete() {
         withContext(Dispatchers.IO) { message.delete().complete() }
     }
+
+    @Throws(CommandException::class)
+    fun error(message: String): Nothing = throw CommandException(message)
 }

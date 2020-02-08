@@ -16,9 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-rootProject.name = "kdp"
-include(":core")
-include(":utils")
-include(":example")
-include(":admin")
-include(":perms")
+package dev.cubxity.libs.kdp.perms
+
+import net.dv8tion.jda.api.Permission
+
+@Suppress("MemberVisibilityCanBePrivate")
+class PermissionDeniedException(val missingPermissions: List<Permission>? = null) : SecurityException() {
+    override fun toString() = "Permission denied. Missing $missingPermissions."
+}

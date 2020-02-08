@@ -18,16 +18,23 @@
 
 package dev.cubxity.libs.kdp
 
+import dev.cubxity.libs.kdp.admin.AdminModule
 import dev.cubxity.libs.kdp.dsl.command
 import dev.cubxity.libs.kdp.dsl.sub
 import dev.cubxity.libs.kdp.module.Module
+import dev.cubxity.libs.kdp.perms.PermissionDeniedException
+import dev.cubxity.libs.kdp.perms.guildPermissions
+import dev.cubxity.libs.kdp.perms.perms
+import dev.cubxity.libs.kdp.processing.CommandException
 import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
+import dev.cubxity.libs.kdp.processing.MissingArgumentException
 import dev.cubxity.libs.kdp.processing.processing
 import dev.cubxity.libs.kdp.serialization.DefaultSerializationFactory
+import dev.cubxity.libs.kdp.utils.embed.bold
 import dev.cubxity.libs.kdp.utils.embed.embed
 import dev.cubxity.libs.kdp.utils.sanitize
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 
@@ -36,6 +43,7 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
         val example by command("example|ex|e <user>", "Example command")
         val sanitize by example.sub("sanitize|s <msg...>", "Echos a message back")
         val embedCommand by example.sub("embed|e <msg...>", "Embed a message")
+        val ban by example.sub("ban", "Permission check for ban")
     }
 
     init {
@@ -64,27 +72,59 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
                 send(embed)
             }
         }
+        ban {
+            guildPermissions = listOf(Permission.BAN_MEMBERS)
+            handler {
+                send("Congrats! You have the force to ban people.")
+            }
+        }
     }
 }
 
 fun main() {
     val kdp = kdp {
         ExampleModule::class.register()
+        AdminModule::class.register()
 
         processing {
             prefix = "^"
         }
 
-        intercept(CommandProcessingPipeline.FILTER) {
+        perms {
+            admins = listOf("290921387655430144")
+        }
+
+        intercept(CommandProcessingPipeline.PRE_FILTER) {
             if (context.channel.id != "485175582854873132") finish()
         }
 
         intercept(CommandProcessingPipeline.ERROR) {
-            val embed = EmbedBuilder()
-                .setColor(Color.RED)
-                .setTitle("Error")
-                .setDescription(context.exception?.toString())
-                .build()
+            val ex = context.exception ?: return@intercept
+            val embed = embed {
+                color = Color.RED
+
+                when (ex) {
+                    is CommandException -> {
+                        +":x: "
+                        +ex.message!!
+                    }
+                    is MissingArgumentException -> {
+                        +":x: "
+                        +"Missing required argument: "
+                        +ex.arg.bold
+                    }
+                    is PermissionDeniedException -> {
+                        +":x: "
+                        +"Permission denied. "
+                        if (ex.missingPermissions != null)
+                            +"Missing guild permissions."
+                    }
+                    else -> {
+                        title = "Error"
+                        +ex.toString()
+                    }
+                }
+            }
             context.send(embed)
         }
 

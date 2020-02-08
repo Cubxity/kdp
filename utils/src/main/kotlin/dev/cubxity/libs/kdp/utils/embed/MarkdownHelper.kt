@@ -35,11 +35,19 @@ fun bold(text: String, escape: Boolean = true) = "**${text.escapeMarkdown()}**".
 @BuilderTagMarker
 fun bold(opt: MarkdownBuilder.() -> Unit) = "**${MarkdownBuilder().apply(opt)}**".asMDString()
 
+@BuilderTagMarker
+val String.bold
+    get() = "**${escapeMarkdown()}**".asMDString()
+
 /**
  * Wraps [text] in italic
  */
 @BuilderTagMarker
 fun italic(text: String) = "*${text.escapeMarkdown()}*".asMDString()
+
+@BuilderTagMarker
+val String.italic
+    get() = "*${escapeMarkdown()}*".asMDString()
 
 /**
  * Wraps text produced in [opt] in italic
@@ -61,6 +69,27 @@ fun underline(text: String) = "__${text.escapeMarkdown()}__".asMDString()
 @BuilderTagMarker
 fun underline(opt: MarkdownBuilder.() -> Unit) = "__${MarkdownBuilder().apply(opt)}__".asMDString()
 
+@BuilderTagMarker
+val String.underline
+    get() = "__${escapeMarkdown()}__".asMDString()
+
+/**
+ * Wraps [text] in underline
+ */
+@BuilderTagMarker
+fun strikethrough(text: String) = "~~${text.escapeMarkdown()}~~".asMDString()
+
+/**
+ * Wraps text produced in [opt] in underline
+ * Note: text produced in [opt] might breaks the underline
+ */
+@BuilderTagMarker
+fun strikethrough(opt: MarkdownBuilder.() -> Unit) = "~~${MarkdownBuilder().apply(opt)}~~".asMDString()
+
+@BuilderTagMarker
+val String.strikethrough
+    get() = "~~${escapeMarkdown()}~~".asMDString()
+
 /**
  * Wraps [text] in code
  */
@@ -73,6 +102,10 @@ fun code(text: String) = "`${text.escapeMarkdown()}`".asMDString()
  */
 @BuilderTagMarker
 fun code(opt: MarkdownBuilder.() -> Unit) = "`${MarkdownBuilder().apply(opt)}`".asMDString()
+
+@BuilderTagMarker
+val String.code
+    get() = "`${escapeMarkdown()}`".asMDString()
 
 /**
  * Wraps [text] in codeBlock
@@ -101,6 +134,10 @@ fun spoiler(text: String) = "||${text.escapeMarkdown()}||".asMDString()
 @BuilderTagMarker
 fun spoiler(opt: MarkdownBuilder.() -> Unit) =
     "||${MarkdownBuilder().apply(opt)}||".asMDString()
+
+@BuilderTagMarker
+val String.spoiler
+    get() = "||${escapeMarkdown()}||".asMDString()
 
 /**
  * Creates a link

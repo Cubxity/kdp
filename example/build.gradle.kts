@@ -24,4 +24,5 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":core"))
     implementation(project(":utils"))
+    implementation(project(":admin"))
 }

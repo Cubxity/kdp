@@ -16,9 +16,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-rootProject.name = "kdp"
-include(":core")
-include(":utils")
-include(":example")
-include(":admin")
-include(":perms")
+package dev.cubxity.libs.kdp.processing
+
+class CommandException(s: String) : IllegalStateException(s)
