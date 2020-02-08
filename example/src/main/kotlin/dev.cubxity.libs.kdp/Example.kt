@@ -58,13 +58,8 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
                 val embed = embed {
                     title = "Echo"
 
-                    field("Message") {
-                        +msg
-                    }
-
-                    field("Sent by") {
-                        +executor
-                    }
+                    field("Message") { +msg }
+                    field("Sent by") { +executor }
                 }
                 send(embed)
             }

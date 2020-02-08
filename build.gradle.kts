@@ -24,6 +24,12 @@ plugins {
 group = "dev.cubxity.libs.kdp"
 version = "0.1"
 
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url = uri("https://jitpack.io") }
+}
+
 subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "kotlin")
