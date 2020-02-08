@@ -7,9 +7,9 @@ fun AdminModule.repeat() = AdminModule.repeat {
     botAdmin = true
     handler {
         val times: Int = args["amount"]!!
-        for (i in 0..times) {
-            val command: String = args["command"]!!
-            val ctx = createContext(executor, command)
+        val command: String = args["command"]!!
+        val ctx = createContext(executor, command)
+        repeat(times) {
             kdp.execute(
                 ctx,
                 CommandProcessingPipeline.POST_FILTER,
