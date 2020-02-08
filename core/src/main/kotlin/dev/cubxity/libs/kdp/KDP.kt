@@ -20,9 +20,7 @@ package dev.cubxity.libs.kdp
 
 import club.minnced.jda.reactor.ReactiveEventManager
 import dev.cubxity.libs.kdp.module.Module
-import dev.cubxity.libs.kdp.module.ModuleInitializer
 import dev.cubxity.libs.kdp.module.ModuleManager
-import dev.cubxity.libs.kdp.module.ReflectionModuleInitializer
 import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 import dev.cubxity.libs.kdp.respond.RespondPipeline
 import dev.cubxity.libs.kdp.serialization.SerializationFactory
@@ -35,16 +33,23 @@ class KDP : CommandProcessingPipeline() {
     val respondPipeline = RespondPipeline()
     var serializationFactory = SerializationFactory()
 
-    fun <T : Module> ModuleInitializer<T>.register() {
+    operator fun <T : Module> T.unaryPlus() {
         moduleManager.register(this)
     }
 
-    fun <T : Module> Class<T>.register() {
-        moduleManager.register(ReflectionModuleInitializer(this))
+    /**
+     * Registers a module class that contains constructor(KDP)
+     */
+    operator fun <T : Module> Class<T>.unaryPlus() {
+        val constructor = getDeclaredConstructor(KDP::class.java) ?: error("Unable to find constructor(KDP)")
+        moduleManager.register(constructor.newInstance(this@KDP))
     }
 
-    fun <T : Module> KClass<T>.register() {
-        moduleManager.register(ReflectionModuleInitializer(this.java))
+    /**
+     * Registers a module class that contains constructor(KDP)
+     */
+    operator fun <T : Module> KClass<T>.unaryPlus() {
+        +java
     }
 
     fun init() {

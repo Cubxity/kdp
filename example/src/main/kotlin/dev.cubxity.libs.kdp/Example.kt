@@ -83,8 +83,8 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
 
 fun main() {
     val kdp = kdp {
-        ExampleModule::class.register()
-        AdminModule::class.register()
+        +ExampleModule::class
+        +AdminModule::class
 
         processing {
             prefix = "^"
