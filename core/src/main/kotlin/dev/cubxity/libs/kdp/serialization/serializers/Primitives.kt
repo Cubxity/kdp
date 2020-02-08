@@ -16,13 +16,23 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.processing
+package dev.cubxity.libs.kdp.serialization.serializers
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.events.message.MessageUpdateEvent
+import dev.cubxity.libs.kdp.processing.CommandProcessingContext
+import dev.cubxity.libs.kdp.serialization.ArgumentSerializer
 
-class MergedPrefixFactory(val provider: () -> List<String>) : PrefixFactory {
-    override fun get(event: MessageReceivedEvent) = provider()
+class IntSerializer : ArgumentSerializer<Int> {
+    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toIntOrNull()
+}
 
-    override fun get(event: MessageUpdateEvent) = provider()
+class DoubleSerializer : ArgumentSerializer<Double> {
+    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toDoubleOrNull()
+}
+
+class LongSerializer : ArgumentSerializer<Long> {
+    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toLongOrNull()
+}
+
+class FloatSerializer : ArgumentSerializer<Float> {
+    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toFloatOrNull()
 }

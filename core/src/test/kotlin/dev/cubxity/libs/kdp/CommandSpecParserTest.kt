@@ -19,21 +19,21 @@
 package dev.cubxity.libs.kdp
 
 import dev.cubxity.libs.kdp.command.CommandData
-import dev.cubxity.libs.kdp.command.CommandStringParser
+import dev.cubxity.libs.kdp.command.CommandSpecParser
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
-class CommandStringParserTest {
+class CommandSpecParserTest {
     @Test
     fun parseEmptyTest() {
-        assertThrows<IllegalStateException> { CommandStringParser.parse("") }
+        assertThrows<IllegalStateException> { CommandSpecParser.parse("") }
     }
 
     @Test
     fun parseSingleTest() {
         assertDoesNotThrow {
-            val data = CommandStringParser.parse("test")
+            val data = CommandSpecParser.parse("test")
             assert(data.aliases == listOf("test"))
             assert(data.parameters.isEmpty())
         }
@@ -42,7 +42,7 @@ class CommandStringParserTest {
     @Test
     fun parseMultiTest() {
         assertDoesNotThrow {
-            val data = CommandStringParser.parse("test|test2")
+            val data = CommandSpecParser.parse("test|test2")
             assert(data.aliases == listOf("test", "test2"))
             assert(data.parameters.isEmpty())
         }
@@ -51,7 +51,7 @@ class CommandStringParserTest {
     @Test
     fun parseSingleWithParameters() {
         assertDoesNotThrow {
-            val data = CommandStringParser.parse("test <p1> [p2...]")
+            val data = CommandSpecParser.parse("test <p1> [p2...]")
             val params = listOf(
                 CommandData.ParameterData("p1", required = true, vararg = false),
                 CommandData.ParameterData("p2", required = false, vararg = true)

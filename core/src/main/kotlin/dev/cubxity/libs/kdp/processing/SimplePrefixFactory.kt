@@ -16,20 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.command
+package dev.cubxity.libs.kdp.processing
 
-interface CommandData {
-    val name: String
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 
-    val aliases: List<String>
-        get() = listOf(name)
+class SimplePrefixFactory(val provider: () -> List<String>) : PrefixFactory {
+    override fun get(event: MessageReceivedEvent) = provider()
 
-    val description: String?
-
-    val args: List<ParameterData>?
-        get() = null
-
-    fun build() = Command(name, description, aliases, args)
-
-    data class ParameterData(val name: String, val required: Boolean, val vararg: Boolean)
+    override fun get(event: MessageUpdateEvent) = provider()
 }

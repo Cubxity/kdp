@@ -16,20 +16,19 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.command
+package dev.cubxity.libs.kdp.serialization
 
-interface CommandData {
-    val name: String
+import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 
-    val aliases: List<String>
-        get() = listOf(name)
+open class SerializationFactory {
+    val serializers = mutableMapOf<Class<*>, ArgumentSerializer<*>>()
 
-    val description: String?
+    inline fun <reified T> serialize(ctx: CommandProcessingContext, s: String): T? {
+        if (s is T) return s
+        return serializers[T::class.java]?.serialize(ctx, s) as? T?
+    }
 
-    val args: List<ParameterData>?
-        get() = null
-
-    fun build() = Command(name, description, aliases, args)
-
-    data class ParameterData(val name: String, val required: Boolean, val vararg: Boolean)
+    inline fun <reified T> register(serializer: ArgumentSerializer<T>) {
+        serializers[T::class.java] = serializer
+    }
 }

@@ -23,8 +23,10 @@ import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 open class Command(
     override val name: String,
     override val description: String?,
-    override val aliases: List<String>
+    override val aliases: List<String>,
+    override val args: List<CommandData.ParameterData>?
 ) : CommandData {
+    val flags: MutableMap<String, Any> = mutableMapOf()
     val subCommands: MutableList<SubCommand> = mutableListOf()
 
     var handler: (suspend CommandProcessingContext.() -> Unit)? = null

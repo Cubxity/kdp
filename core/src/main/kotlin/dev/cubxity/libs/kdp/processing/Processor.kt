@@ -42,7 +42,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
     /**
      * Factory to provide prefixes for the specified message event
      */
-    var prefixFactory: PrefixFactory = MergedPrefixFactory { listOf(prefix) }
+    var prefixFactory: PrefixFactory = SimplePrefixFactory { listOf(prefix) }
 
     fun processEvent(e: MessageReceivedEvent) {
         launch {
@@ -119,8 +119,11 @@ class Processor(val kdp: KDP) : CoroutineScope {
                     if (depth > 0) args = args.subList(depth, args.size)
                     val effectiveCommand = subCommand ?: cmd
 
+                    val argSpec = effectiveCommand.args
+                    if (argSpec != null && args.size < argSpec.size) throw MissingArgumentException(argSpec[args.size].name)
+
                     this.command = effectiveCommand
-                    this.args = args
+                    this.rawArgs = args
                 } catch (t: Throwable) {
                     t.printStackTrace()
                     exception = t
@@ -140,6 +143,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
 
                     cmd.handler?.invoke(this)
                 } catch (t: Throwable) {
+                    t.printStackTrace()
                     exception = t
                     finish()
                     kdp.execute(this, CommandProcessingPipeline.ERROR)

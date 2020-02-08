@@ -16,20 +16,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.command
+package dev.cubxity.libs.kdp.utils
 
-interface CommandData {
-    val name: String
+import org.apache.commons.text.similarity.FuzzyScore
+import java.util.*
 
-    val aliases: List<String>
-        get() = listOf(name)
+object FuzzyUtils {
+    private val fuzzyScore = FuzzyScore(Locale.ENGLISH)
 
-    val description: String?
+    fun <T> extract(query: String, items: Iterable<T>, toString: (T) -> String) =
+        items.map { Match(it, fuzzyScore.fuzzyScore(toString(it), query)) }
+            .maxBy { it.score }
 
-    val args: List<ParameterData>?
-        get() = null
-
-    fun build() = Command(name, description, aliases, args)
-
-    data class ParameterData(val name: String, val required: Boolean, val vararg: Boolean)
+    data class Match<T>(val item: T, val score: Int)
 }

@@ -16,20 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.command
+package dev.cubxity.libs.kdp.processing
 
-interface CommandData {
-    val name: String
-
-    val aliases: List<String>
-        get() = listOf(name)
-
-    val description: String?
-
-    val args: List<ParameterData>?
-        get() = null
-
-    fun build() = Command(name, description, aliases, args)
-
-    data class ParameterData(val name: String, val required: Boolean, val vararg: Boolean)
-}
+@Suppress("CanBeParameter", "MemberVisibilityCanBePrivate")
+class MissingArgumentException(val arg: String) : IllegalStateException("Missing required argument: $arg")

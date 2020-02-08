@@ -18,12 +18,12 @@
 
 package dev.cubxity.libs.kdp.command
 
-object CommandStringParser {
+object CommandSpecParser {
     private val commandStringRegex = "(?<aliases>[^ ]+) ?(?<params>.+)?".toRegex()
     private val paramRegex = "(?<required>[\\[<])(?<name>[^ ]+)[]>] ?".toRegex()
 
-    fun parse(s: String): Data {
-        val res = commandStringRegex.find(s) ?: error("Unable to parse the command string")
+    fun parse(spec: String): Data {
+        val res = commandStringRegex.find(spec) ?: error("Unable to parse the command string")
         val aliases = res.groupValues[1].split('|')
         val params = paramRegex.findAll(res.groupValues[2])
             .map {

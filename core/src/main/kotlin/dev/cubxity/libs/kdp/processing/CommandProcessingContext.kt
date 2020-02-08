@@ -61,7 +61,9 @@ class CommandProcessingContext(
     /**
      * The parsed arguments, this may not match with [message]
      */
-    var args: List<String>? = null
+    var rawArgs: List<String>? = null
+
+    val args: ArgumentsContainer = ArgumentsContainer(this)
 
     /**
      * The alias used on invocation
@@ -98,7 +100,7 @@ class CommandProcessingContext(
      * Sends [message] to [channel]
      */
     suspend fun send(message: MessageBuilder): Message? = coroutineScope {
-        RespondContext(channel, message)
+        RespondContext(this@CommandProcessingContext, channel, message)
             .also { kdp.respondPipeline.execute(it) }
             .sentMessage
     }

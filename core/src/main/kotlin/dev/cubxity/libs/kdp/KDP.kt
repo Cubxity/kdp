@@ -22,17 +22,29 @@ import club.minnced.jda.reactor.ReactiveEventManager
 import dev.cubxity.libs.kdp.module.Module
 import dev.cubxity.libs.kdp.module.ModuleInitializer
 import dev.cubxity.libs.kdp.module.ModuleManager
+import dev.cubxity.libs.kdp.module.ReflectionModuleInitializer
 import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 import dev.cubxity.libs.kdp.respond.RespondPipeline
+import dev.cubxity.libs.kdp.serialization.SerializationFactory
 import kotlinx.coroutines.runBlocking
+import kotlin.reflect.KClass
 
 class KDP : CommandProcessingPipeline() {
     val manager = ReactiveEventManager()
     val moduleManager = ModuleManager(this)
     val respondPipeline = RespondPipeline()
+    var serializationFactory = SerializationFactory()
 
     fun <T : Module> ModuleInitializer<T>.register() {
         moduleManager.register(this)
+    }
+
+    fun <T : Module> Class<T>.register() {
+        moduleManager.register(ReflectionModuleInitializer(this))
+    }
+
+    fun <T : Module> KClass<T>.register() {
+        moduleManager.register(ReflectionModuleInitializer(this.java))
     }
 
     fun init() {

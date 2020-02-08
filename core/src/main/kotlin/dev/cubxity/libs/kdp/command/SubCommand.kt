@@ -22,5 +22,6 @@ class SubCommand(
     override val parent: CommandData,
     name: String,
     description: String?,
-    aliases: List<String>
-) : Command(name, description, aliases), SubCommandData
+    aliases: List<String>,
+    override val args: List<CommandData.ParameterData>?
+) : Command(name, description, aliases, args), SubCommandData

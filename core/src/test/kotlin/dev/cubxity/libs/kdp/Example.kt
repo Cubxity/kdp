@@ -21,23 +21,27 @@ package dev.cubxity.libs.kdp
 import dev.cubxity.libs.kdp.dsl.command
 import dev.cubxity.libs.kdp.dsl.sub
 import dev.cubxity.libs.kdp.module.Module
-import dev.cubxity.libs.kdp.module.ModuleInitializer
 import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 import dev.cubxity.libs.kdp.processing.processing
+import dev.cubxity.libs.kdp.serialization.DefaultSerializationFactory
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.entities.User
 import java.awt.Color
 
 class ExampleModule(kdp: KDP) : Module(kdp, "example") {
-    companion object : ModuleInitializer<ExampleModule>({ ExampleModule(it) }) {
-        val example by command(description = "Example command")
+    companion object {
+        val example by command("example|ex <user>", "Example command")
         val error by example.sub(description = "Throws an error")
         val not by error.sub(description = "It does not throw an error")
     }
 
     init {
         example {
-            handler { send("Hello world!") }
+            handler {
+                val user: User = args["user"] ?: error("User not found")
+                send("You are referring to ${user.asTag}!")
+            }
         }
         error {
             handler { throw error("Omega lul") }
@@ -50,7 +54,7 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
 
 fun main() {
     val kdp = kdp {
-        ExampleModule.register()
+        ExampleModule::class.register()
 
         processing {
             prefix = "^"
@@ -64,6 +68,8 @@ fun main() {
                 .build()
             context.send(embed)
         }
+
+        serializationFactory = DefaultSerializationFactory()
 
         init()
     }

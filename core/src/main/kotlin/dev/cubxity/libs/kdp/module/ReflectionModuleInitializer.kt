@@ -16,20 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.command
+package dev.cubxity.libs.kdp.module
 
-interface CommandData {
-    val name: String
+import dev.cubxity.libs.kdp.KDP
 
-    val aliases: List<String>
-        get() = listOf(name)
-
-    val description: String?
-
-    val args: List<ParameterData>?
-        get() = null
-
-    fun build() = Command(name, description, aliases, args)
-
-    data class ParameterData(val name: String, val required: Boolean, val vararg: Boolean)
-}
+/**
+ * This module initializer is able to initialize a module with a constructor(KDP)
+ */
+class ReflectionModuleInitializer<T : Module>(clazz: Class<T>) : ModuleInitializer<T>({
+    val constructor = clazz.getDeclaredConstructor(KDP::class.java) ?: error("Unable to find constructor(KDP)")
+    constructor.newInstance(it)
+})
