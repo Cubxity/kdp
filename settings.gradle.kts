@@ -18,3 +18,7 @@
 
 rootProject.name = "kdp"
 include(":core")
+include(":utils")
+include(":example")
+include(":admin")
+include(":perms")

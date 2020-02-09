@@ -16,10 +16,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.module
+package dev.cubxity.libs.kdp.processing
 
-import dev.cubxity.libs.kdp.KDP
-
-open class ModuleInitializer<T : Module>(private val initializer: (KDP) -> T) {
-    fun initialize(kdp: KDP): T = initializer(kdp)
-}
+class CommandException(s: String) : IllegalStateException(s)

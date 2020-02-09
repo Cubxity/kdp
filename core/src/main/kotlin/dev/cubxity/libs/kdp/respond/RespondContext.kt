@@ -18,11 +18,13 @@
 
 package dev.cubxity.libs.kdp.respond
 
+import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
 
 data class RespondContext(
+    val ctx: CommandProcessingContext,
     val target: MessageChannel,
     val message: MessageBuilder
 ) {

@@ -16,13 +16,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.libs.kdp.processing
-
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.events.message.MessageUpdateEvent
-
-class MergedPrefixFactory(val provider: () -> List<String>) : PrefixFactory {
-    override fun get(event: MessageReceivedEvent) = provider()
-
-    override fun get(event: MessageUpdateEvent) = provider()
+dependencies {
+    api(project(":core"))
 }

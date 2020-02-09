@@ -19,9 +19,26 @@
 package dev.cubxity.libs.kdp.dsl
 
 import dev.cubxity.libs.kdp.command.CommandData
+import dev.cubxity.libs.kdp.command.CommandSpecParser
 import dev.cubxity.libs.kdp.command.SubCommandData
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+
+fun command(spec: String, description: String?) = object : ReadOnlyProperty<Any, CommandData> {
+    override fun getValue(thisRef: Any, property: KProperty<*>): CommandData {
+        val (aliases, args) = CommandSpecParser.parse(spec)
+        return object : CommandData {
+            override val name
+                get() = aliases.first()
+            override val aliases: List<String>
+                get() = aliases
+            override val description
+                get() = description
+            override val args: List<CommandData.ParameterData>?
+                get() = args
+        }
+    }
+}
 
 /**
  * Command delegate. It will return command data which contains the name and the description.
@@ -31,10 +48,31 @@ import kotlin.reflect.KProperty
 fun command(name: String? = null, description: String? = null, vararg aliases: String = emptyArray()) =
     object : ReadOnlyProperty<Any, CommandData> {
         override fun getValue(thisRef: Any, property: KProperty<*>) = object : CommandData {
-            override val name = name ?: property.name
+            override val name
+                get() = name ?: property.name
             override val aliases: List<String>
                 get() = if (aliases.isEmpty()) listOf(this.name) else aliases.toList()
-            override val description = description
+            override val description
+                get() = description
+        }
+    }
+
+fun CommandData.sub(spec: String, description: String? = null) =
+    object : ReadOnlyProperty<Any, SubCommandData> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): SubCommandData {
+            val (aliases, args) = CommandSpecParser.parse(spec)
+            return object : SubCommandData {
+                override val parent
+                    get() = this@sub
+                override val name
+                    get() = aliases.first()
+                override val aliases: List<String>
+                    get() = if (aliases.isEmpty()) listOf(this.name) else aliases.toList()
+                override val description
+                    get() = description
+                override val args: List<CommandData.ParameterData>?
+                    get() = args
+            }
         }
     }
 
@@ -47,10 +85,13 @@ fun command(name: String? = null, description: String? = null, vararg aliases: S
 fun CommandData.sub(name: String? = null, description: String? = null, vararg aliases: String = emptyArray()) =
     object : ReadOnlyProperty<Any, SubCommandData> {
         override fun getValue(thisRef: Any, property: KProperty<*>) = object : SubCommandData {
-            override val parent = this@sub
-            override val name: String = name ?: property.name
+            override val parent
+                get() = this@sub
+            override val name
+                get() = name ?: property.name
             override val aliases: List<String>
                 get() = if (aliases.isEmpty()) listOf(this.name) else aliases.toList()
-            override val description = description
+            override val description
+                get() = description
         }
     }

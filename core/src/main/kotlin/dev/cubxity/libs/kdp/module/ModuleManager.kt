@@ -24,26 +24,24 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 class ModuleManager(private val kdp: KDP) {
-    private val moduleInitializers = mutableListOf<ModuleInitializer<*>>()
-    val modules = mutableListOf<Module>()
+    private val _modules = mutableListOf<Module>()
+    val modules: List<Module>
+        get() = _modules
 
-    fun <T : Module> register(vararg initializers: ModuleInitializer<T>) {
-        initializers.forEach { moduleInitializers += it }
+    fun register(vararg modules: Module) {
+        modules.forEach { _modules += it }
     }
 
-    fun <T : Module> unregister(initializer: ModuleInitializer<T>) {
-        moduleInitializers -= initializer
+    fun unregister(module: Module) {
+        _modules -= module
     }
-
-    fun <T : Module> load(initializer: ModuleInitializer<T>) = initializer.initialize(kdp)
 
     suspend fun load() = coroutineScope {
-        modules += moduleInitializers.map { async { load(it) } }.awaitAll()
+        modules.map { async { it.init() } }.awaitAll()
     }
 
     suspend fun unload() = coroutineScope {
-        modules.map { async { it.dispose() } }.awaitAll()
-        modules.clear()
+        _modules.map { async { it.dispose() } }.awaitAll()
     }
 
     suspend fun reload() {

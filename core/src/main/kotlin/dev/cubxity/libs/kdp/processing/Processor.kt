@@ -42,14 +42,15 @@ class Processor(val kdp: KDP) : CoroutineScope {
     /**
      * Factory to provide prefixes for the specified message event
      */
-    var prefixFactory: PrefixFactory = MergedPrefixFactory { listOf(prefix) }
+    var prefixFactory: PrefixFactory = SimplePrefixFactory { listOf(prefix) }
 
     fun processEvent(e: MessageReceivedEvent) {
         launch {
             kdp.execute(
                 CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
-                CommandProcessingPipeline.FILTER,
+                CommandProcessingPipeline.PRE_FILTER,
                 CommandProcessingPipeline.MATCH,
+                CommandProcessingPipeline.POST_FILTER,
                 CommandProcessingPipeline.MONITORING,
                 CommandProcessingPipeline.PROCESS
             )
@@ -60,8 +61,9 @@ class Processor(val kdp: KDP) : CoroutineScope {
         launch {
             kdp.execute(
                 CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
-                CommandProcessingPipeline.FILTER,
+                CommandProcessingPipeline.PRE_FILTER,
                 CommandProcessingPipeline.MATCH,
+                CommandProcessingPipeline.POST_FILTER,
                 CommandProcessingPipeline.MONITORING,
                 CommandProcessingPipeline.PROCESS
             )
@@ -99,7 +101,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
                     }
 
                     val cmdName = args[0]
-                    val cmd = kdp.moduleManager.modules.map { it.commands.find { c -> cmdName in c.aliases } }
+                    val cmd = kdp.moduleManager.modules.mapNotNull { it.commands.find { c -> cmdName in c.aliases } }
                         .firstOrNull()
                     if (cmd == null) {
                         finish()
@@ -119,8 +121,12 @@ class Processor(val kdp: KDP) : CoroutineScope {
                     if (depth > 0) args = args.subList(depth, args.size)
                     val effectiveCommand = subCommand ?: cmd
 
+                    val requiredArgs = effectiveCommand.args?.filter { it.required }
+                    if (requiredArgs != null && args.size < requiredArgs.size)
+                        throw MissingArgumentException(requiredArgs[args.size].name)
+
                     this.command = effectiveCommand
-                    this.args = args
+                    this.rawArgs = args
                 } catch (t: Throwable) {
                     t.printStackTrace()
                     exception = t
@@ -140,6 +146,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
 
                     cmd.handler?.invoke(this)
                 } catch (t: Throwable) {
+                    t.printStackTrace()
                     exception = t
                     finish()
                     kdp.execute(this, CommandProcessingPipeline.ERROR)
@@ -160,7 +167,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
         override val key = "kdp.features.processor"
 
         override fun install(pipeline: KDP, configure: Processor.() -> Unit): Processor {
-            val feature = Processor(pipeline)
+            val feature = Processor(pipeline).apply(configure)
             with(pipeline.manager) {
                 on<MessageReceivedEvent>().subscribe { feature.processEvent(it) }
                 on<MessageUpdateEvent>().subscribe { feature.processEvent(it) }

@@ -68,6 +68,10 @@ open class Module(val kdp: KDP, val name: String, val description: String = "No 
             cmd
         }
 
+    suspend fun init() {
+
+    }
+
     open suspend fun dispose() {
         commands.clear()
         listeners.forEach { it.dispose() }

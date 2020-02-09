@@ -21,8 +21,9 @@ package dev.cubxity.libs.kdp.processing
 import dev.cubxity.libs.kdp.pipeline.Pipeline
 
 open class CommandProcessingPipeline : Pipeline<CommandProcessingContext>(
-    FILTER,
+    PRE_FILTER,
     MATCH,
+    POST_FILTER,
     MONITORING,
     PROCESS,
     ERROR
@@ -31,12 +32,17 @@ open class CommandProcessingPipeline : Pipeline<CommandProcessingContext>(
         /**
          * Phase for filtering messages
          */
-        const val FILTER = "Filter"
+        const val PRE_FILTER = "Pre-Filter"
 
         /**
          * Phase for processing arguments and matching command
          */
         const val MATCH = "Match"
+
+        /**
+         * Phase for filtering command
+         */
+        const val POST_FILTER = "Post-Filter"
 
         /**
          * Phase for tracing commands, useful for logging, metrics, etc..

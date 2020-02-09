@@ -22,7 +22,13 @@ plugins {
 }
 
 group = "dev.cubxity.libs.kdp"
-version = "1.0-SNAPSHOT"
+version = "0.1"
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url = uri("https://jitpack.io") }
+}
 
 subprojects {
     apply(plugin = "maven-publish")
@@ -31,7 +37,7 @@ subprojects {
     repositories {
         mavenCentral()
         jcenter()
-        maven { url = uri("https:/jitpack.io") }
+        maven { url = uri("https://jitpack.io") }
     }
 
     publishing {
@@ -45,13 +51,19 @@ subprojects {
             }
         }
     }
-}
 
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+    tasks {
+        compileKotlin {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        compileTestKotlin {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        test {
+            useJUnitPlatform()
+            testLogging {
+                events("passed", "skipped", "failed")
+            }
+        }
     }
 }

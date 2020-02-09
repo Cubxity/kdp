@@ -61,7 +61,9 @@ class CommandProcessingContext(
     /**
      * The parsed arguments, this may not match with [message]
      */
-    var args: List<String>? = null
+    var rawArgs: List<String>? = null
+
+    val args: ArgumentsContainer = ArgumentsContainer(this)
 
     /**
      * The alias used on invocation
@@ -98,7 +100,26 @@ class CommandProcessingContext(
      * Sends [message] to [channel]
      */
     suspend fun send(message: MessageBuilder): Message? = coroutineScope {
-        RespondContext(channel, message)
+        RespondContext(this@CommandProcessingContext, channel, message)
+            .also { kdp.respondPipeline.execute(it) }
+            .sentMessage
+    }
+
+    /**
+     * Sends [message] to the receiver
+     */
+    suspend fun MessageChannel.send(message: String): Message? = send(MessageBuilder(message))
+
+    /**
+     * Sends [message] to the receiver
+     */
+    suspend fun MessageChannel.send(message: MessageEmbed): Message? = send(MessageBuilder(message))
+
+    /**
+     * Sends [message] to the receiver
+     */
+    suspend fun MessageChannel.send(message: MessageBuilder): Message? = coroutineScope {
+        RespondContext(this@CommandProcessingContext, channel, message)
             .also { kdp.respondPipeline.execute(it) }
             .sentMessage
     }
@@ -111,10 +132,24 @@ class CommandProcessingContext(
     }
 
     /**
+     * React with [emote] on the receiver
+     */
+    suspend fun Message.react(emote: Emote) {
+        withContext(Dispatchers.IO) { addReaction(emote).complete() }
+    }
+
+    /**
      * React with [unicode] on [message]
      */
     suspend fun react(unicode: String) {
         withContext(Dispatchers.IO) { message.addReaction(unicode).complete() }
+    }
+
+    /**
+     * React with [unicode] on the receiver
+     */
+    suspend fun Message.react(unicode: String) {
+        withContext(Dispatchers.IO) { addReaction(unicode).complete() }
     }
 
     /**
@@ -123,4 +158,14 @@ class CommandProcessingContext(
     suspend fun delete() {
         withContext(Dispatchers.IO) { message.delete().complete() }
     }
+
+    /**
+     * Send typing signal to [channel]
+     */
+    suspend fun sendTyping() {
+        withContext(Dispatchers.IO) { channel.sendTyping().complete() }
+    }
+
+    @Throws(CommandException::class)
+    fun error(message: String): Nothing = throw CommandException(message)
 }
