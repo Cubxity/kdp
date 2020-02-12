@@ -58,8 +58,8 @@ class WrappedEmbedBuilder : EmbedBuilder() {
      * @param name field's name
      * @param inline
      */
-    fun field(name: String, inline: Boolean = false, opt: EasyStringBuilder.() -> Unit) {
-        addField(name, EasyStringBuilder().apply(opt).toString(), inline)
+    fun field(name: String, inline: Boolean = false, opt: MarkdownBuilder.() -> Unit) {
+        addField(name, MarkdownBuilder().apply(opt).toString(), inline)
     }
 
 }

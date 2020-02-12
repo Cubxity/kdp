@@ -4,7 +4,7 @@ package dev.cubxity.libs.kdp.util
  * @author Cubxity
  * @since 6/10/2019
  */
-class EasyStringBuilder {
+class MarkdownBuilder {
     private val builder = StringBuilder()
 
     operator fun String.unaryPlus() {
@@ -15,7 +15,7 @@ class EasyStringBuilder {
      * Appends [s] into [builder]
      * @return this instance for chaining
      */
-    fun append(s: String): EasyStringBuilder {
+    fun append(s: String): MarkdownBuilder {
         builder.append(s)
         return this
     }
