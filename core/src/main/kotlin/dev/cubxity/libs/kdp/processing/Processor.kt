@@ -40,6 +40,11 @@ class Processor(val kdp: KDP) : CoroutineScope {
     var prefix = "."
 
     /**
+     * Determines whether errors should be logged
+     */
+    var printError = true
+
+    /**
      * Factory to provide prefixes for the specified message event
      */
     var prefixFactory: PrefixFactory = SimplePrefixFactory { listOf(prefix) }
@@ -128,7 +133,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
                     this.command = effectiveCommand
                     this.rawArgs = args
                 } catch (t: Throwable) {
-                    t.printStackTrace()
+                    if (printError) t.printStackTrace()
                     exception = t
                     finish()
                     kdp.execute(this, CommandProcessingPipeline.ERROR)
@@ -146,7 +151,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
 
                     cmd.handler?.invoke(this)
                 } catch (t: Throwable) {
-                    t.printStackTrace()
+                    if (printError) t.printStackTrace()
                     exception = t
                     finish()
                     kdp.execute(this, CommandProcessingPipeline.ERROR)

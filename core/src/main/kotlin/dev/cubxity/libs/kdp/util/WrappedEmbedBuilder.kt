@@ -71,7 +71,7 @@ class WrappedEmbedBuilder : EmbedBuilder() {
 @BuilderTagMarker
 suspend fun CommandProcessingContext.embed(opt: WrappedEmbedBuilder.() -> Unit = {}) =
     WrappedEmbedBuilder().apply(opt).also {
-        RespondContext(channel, MessageBuilder(it.build()))
+        RespondContext(this, channel, MessageBuilder(it.build()))
             .also { i -> kdp.respondPipeline.execute(i) }
     }
 
