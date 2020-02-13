@@ -26,8 +26,8 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import reactor.core.Disposable
-import reactor.core.publisher.toMono
 import java.time.Duration
+import java.util.concurrent.TimeoutException
 import kotlin.math.max
 import kotlin.math.min
 
@@ -62,27 +62,31 @@ class EmbedReactionMenu(
         } else withContext(Dispatchers.IO) { ctx.channel.sendMessage(embed).complete() }
         this@EmbedReactionMenu.msg = m
         if (embed.length > 1) {
-            m.on<MessageReactionAddEvent>()
-                .filter { it.user != ctx.event.jda.selfUser }
-                .timeout(timeout)
-                .next()
-                .subscribe {
-                    try {
-                        it.reaction.removeReaction(it.user!!).queue()
-                    } catch (e: Exception) {}
-
-                    if (it.user == ctx.executor)
-                        when (it.reactionEmote.name) {
-                            reactions.stop -> {
-                                listener?.dispose()
-                                m.clearReactions().queue()
-                            }
-                            reactions.first -> launch { sendTo(ctx, 0) }
-                            reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
-                            reactions.next -> launch { sendTo(ctx, min(index + 1, embeds.size - 1)) }
-                            reactions.last -> launch { sendTo(ctx, embeds.size - 1) }
+            try {
+                m.on<MessageReactionAddEvent>()
+                    .filter { it.user != ctx.event.jda.selfUser }
+                    .timeout(timeout)
+                    .next()
+                    .subscribe {
+                        try {
+                            it.reaction.removeReaction(it.user!!).queue()
+                        } catch (e: Exception) {
                         }
-                }
+
+                        if (it.user == ctx.executor)
+                            when (it.reactionEmote.name) {
+                                reactions.stop -> {
+                                    listener?.dispose()
+                                    m.clearReactions().queue()
+                                }
+                                reactions.first -> launch { sendTo(ctx, 0) }
+                                reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
+                                reactions.next -> launch { sendTo(ctx, min(index + 1, embeds.size - 1)) }
+                                reactions.last -> launch { sendTo(ctx, embeds.size - 1) }
+                            }
+                    }
+            } catch (ignored: TimeoutException) {
+            }
 
             if (first) {
                 with(ctx) {
