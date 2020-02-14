@@ -31,6 +31,8 @@ open class Command(
     val subCommands: MutableList<SubCommand> = mutableListOf()
 
     var handler: (suspend CommandProcessingContext.() -> Unit)? = null
+    
+    var ignoreQuotes = false
 
     @BuilderTagMarker
     fun handler(handler: suspend CommandProcessingContext.() -> Unit) {

@@ -113,7 +113,9 @@ class Processor(val kdp: KDP) : CoroutineScope {
                         return@with
                     }
                     this.alias = cmdName
-                    args = args.subList(1, args.size)
+                    args = if (cmd.ignoreQuotes)
+                        content.removePrefix(prefix).trim().removePrefix(cmdName).trim().split(" ")
+                    else args.subList(1, args.size)
 
                     var subCommand: SubCommand? = null
                     var depth = 0
