@@ -38,7 +38,8 @@ private val imports = arrayOf(
     "dev.cubxity.libs.kdp.utils.embed.*",
     "dev.cubxity.libs.kdp.utils.paginator.*",
     "dev.cubxity.libs.kdp.processing.*",
-    "dev.cubxity.libs.kdp.*"
+    "dev.cubxity.libs.kdp.*",
+    "kotlinx.coroutines.*"
 )
 
 fun AdminModule.eval() = AdminModule.eval {
