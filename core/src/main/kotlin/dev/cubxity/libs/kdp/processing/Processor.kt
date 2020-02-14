@@ -19,14 +19,13 @@
 package dev.cubxity.libs.kdp.processing
 
 import club.minnced.jda.reactor.on
+import club.minnced.jda.reactor.toText
 import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.command.SubCommand
 import dev.cubxity.libs.kdp.feature.KDPFeature
 import dev.cubxity.libs.kdp.feature.install
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 
@@ -79,7 +78,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
         kdp.intercept(CommandProcessingPipeline.MATCH) {
             with(context) {
                 try {
-                    val content = message.contentRaw
+                    val content = "${message.contentRaw} ${message.textAttachments()}".trim()
                     if (content.isEmpty()) {
                         finish()
                         return@with
@@ -183,6 +182,23 @@ class Processor(val kdp: KDP) : CoroutineScope {
         }
     }
 }
+
+/**
+ * Gets the text attachments as a string.
+ *
+ * @author Koding
+ * @since  0.1-PRE
+ */
+suspend fun Message.textAttachments() =
+    // Run as IO
+    withContext(Dispatchers.IO) {
+        // Filter valid attachments
+        attachments.filter { !it.isImage && !it.isVideo }
+            // Get all the text
+            .mapNotNull { it.toText().block() }
+            // Join it
+            .joinToString(separator = " ")
+    }
 
 /**
  * Get or install [Processor] feature and run [opt] on it
