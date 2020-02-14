@@ -54,7 +54,7 @@ fun AdminModule.eval() = AdminModule.eval {
             append("\n")
 
             hashMapOf(
-                "ctx" to this,
+                "ctx" to this@handler,
                 "kdp" to kdp,
                 "guild" to guild,
                 "user" to executor,
