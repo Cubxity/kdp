@@ -33,7 +33,6 @@ private val imports = arrayOf(
     "net.dv8tion.jda.api.utils.*",
     "net.dv8tion.jda.internal.entities.*",
     "net.dv8tion.jda.api.entities.*",
-    "dev.cubxity.libs.kdp.util.*",
     "dev.cubxity.libs.kdp.utils.*",
     "dev.cubxity.libs.kdp.utils.embed.*",
     "dev.cubxity.libs.kdp.utils.paginator.*",
