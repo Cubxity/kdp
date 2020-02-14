@@ -32,7 +32,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 class Processor(val kdp: KDP) : CoroutineScope {
     override val coroutineContext = Job() + Dispatchers.Default
     private val ARGS_REGEX = "(\"([^\"]+)\"|[^ ]+)( ?)".toRegex()
-    private val ARGS_REGEX_NO_QUOTES = "([^ ]+)( ?)".toRegex()
+    private val ARGS_REGEX_NO_QUOTES = "(([^ ]+)|[^ ]+)( ?)".toRegex()
 
     /**
      * Only works if [prefixFactory] has not been changed
