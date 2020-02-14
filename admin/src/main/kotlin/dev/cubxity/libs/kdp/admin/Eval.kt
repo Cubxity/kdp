@@ -44,9 +44,11 @@ private val imports = arrayOf(
 
 fun AdminModule.eval() = AdminModule.eval {
     botAdmin = true
-    handler {
-        System.setProperty("idea.use.native.fs.for.win", "false")
+    ignoreQuotes = true
 
+    System.setProperty("idea.use.native.fs.for.win", "false")
+
+    handler {
         val code: String = args["code"]!!
         val bindings = engine.createBindings()
         val header = buildString {

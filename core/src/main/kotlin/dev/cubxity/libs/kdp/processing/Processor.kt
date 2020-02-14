@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 class Processor(val kdp: KDP) : CoroutineScope {
     override val coroutineContext = Job() + Dispatchers.Default
     private val ARGS_REGEX = "(\"([^\"]+)\"|[^ ]+)( ?)".toRegex()
+    private val ARGS_REGEX_NO_QUOTES = "([^ ]+)( ?)".toRegex()
 
     /**
      * Only works if [prefixFactory] has not been changed
@@ -98,7 +99,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
                         return@with
                     }
 
-                    var args = processArguments(content, prefix)
+                    var args = processArguments(content, prefix, ARGS_REGEX)
                     if (args.isEmpty()) {
                         finish()
                         return@with
@@ -112,9 +113,10 @@ class Processor(val kdp: KDP) : CoroutineScope {
                         return@with
                     }
                     this.alias = cmdName
-                    args = if (cmd.ignoreQuotes)
-                        content.removePrefix(prefix).trim().removePrefix(cmdName).trim().split(" ")
-                    else args.subList(1, args.size)
+                    args =
+                        (if (cmd.ignoreQuotes) processArguments(content, prefix, ARGS_REGEX_NO_QUOTES) else args).let {
+                            it.subList(1, it.size)
+                        }
 
                     var subCommand: SubCommand? = null
                     var depth = 0
@@ -161,8 +163,8 @@ class Processor(val kdp: KDP) : CoroutineScope {
         }
     }
 
-    private fun processArguments(content: String, alias: String) =
-        ARGS_REGEX.findAll(content.removePrefix(alias))
+    private fun processArguments(content: String, alias: String, regex: Regex) =
+        regex.findAll(content.removePrefix(alias))
             .mapNotNull {
                 it.groupValues.getOrNull(2)?.let { s -> if (s.isEmpty()) it.groupValues.getOrNull(1) else s }
                     ?: it.groupValues.getOrNull(1)
