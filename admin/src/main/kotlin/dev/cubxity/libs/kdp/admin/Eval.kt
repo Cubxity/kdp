@@ -70,7 +70,7 @@ fun AdminModule.eval() = AdminModule.eval {
         val (success, out) = try {
             true to engine.eval("$header$code", bindings)
         } catch (e: Throwable) {
-            false to ExceptionUtils.getStackTrace(if (e is ScriptException) e.cause else e)
+            false to ExceptionUtils.getStackTrace(if (e is ScriptException) e.cause ?: e else e)
         }
 
         val embed = embed {
