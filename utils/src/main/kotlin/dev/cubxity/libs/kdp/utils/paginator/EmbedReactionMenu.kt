@@ -66,6 +66,7 @@ class EmbedReactionMenu(
                 m.on<MessageReactionAddEvent>()
                     .filter { it.user != ctx.event.jda.selfUser }
                     .timeout(timeout)
+                    .doOnError {  }
                     .next()
                     .subscribe {
                         try {
