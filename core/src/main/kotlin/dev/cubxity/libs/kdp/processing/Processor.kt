@@ -21,6 +21,7 @@ package dev.cubxity.libs.kdp.processing
 import club.minnced.jda.reactor.on
 import club.minnced.jda.reactor.toText
 import dev.cubxity.libs.kdp.KDP
+import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.command.SubCommand
 import dev.cubxity.libs.kdp.feature.KDPFeature
 import dev.cubxity.libs.kdp.feature.install
@@ -79,7 +80,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
         kdp.intercept(CommandProcessingPipeline.MATCH) {
             with(context) {
                 try {
-                    val content = "${message.contentRaw} ${message.textAttachments()}".trim()
+                    val content = message.contentRaw
                     if (content.isEmpty()) {
                         finish()
                         return@with
@@ -174,6 +175,8 @@ class Processor(val kdp: KDP) : CoroutineScope {
     companion object Feature : KDPFeature<KDP, Processor, Processor> {
         override val key = "kdp.features.processor"
 
+        const val FLAG_IGNORE_QUOTES = "core:ignore_quotes"
+
         override fun install(pipeline: KDP, configure: Processor.() -> Unit): Processor {
             val feature = Processor(pipeline).apply(configure)
             with(pipeline.manager) {
@@ -184,6 +187,12 @@ class Processor(val kdp: KDP) : CoroutineScope {
         }
     }
 }
+
+var Command.ignoreQuotes: Boolean
+    get() = flags[Processor.FLAG_IGNORE_QUOTES] as? Boolean ?: false
+    set(value) {
+        flags[Processor.FLAG_IGNORE_QUOTES] = value
+    }
 
 /**
  * Gets the text attachments as a string.
@@ -197,7 +206,12 @@ suspend fun Message.textAttachments() =
         // Filter valid attachments
         attachments.filter { !it.isImage && !it.isVideo }
             // Get all the text
-            .mapNotNull { it.toText().block() }
+            .mapNotNull { async {
+                // Block with context
+                withContext(Dispatchers.IO) { it.toText().block() }
+            } }
+            // Await all
+            .awaitAll()
             // Join it
             .joinToString(separator = " ")
     }
