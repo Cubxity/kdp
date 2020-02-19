@@ -13,8 +13,7 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
         example {
             handler {
                 val user: User = args["user"] ?: error("User not found")
-                send("You are referring to ${user.asTag}!")
-                send("\uD83E\uDD80")
+                send("You are referring to ${user.asTag}! \uD83E\uDD80")
             }
         }
     }
