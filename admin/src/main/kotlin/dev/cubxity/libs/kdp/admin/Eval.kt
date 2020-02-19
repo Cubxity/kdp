@@ -19,38 +19,74 @@
 package dev.cubxity.libs.kdp.admin
 
 import dev.cubxity.libs.kdp.perms.botAdmin
+import dev.cubxity.libs.kdp.processing.ignoreQuotes
+import dev.cubxity.libs.kdp.utils.embed.codeBlock
 import dev.cubxity.libs.kdp.utils.embed.embed
-import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
-import javax.script.Bindings
+import org.apache.commons.lang3.exception.ExceptionUtils
+import java.awt.Color
+import javax.script.ScriptEngineManager
+import javax.script.ScriptException
 
-private val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
+private val engine = ScriptEngineManager().getEngineByExtension("kts")
+
+private val imports = arrayOf(
+    "net.dv8tion.jda.api.*",
+    "net.dv8tion.jda.api.utils.*",
+    "net.dv8tion.jda.internal.entities.*",
+    "net.dv8tion.jda.api.entities.*",
+    "dev.cubxity.libs.kdp.utils.*",
+    "dev.cubxity.libs.kdp.utils.embed.*",
+    "dev.cubxity.libs.kdp.utils.paginator.*",
+    "dev.cubxity.libs.kdp.processing.*",
+    "dev.cubxity.libs.kdp.*",
+    "kotlinx.coroutines.*"
+)
 
 fun AdminModule.eval() = AdminModule.eval {
     botAdmin = true
+    ignoreQuotes = true
+
+    System.setProperty("idea.use.native.fs.for.win", "false")
+
     handler {
         val code: String = args["code"]!!
         val bindings = engine.createBindings()
-        bindings["ctx"] = this
-        bindings["kdp"] = kdp
-        bindings["g"] = guild
-        bindings["u"] = executor
-        bindings["m"] = message
-        bindings["c"] = channel
+        val header = buildString {
+            append(imports.joinToString(separator = "\n") { "import $it" })
+            append("\n")
+
+            hashMapOf(
+                "ctx" to this@handler,
+                "kdp" to kdp,
+                "guild" to guild,
+                "user" to executor,
+                "message" to message,
+                "channel" to channel
+            ).forEach { (key, value) ->
+                bindings[key] = value ?: return@forEach
+                append("val $key = bindings[\"$key\"]!! as ${value::class.simpleName}\n")
+            }
+        }
 
         sendTyping()
-        val header = createHeader(bindings)
-        val out = engine.eval("$header$code", bindings)
+        val start = System.currentTimeMillis()
+        val (success, out) = try {
+            true to engine.eval("$header$code", bindings)
+        } catch (e: Throwable) {
+            false to ExceptionUtils.getStackTrace(if (e is ScriptException) e.cause ?: e else e)
+        }
 
         val embed = embed {
-            title = "Output"
-            +out.toString()
-        }
-        send(embed)
-    }
-}
+            title = "Eval Output"
+            color = if (success) Color(102, 187, 106) else Color(239, 83, 80)
+            setFooter(
+                "Executed in ${System.currentTimeMillis() - start}ms by ${executor.asTag}",
+                executor.effectiveAvatarUrl
+            )
 
-private fun createHeader(bindings: Bindings) = buildString {
-    bindings.forEach { (k) ->
-        if (k != "kotlin.script.engine") append("val $k=bindings[\"$k\"]\n")
+            +codeBlock("kotlin") { +out.toString() }
+        }
+
+        send(embed)
     }
 }

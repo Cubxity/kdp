@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 
 class SimplePrefixFactory(val provider: () -> List<String>) : PrefixFactory {
-    override fun get(event: MessageReceivedEvent) = provider()
+    override suspend fun get(event: MessageReceivedEvent) = provider()
 
-    override fun get(event: MessageUpdateEvent) = provider()
+    override suspend fun get(event: MessageUpdateEvent) = provider()
 }

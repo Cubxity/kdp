@@ -19,25 +19,31 @@
 package dev.cubxity.libs.kdp.processing
 
 import club.minnced.jda.reactor.on
+import club.minnced.jda.reactor.toText
 import dev.cubxity.libs.kdp.KDP
+import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.command.SubCommand
 import dev.cubxity.libs.kdp.feature.KDPFeature
 import dev.cubxity.libs.kdp.feature.install
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 
 class Processor(val kdp: KDP) : CoroutineScope {
     override val coroutineContext = Job() + Dispatchers.Default
     private val ARGS_REGEX = "(\"([^\"]+)\"|[^ ]+)( ?)".toRegex()
+    private val ARGS_REGEX_NO_QUOTES = "(([^ ]+)|[^ ]+)( ?)".toRegex()
 
     /**
      * Only works if [prefixFactory] has not been changed
      */
     var prefix = "."
+
+    /**
+     * Determines whether errors should be logged
+     */
+    var printError = true
 
     /**
      * Factory to provide prefixes for the specified message event
@@ -94,7 +100,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
                         return@with
                     }
 
-                    var args = processArguments(content, prefix)
+                    var args = processArguments(content, prefix, ARGS_REGEX)
                     if (args.isEmpty()) {
                         finish()
                         return@with
@@ -108,7 +114,10 @@ class Processor(val kdp: KDP) : CoroutineScope {
                         return@with
                     }
                     this.alias = cmdName
-                    args = args.subList(1, args.size)
+                    args =
+                        (if (cmd.ignoreQuotes) processArguments(content, prefix, ARGS_REGEX_NO_QUOTES) else args).let {
+                            it.subList(1, it.size)
+                        }
 
                     var subCommand: SubCommand? = null
                     var depth = 0
@@ -128,7 +137,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
                     this.command = effectiveCommand
                     this.rawArgs = args
                 } catch (t: Throwable) {
-                    t.printStackTrace()
+                    if (printError) t.printStackTrace()
                     exception = t
                     finish()
                     kdp.execute(this, CommandProcessingPipeline.ERROR)
@@ -146,7 +155,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
 
                     cmd.handler?.invoke(this)
                 } catch (t: Throwable) {
-                    t.printStackTrace()
+                    if (printError) t.printStackTrace()
                     exception = t
                     finish()
                     kdp.execute(this, CommandProcessingPipeline.ERROR)
@@ -155,8 +164,8 @@ class Processor(val kdp: KDP) : CoroutineScope {
         }
     }
 
-    private fun processArguments(content: String, alias: String) =
-        ARGS_REGEX.findAll(content.removePrefix(alias))
+    private fun processArguments(content: String, alias: String, regex: Regex) =
+        regex.findAll(content.removePrefix(alias))
             .mapNotNull {
                 it.groupValues.getOrNull(2)?.let { s -> if (s.isEmpty()) it.groupValues.getOrNull(1) else s }
                     ?: it.groupValues.getOrNull(1)
@@ -165,6 +174,8 @@ class Processor(val kdp: KDP) : CoroutineScope {
 
     companion object Feature : KDPFeature<KDP, Processor, Processor> {
         override val key = "kdp.features.processor"
+
+        const val FLAG_IGNORE_QUOTES = "core:ignore_quotes"
 
         override fun install(pipeline: KDP, configure: Processor.() -> Unit): Processor {
             val feature = Processor(pipeline).apply(configure)
@@ -176,6 +187,34 @@ class Processor(val kdp: KDP) : CoroutineScope {
         }
     }
 }
+
+var Command.ignoreQuotes: Boolean
+    get() = flags[Processor.FLAG_IGNORE_QUOTES] as? Boolean ?: false
+    set(value) {
+        flags[Processor.FLAG_IGNORE_QUOTES] = value
+    }
+
+/**
+ * Gets the text attachments as a string.
+ *
+ * @author Koding
+ * @since  0.1-PRE
+ */
+suspend fun Message.textAttachments() =
+    // Run as IO
+    withContext(Dispatchers.IO) {
+        // Filter valid attachments
+        attachments.filter { !it.isImage && !it.isVideo }
+            // Get all the text
+            .mapNotNull { async {
+                // Block with context
+                withContext(Dispatchers.IO) { it.toText().block() }
+            } }
+            // Await all
+            .awaitAll()
+            // Join it
+            .joinToString(separator = " ")
+    }
 
 /**
  * Get or install [Processor] feature and run [opt] on it

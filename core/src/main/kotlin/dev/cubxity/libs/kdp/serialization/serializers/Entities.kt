@@ -77,9 +77,9 @@ class UserSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
         else {
             val n = match[4]
             val d = match.getOrNull(5)?.takeIf { it.isNotEmpty() }
-            val users = ctx.event.jda.userCache
-            users.find { it.name == n && (d == null || it.discriminator == d) }
-                ?: if (isFuzzy) FuzzyUtils.extract(n, users, User::getName)?.item
+            val users = ctx.guild?.memberCache?.mapNotNull { it.user }
+            users?.find { it.name == n && (d == null || it.discriminator == d) }
+                ?: if (isFuzzy) FuzzyUtils.extract(n, users ?: listOf(), User::getName)?.item
                 else null
         }
     }

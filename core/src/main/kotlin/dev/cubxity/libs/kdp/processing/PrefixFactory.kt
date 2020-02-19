@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 
 interface PrefixFactory {
-    fun get(event: MessageReceivedEvent): List<String>
+    suspend fun get(event: MessageReceivedEvent): List<String>
 
-    fun get(event: MessageUpdateEvent): List<String>
+    suspend fun get(event: MessageUpdateEvent): List<String>
 }

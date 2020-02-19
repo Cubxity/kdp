@@ -111,7 +111,7 @@ val String.code
  * Wraps [text] in codeBlock
  */
 @BuilderTagMarker
-fun codeBlock(text: String) = "```\\n${text.escapeMarkdown()}\n```".asMDString()
+fun codeBlock(text: String) = "```\n${text.escapeMarkdown()}\n```".asMDString()
 
 /**
  * Wraps text produced in [opt] in codeBlock

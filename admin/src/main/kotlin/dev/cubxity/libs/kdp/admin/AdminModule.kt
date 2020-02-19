@@ -22,6 +22,7 @@ import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.dsl.command
 import dev.cubxity.libs.kdp.dsl.sub
 import dev.cubxity.libs.kdp.module.Module
+import dev.cubxity.libs.kdp.perms.botAdmin
 import dev.cubxity.libs.kdp.utils.embed.bold
 import dev.cubxity.libs.kdp.utils.embed.code
 import dev.cubxity.libs.kdp.utils.embed.embed
@@ -37,11 +38,13 @@ class AdminModule(kdp: KDP) : Module(kdp, "admin") {
 
     init {
         admin {
+            botAdmin = true
+
             handler {
                 val embed = embed {
                     title = "Admin module"
                     +"Available commands:\n".bold
-                    +commands.map { it.name.code }
+                    +subCommands.map { it.name.code }
                 }
                 send(embed)
             }

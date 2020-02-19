@@ -25,7 +25,9 @@ object FuzzyUtils {
     private val fuzzyScore = FuzzyScore(Locale.ENGLISH)
 
     fun <T> extract(query: String, items: Iterable<T>, toString: (T) -> String) =
-        items.map { Match(it, fuzzyScore.fuzzyScore(toString(it), query)) }
+//        items.map { Match(it, fuzzyScore.fuzzyScore(toString(it), query)) }
+//            .maxBy { it.score }
+        items.map { Match(it, query.commonPrefixWith(toString(it), true).length) }
             .maxBy { it.score }
 
     data class Match<T>(val item: T, val score: Int)
