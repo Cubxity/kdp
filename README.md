@@ -14,6 +14,7 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
             handler {
                 val user: User = args["user"] ?: error("User not found")
                 send("You are referring to ${user.asTag}!")
+                send("🦀")
             }
         }
     }
