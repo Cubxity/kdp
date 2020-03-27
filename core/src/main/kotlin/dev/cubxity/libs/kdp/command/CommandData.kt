@@ -21,6 +21,11 @@ package dev.cubxity.libs.kdp.command
 interface CommandData {
     val name: String
 
+    val spec: String
+        get() = name
+    val path: String
+        get() = name
+
     val aliases: List<String>
         get() = listOf(name)
 
