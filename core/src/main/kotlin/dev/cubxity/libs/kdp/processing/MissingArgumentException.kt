@@ -18,5 +18,7 @@
 
 package dev.cubxity.libs.kdp.processing
 
+import dev.cubxity.libs.kdp.command.Command
+
 @Suppress("CanBeParameter", "MemberVisibilityCanBePrivate")
-class MissingArgumentException(val arg: String) : IllegalStateException("Missing required argument: $arg")
+class MissingArgumentException(val arg: String, val command: Command) : IllegalStateException("Missing required argument: $arg")

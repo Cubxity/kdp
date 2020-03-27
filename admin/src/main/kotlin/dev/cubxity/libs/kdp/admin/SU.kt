@@ -69,7 +69,7 @@ fun CommandProcessingContext.createContext(user: User, command: String): Command
 
     val requiredArgs = effectiveCommand.args?.filter { it.required }
     if (requiredArgs != null && args.size < requiredArgs.size)
-        throw MissingArgumentException(requiredArgs[args.size].name)
+        throw MissingArgumentException(requiredArgs[args.size].name, effectiveCommand)
 
     ctx.command = effectiveCommand
     ctx.rawArgs = args
