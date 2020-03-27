@@ -23,5 +23,7 @@ class SubCommand(
     name: String,
     description: String?,
     aliases: List<String>,
+    path: String,
+    spec: String,
     override val args: List<CommandData.ParameterData>?
-) : Command(name, description, aliases, args), SubCommandData
+) : Command(name, description, aliases, args, path, spec), SubCommandData

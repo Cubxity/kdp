@@ -25,7 +25,9 @@ open class Command(
     override val name: String,
     override val description: String?,
     override val aliases: List<String>,
-    override val args: List<CommandData.ParameterData>?
+    override val args: List<CommandData.ParameterData>?,
+    override val path: String,
+    override val spec: String
 ) : CommandData {
     val flags: MutableMap<String, Any> = mutableMapOf()
     val subCommands: MutableList<SubCommand> = mutableListOf()

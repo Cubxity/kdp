@@ -34,7 +34,7 @@ interface CommandData {
     val args: List<ParameterData>?
         get() = null
 
-    fun build() = Command(name, description, aliases, args)
+    fun build() = Command(name, description, aliases, args, path, spec)
 
     data class ParameterData(val name: String, val required: Boolean, val vararg: Boolean)
 }
