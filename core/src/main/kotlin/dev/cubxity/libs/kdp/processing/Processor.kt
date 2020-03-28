@@ -99,6 +99,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
                         finish()
                         return@with
                     }
+                    this.prefix = prefix
 
                     var args = processArguments(content, prefix, ARGS_REGEX)
                     if (args.isEmpty()) {
