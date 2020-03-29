@@ -32,7 +32,8 @@ import kotlin.math.min
 class PaginatorEmbedInterface(
     paginator: Paginator,
     private val embed: EmbedBuilder = EmbedBuilder(),
-    private val reactions: PaginatorReactions = PaginatorReactions()
+    private val reactions: PaginatorReactions = PaginatorReactions(),
+    private val footer: String? = null
 ) : CoroutineScope{
     override val coroutineContext = Dispatchers.Default + Job()
     private val chunks = paginator.chunks
@@ -46,7 +47,7 @@ class PaginatorEmbedInterface(
     suspend fun sendTo(ctx: CommandProcessingContext, page: Int = 0) {
         val clone = EmbedBuilder(embed)
         clone.setDescription(chunks[page])
-        clone.setFooter("Page ${page + 1}/${chunks.size}")
+        clone.setFooter("Page ${page + 1}/${chunks.size}${if (footer == null) "" else " | $footer"}")
         send(ctx, clone.build())
         index = page
     }
