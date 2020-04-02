@@ -33,7 +33,8 @@ class PaginatorEmbedInterface(
     paginator: Paginator,
     private val embed: EmbedBuilder = EmbedBuilder(),
     private val reactions: PaginatorReactions = PaginatorReactions(),
-    private val footer: String? = null
+    private val footer: String? = null,
+    private val delete: Boolean = true
 ) : CoroutineScope{
     override val coroutineContext = Dispatchers.Default + Job()
     private val chunks = paginator.chunks
@@ -71,7 +72,9 @@ class PaginatorEmbedInterface(
                             when (it.reactionEmote.name) {
                                 reactions.stop -> {
                                     listener?.dispose()
-                                    m.clearReactions().queue()
+
+                                    if (delete) m.delete().queue()
+                                    else m.clearReactions().queue()
                                 }
                                 reactions.first -> launch { sendTo(ctx, 0) }
                                 reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }

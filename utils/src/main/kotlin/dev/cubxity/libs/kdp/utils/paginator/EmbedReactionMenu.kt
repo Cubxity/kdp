@@ -34,7 +34,8 @@ import kotlin.math.min
 class EmbedReactionMenu(
     private val embeds: Array<MessageEmbed>,
     private val timeout: Duration = Duration.ofSeconds(15),
-    private val reactions: PaginatorReactions = PaginatorReactions()
+    private val reactions: PaginatorReactions = PaginatorReactions(),
+    private val delete: Boolean = true
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private var listener: Disposable? = null
@@ -78,7 +79,8 @@ class EmbedReactionMenu(
                             when (it.reactionEmote.name) {
                                 reactions.stop -> {
                                     listener?.dispose()
-                                    m.clearReactions().queue()
+                                    if (delete) m.delete().queue()
+                                    else m.clearReactions().queue()
                                 }
                                 reactions.first -> launch { sendTo(ctx, 0) }
                                 reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
