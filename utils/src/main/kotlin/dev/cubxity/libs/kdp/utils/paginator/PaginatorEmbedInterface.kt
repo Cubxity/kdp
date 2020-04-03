@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
+import net.dv8tion.jda.api.exceptions.ContextException
 import reactor.core.Disposable
 import kotlin.math.max
 import kotlin.math.min
@@ -83,11 +84,16 @@ class PaginatorEmbedInterface(
                             }
                     }
                 with(ctx) {
-                    m.react(reactions.stop)
-                    m.react(reactions.first)
-                    m.react(reactions.previous)
-                    m.react(reactions.next)
-                    m.react(reactions.last)
+                    launch {
+                        try {
+                            m?.react(reactions.stop)
+                            m?.react(reactions.first)
+                            m?.react(reactions.previous)
+                            m?.react(reactions.next)
+                            m?.react(reactions.last)
+                        } catch (e: ContextException) {
+                        }
+                    }
                 }
             }
         }
