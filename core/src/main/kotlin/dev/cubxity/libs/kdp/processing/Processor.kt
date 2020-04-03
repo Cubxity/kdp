@@ -46,6 +46,11 @@ class Processor(val kdp: KDP) : CoroutineScope {
     var printError = true
 
     /**
+     * Determines if the processor should ignore bots
+     */
+    var ignoreBots = true
+
+    /**
      * Factory to provide prefixes for the specified message event
      */
     var prefixFactory: PrefixFactory = SimplePrefixFactory { listOf(prefix) }
@@ -53,12 +58,12 @@ class Processor(val kdp: KDP) : CoroutineScope {
     fun processEvent(e: MessageReceivedEvent) {
         launch {
             kdp.execute(
-                    CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
-                    CommandProcessingPipeline.PRE_FILTER,
-                    CommandProcessingPipeline.MATCH,
-                    CommandProcessingPipeline.POST_FILTER,
-                    CommandProcessingPipeline.MONITORING,
-                    CommandProcessingPipeline.PROCESS
+                CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
+                CommandProcessingPipeline.PRE_FILTER,
+                CommandProcessingPipeline.MATCH,
+                CommandProcessingPipeline.POST_FILTER,
+                CommandProcessingPipeline.MONITORING,
+                CommandProcessingPipeline.PROCESS
             )
         }
     }
@@ -66,17 +71,20 @@ class Processor(val kdp: KDP) : CoroutineScope {
     fun processEvent(e: MessageUpdateEvent) {
         launch {
             kdp.execute(
-                    CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
-                    CommandProcessingPipeline.PRE_FILTER,
-                    CommandProcessingPipeline.MATCH,
-                    CommandProcessingPipeline.POST_FILTER,
-                    CommandProcessingPipeline.MONITORING,
-                    CommandProcessingPipeline.PROCESS
+                CommandProcessingContext(kdp, e.author, e.channel, e.message, e),
+                CommandProcessingPipeline.PRE_FILTER,
+                CommandProcessingPipeline.MATCH,
+                CommandProcessingPipeline.POST_FILTER,
+                CommandProcessingPipeline.MONITORING,
+                CommandProcessingPipeline.PROCESS
             )
         }
     }
 
     init {
+        kdp.intercept(CommandProcessingPipeline.PRE_FILTER) {
+            if (ignoreBots && context.executor.isBot) finish()
+        }
         kdp.intercept(CommandProcessingPipeline.MATCH) {
             with(context) {
                 try {
@@ -109,16 +117,16 @@ class Processor(val kdp: KDP) : CoroutineScope {
 
                     val cmdName = args[0]
                     val cmd = kdp.moduleManager.modules.mapNotNull { it.commands.find { c -> cmdName in c.aliases } }
-                            .firstOrNull()
+                        .firstOrNull()
                     if (cmd == null) {
                         finish()
                         return@with
                     }
                     this.alias = cmdName
                     args =
-                            (if (cmd.ignoreQuotes) processArguments(content, prefix, ARGS_REGEX_NO_QUOTES) else args).let {
-                                it.subList(1, it.size)
-                            }
+                        (if (cmd.ignoreQuotes) processArguments(content, prefix, ARGS_REGEX_NO_QUOTES) else args).let {
+                            it.subList(1, it.size)
+                        }
 
                     var subCommand: SubCommand? = null
                     var depth = 0
@@ -170,12 +178,12 @@ class Processor(val kdp: KDP) : CoroutineScope {
     }
 
     private fun processArguments(content: String, alias: String, regex: Regex) =
-            regex.findAll(content.removePrefix(alias))
-                    .mapNotNull {
-                        it.groupValues.getOrNull(2)?.let { s -> if (s.isEmpty()) it.groupValues.getOrNull(1) else s }
-                                ?: it.groupValues.getOrNull(1)
-                    }
-                    .toList()
+        regex.findAll(content.removePrefix(alias))
+            .mapNotNull {
+                it.groupValues.getOrNull(2)?.let { s -> if (s.isEmpty()) it.groupValues.getOrNull(1) else s }
+                    ?: it.groupValues.getOrNull(1)
+            }
+            .toList()
 
     companion object Feature : KDPFeature<KDP, Processor, Processor> {
         override val key = "kdp.features.processor"
@@ -206,25 +214,25 @@ var Command.ignoreQuotes: Boolean
  * @since  0.1-PRE
  */
 suspend fun Message.textAttachments() =
-        // Run as IO
-        withContext(Dispatchers.IO) {
-            // Filter valid attachments
-            attachments.filter { !it.isImage && !it.isVideo }
-                    // Get all the text
-                    .mapNotNull {
-                        async {
-                            // Block with context
-                            withContext(Dispatchers.IO) { it.toText().block() }
-                        }
-                    }
-                    // Await all
-                    .awaitAll()
-                    // Join it
-                    .joinToString(separator = " ")
-        }
+    // Run as IO
+    withContext(Dispatchers.IO) {
+        // Filter valid attachments
+        attachments.filter { !it.isImage && !it.isVideo }
+            // Get all the text
+            .mapNotNull {
+                async {
+                    // Block with context
+                    withContext(Dispatchers.IO) { it.toText().block() }
+                }
+            }
+            // Await all
+            .awaitAll()
+            // Join it
+            .joinToString(separator = " ")
+    }
 
 /**
  * Get or install [Processor] feature and run [opt] on it
  */
 fun KDP.processing(opt: Processor.() -> Unit = {}): Processor = (features[Processor.key] as Processor?
-        ?: install(Processor)).apply(opt)
+    ?: install(Processor)).apply(opt)
