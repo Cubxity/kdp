@@ -26,7 +26,7 @@ class IntSerializer : ArgumentSerializer<Int> {
 }
 
 class DoubleSerializer : ArgumentSerializer<Double> {
-    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toDoubleOrNull()
+    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toDoubleOrNull()?.takeIf { it.isFinite() }
 }
 
 class LongSerializer : ArgumentSerializer<Long> {
@@ -34,5 +34,5 @@ class LongSerializer : ArgumentSerializer<Long> {
 }
 
 class FloatSerializer : ArgumentSerializer<Float> {
-    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toFloatOrNull()
+    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toFloatOrNull()?.takeIf { it.isFinite() }
 }
