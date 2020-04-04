@@ -49,8 +49,8 @@ class Paginator(private val prefix: String = "", private val suffix: String = ""
         lines += s
     }
 
-    fun addLine(line: String) {
-        val s = line.escapeMarkdown()
+    fun addLine(line: String, escape: Boolean = false) {
+        val s = if (escape) line.escapeMarkdown() else line
         if (s.length + prefix.length + suffix.length > size) error("This line is too long! (${s.length})")
         lines += s
     }
