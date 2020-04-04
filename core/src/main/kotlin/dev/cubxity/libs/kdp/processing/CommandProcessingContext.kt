@@ -87,6 +87,11 @@ class CommandProcessingContext(
     var exception: Throwable? = null
 
     /**
+     * Contains any extra data for the command to be processed.
+     */
+    val extra = hashMapOf<String, Any>()
+
+    /**
      * Sends [message] to [channel]
      */
     suspend fun send(message: String): Message? = send(MessageBuilder(message))
