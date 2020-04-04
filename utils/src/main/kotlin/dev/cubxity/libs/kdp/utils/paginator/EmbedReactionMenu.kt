@@ -72,7 +72,7 @@ class EmbedReactionMenu(
                     .next()
                     .subscribe {
                         try {
-                            it.reaction.removeReaction(it.user!!).queue()
+                            it.reaction.removeReaction(it.user!!).queue({}, {})
                         } catch (e: Exception) {
                         }
 
@@ -81,7 +81,7 @@ class EmbedReactionMenu(
                                 reactions.stop -> {
                                     listener?.dispose()
                                     if (delete) m.delete().queue()
-                                    else m.clearReactions().queue()
+                                    else m.clearReactions().queue({}, {})
                                 }
                                 reactions.first -> launch { sendTo(ctx, 0) }
                                 reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }

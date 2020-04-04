@@ -68,14 +68,14 @@ class PaginatorEmbedInterface(
                 m.on<MessageReactionAddEvent>()
                     .filter { it.user != ctx.event.jda.selfUser }
                     .subscribe {
-                        it.reaction.removeReaction(it.user!!).queue()
+                        it.reaction.removeReaction(it.user!!).queue({}, {})
                         if (it.user == ctx.executor)
                             when (it.reactionEmote.name) {
                                 reactions.stop -> {
                                     listener?.dispose()
 
                                     if (delete) m.delete().queue()
-                                    else m.clearReactions().queue()
+                                    else m.clearReactions().queue({}, {})
                                 }
                                 reactions.first -> launch { sendTo(ctx, 0) }
                                 reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
