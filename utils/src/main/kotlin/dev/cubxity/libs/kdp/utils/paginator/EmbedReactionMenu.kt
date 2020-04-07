@@ -92,7 +92,7 @@ class EmbedReactionMenu(
         message.on<MessageReactionAddEvent>()
                 .filter { it.user != ctx.event.jda.selfUser }
                 .timeout(timeout)
-                .doOnError { }
+                .doOnError { message.clearReactions().queue({}, {}) }
                 .next()
                 .subscribe {
                     try {
