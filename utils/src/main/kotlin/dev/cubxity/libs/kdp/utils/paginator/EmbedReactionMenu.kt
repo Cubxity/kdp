@@ -33,11 +33,11 @@ import kotlin.math.max
 import kotlin.math.min
 
 class EmbedReactionMenu(
-    private val embeds: Array<MessageEmbed>,
-    private val timeout: Duration = Duration.ofSeconds(15),
-    private val reactions: PaginatorReactions = PaginatorReactions(),
-    private val footer: String? = null,
-    private val delete: Boolean = true
+        private val embeds: Array<MessageEmbed>,
+        private val timeout: Duration = Duration.ofSeconds(15),
+        private val reactions: PaginatorReactions = PaginatorReactions(),
+        private val footer: String? = null,
+        private val delete: Boolean = true
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private var listener: Disposable? = null
@@ -50,63 +50,70 @@ class EmbedReactionMenu(
     suspend fun sendTo(ctx: CommandProcessingContext, page: Int = 0) {
         val clone = EmbedBuilder(embeds[page])
         clone.setFooter("Page ${page + 1} / ${embeds.size}${if (footer == null) "" else " | $footer"}", ctx.executor.effectiveAvatarUrl)
-        send(ctx, clone.build())
+        send(ctx, clone.build(), page)
         index = page
     }
 
     @Suppress("SuspendFunctionOnCoroutineScope")
-    private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed) {
+    private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed, page: Int) {
         val msg = msg
         val first = msg == null
         // TODO
         // Not sending via ctx.send because I have not implemented ctx.edit
         val m = if (msg != null) {
-            withContext(Dispatchers.IO) { msg.editMessage(embed).complete() }
+            if (index != page) withContext(Dispatchers.IO) { msg.editMessage(embed).complete() } else msg
         } else withContext(Dispatchers.IO) { ctx.channel.sendMessage(embed).complete() }
         this@EmbedReactionMenu.msg = m
-        if (embed.length > 1) {
-            try {
-                m.on<MessageReactionAddEvent>()
-                    .filter { it.user != ctx.event.jda.selfUser }
-                    .timeout(timeout)
-                    .doOnError {  }
-                    .next()
-                    .subscribe {
-                        try {
-                            it.reaction.removeReaction(it.user!!).queue({}, {})
-                        } catch (e: Exception) {
-                        }
+        try {
+            listen(m, ctx)
+        } catch (ignored: TimeoutException) {
+        }
 
-                        if (it.user == ctx.executor)
-                            when (it.reactionEmote.name) {
-                                reactions.stop -> {
-                                    listener?.dispose()
-                                    if (delete) m.delete().queue()
-                                    else m.clearReactions().queue({}, {})
-                                }
-                                reactions.first -> launch { sendTo(ctx, 0) }
-                                reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
-                                reactions.next -> launch { sendTo(ctx, min(index + 1, embeds.size - 1)) }
-                                reactions.last -> launch { sendTo(ctx, embeds.size - 1) }
-                            }
-                    }
-            } catch (ignored: TimeoutException) {
-            }
+        if (first) {
+            with(ctx) {
+                launch {
+                    try {
+                        m?.react(reactions.stop)
 
-            if (first) {
-                with(ctx) {
-                    launch {
-                        try {
-                            m?.react(reactions.stop)
+                        if (embeds.size > 1) {
                             m?.react(reactions.first)
                             m?.react(reactions.previous)
                             m?.react(reactions.next)
                             m?.react(reactions.last)
-                        } catch (e: ContextException) {
                         }
+                    } catch (e: ContextException) {
                     }
                 }
             }
         }
+    }
+
+    private fun listen(message: Message, ctx: CommandProcessingContext) {
+        message.on<MessageReactionAddEvent>()
+                .filter { it.user != ctx.event.jda.selfUser }
+                .timeout(timeout)
+                .doOnError { }
+                .next()
+                .subscribe {
+                    try {
+                        it.reaction.removeReaction(it.user!!).queue({}, {})
+                    } catch (e: Exception) {
+                    }
+
+                    if (it.user == ctx.executor)
+                        when (it.reactionEmote.name) {
+                            reactions.stop -> {
+                                listener?.dispose()
+                                if (delete) message.delete().queue()
+                                else message.clearReactions().queue({}, {})
+                            }
+                            reactions.first -> launch { sendTo(ctx, 0) }
+                            reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
+                            reactions.next -> launch { sendTo(ctx, min(index + 1, embeds.size - 1)) }
+                            reactions.last -> launch { sendTo(ctx, embeds.size - 1) }
+                        }
+                    else
+                        launch { listen(message, ctx) }
+                }
     }
 }
