@@ -22,6 +22,7 @@ import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.feature.KDPFeature
 import dev.cubxity.libs.kdp.feature.install
+import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 import net.dv8tion.jda.api.Permission
 
@@ -34,7 +35,7 @@ class PermsFeature(kdp: KDP) {
     /**
      * Admin bypasses guild permission check
      */
-    var adminBypass: Boolean = true
+    var adminBypassFactory: (CommandProcessingContext) -> Boolean = { false }
 
     init {
         kdp.intercept(CommandProcessingPipeline.POST_FILTER) {
@@ -50,7 +51,7 @@ class PermsFeature(kdp: KDP) {
             }
 
             val guildPerms = cmd.flags[FLAG_GUILD_PERMISSIONS] as? List<Permission>
-            if (g != null && guildPerms != null && (!adminBypass || !isAdmin)) {
+            if (g != null && guildPerms != null && (!adminBypassFactory.invoke(context) || !isAdmin)) {
                 val m = g.getMember(context.executor)
                 if (m == null) {
                     finish()
