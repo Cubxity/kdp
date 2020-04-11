@@ -7,15 +7,13 @@ fun AdminModule.debug() = AdminModule.debug {
     botAdmin = true
     handler {
         val command: String = args["command"]!!
-        val ctx = createContext(executor, command)
         val startTime = System.currentTimeMillis()
         kdp.execute(
-            ctx,
+            createContext(executor, command),
             CommandProcessingPipeline.POST_FILTER,
             CommandProcessingPipeline.MONITORING,
             CommandProcessingPipeline.PROCESS
         )
-        val endTime = System.currentTimeMillis()
-        send("Successfully ran $command, it took ${endTime - startTime}ms to run")
+        send("Successfully ran $command, it took ${System.currentTimeMillis() - startTime}ms to run")
     }
 }

@@ -22,10 +22,6 @@ import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.dsl.command
 import dev.cubxity.libs.kdp.dsl.sub
 import dev.cubxity.libs.kdp.module.Module
-import dev.cubxity.libs.kdp.perms.botAdmin
-import dev.cubxity.libs.kdp.utils.embed.bold
-import dev.cubxity.libs.kdp.utils.embed.code
-import dev.cubxity.libs.kdp.utils.embed.embed
 
 class AdminModule(kdp: KDP) : Module(kdp, "admin") {
     companion object {
@@ -34,23 +30,20 @@ class AdminModule(kdp: KDP) : Module(kdp, "admin") {
         val repeat by admin.sub("repeat <amount> <command...>", "Runs a command a specific amount of times")
         val eval by admin.sub("eval <code...>", "Evaluate a code expression")
         val debug by admin.sub("debug <command...>")
+        val say by admin.sub("say <message...>")
+        val import by admin.sub("import <imports...>")
+        val dm by admin.sub("dm <user> <message...>")
+        val removeImport by admin.sub("removeimport <imports...>")
     }
 
     init {
-        admin {
-            botAdmin = true
-
-            handler {
-                val embed = embed {
-                    title = "Admin module"
-                    +"Available commands:\n".bold
-                    +subCommands.map { it.name.code }
-                }
-                send(embed)
-            }
-        }
+        default()
         su()
+        say()
+        dm()
         debug()
+        import()
+        removeImport()
         repeat()
         eval()
     }
