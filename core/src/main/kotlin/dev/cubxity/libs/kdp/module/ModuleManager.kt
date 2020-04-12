@@ -45,7 +45,7 @@ class ModuleManager(private val kdp: KDP) {
     }
 
     suspend fun reload() {
-        load()
         unload()
+        load()
     }
 }
