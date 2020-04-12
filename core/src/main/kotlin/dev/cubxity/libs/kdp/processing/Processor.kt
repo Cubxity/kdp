@@ -143,12 +143,12 @@ class Processor(val kdp: KDP) : CoroutineScope {
                     if (depth > 0) args = args.subList(depth, args.size)
                     val effectiveCommand = subCommand ?: cmd
 
+                    this.command = effectiveCommand
+                    this.rawArgs = args
+
                     val requiredArgs = effectiveCommand.args?.filter { it.required }
                     if (requiredArgs != null && args.size < requiredArgs.size)
                         throw MissingArgumentException(requiredArgs[args.size].name, effectiveCommand)
-
-                    this.command = effectiveCommand
-                    this.rawArgs = args
                 } catch (t: Throwable) {
                     if (printError) t.printStackTrace()
                     exception = t

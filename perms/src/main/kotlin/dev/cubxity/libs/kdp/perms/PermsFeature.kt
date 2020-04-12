@@ -39,14 +39,14 @@ class PermsFeature(kdp: KDP) {
 
     init {
         kdp.intercept(CommandProcessingPipeline.POST_FILTER) {
-            val cmd = context.command ?: return@intercept
+            val cmd = context.command ?: return@intercept finish()
             val g = context.guild
             val isAdmin = context.executor.id in admins
-            val botAdmin = cmd.flags[FLAG_BOT_ADMIN] as? Boolean ?: false
+            val botAdmin = cmd.botAdmin
             if (botAdmin && !isAdmin) {
+                finish()
                 context.exception = PermissionDeniedException()
                 kdp.execute(context, CommandProcessingPipeline.ERROR)
-                finish()
                 return@intercept
             }
 
@@ -59,9 +59,9 @@ class PermsFeature(kdp: KDP) {
                 }
                 val missingPermissions = guildPerms.filter { it !in m.permissions }
                 if (missingPermissions.isNotEmpty()) {
+                    finish()
                     context.exception = PermissionDeniedException(missingPermissions)
                     kdp.execute(context, CommandProcessingPipeline.ERROR)
-                    finish()
                     return@intercept
                 }
             }
