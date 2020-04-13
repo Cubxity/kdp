@@ -27,15 +27,19 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.exceptions.ContextException
 import reactor.core.Disposable
+import java.time.Duration
+import java.util.concurrent.TimeoutException
 import kotlin.math.max
 import kotlin.math.min
 
+@Suppress("UNUSED")
 class PaginatorEmbedInterface(
     paginator: Paginator,
     private val embed: EmbedBuilder = EmbedBuilder(),
     private val reactions: PaginatorReactions = PaginatorReactions(),
     private val footer: String? = null,
-    private val delete: Boolean = true
+    private val delete: Boolean = true,
+    private val timeout: Duration = Duration.ofSeconds(15)
 ) : CoroutineScope{
     override val coroutineContext = Dispatchers.Default + Job()
     private val chunks = paginator.chunks
@@ -50,52 +54,70 @@ class PaginatorEmbedInterface(
         val clone = EmbedBuilder(embed)
         clone.setDescription(chunks[page])
         clone.setFooter("Page ${page + 1}/${chunks.size}${if (footer == null) "" else " | $footer"}")
-        send(ctx, clone.build())
+        send(ctx, clone.build(), page)
         index = page
     }
 
     @Suppress("SuspendFunctionOnCoroutineScope")
-    private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed)  {
+    private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed, page: Int)  {
         val msg = msg
-        if (msg != null) {
-            withContext(Dispatchers.IO) { msg.editMessage(embed).complete() }
-        } else {
-            // TODO
-            // Not sending via ctx.send because I have not implemented ctx.edit
-            val m = withContext(Dispatchers.IO) { ctx.channel.sendMessage(embed).complete() }
-            this@PaginatorEmbedInterface.msg = m
-            if (chunks.size > 1) {
-                m.on<MessageReactionAddEvent>()
-                    .filter { it.user != ctx.event.jda.selfUser }
-                    .subscribe {
-                        it.reaction.removeReaction(it.user!!).queue({}, {})
-                        if (it.user == ctx.executor)
-                            when (it.reactionEmote.name) {
-                                reactions.stop -> {
-                                    listener?.dispose()
+        val first = msg == null
+        // TODO
+        // Not sending via ctx.send because I have not implemented ctx.edit
+        val m = if (msg != null) {
+            if (index != page) withContext(Dispatchers.IO) { msg.editMessage(embed).complete() } else msg
+        } else withContext(Dispatchers.IO) { ctx.channel.sendMessage(embed).complete() }
+        this@PaginatorEmbedInterface.msg = m
+        try {
+            listen(m, ctx)
+        } catch (ignored: TimeoutException) {
+        }
 
-                                    if (delete) m.delete().queue()
-                                    else m.clearReactions().queue({}, {})
-                                }
-                                reactions.first -> launch { sendTo(ctx, 0) }
-                                reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
-                                reactions.next -> launch { sendTo(ctx, min(index + 1, chunks.lastIndex)) }
-                                reactions.last -> launch { sendTo(ctx, chunks.lastIndex) }
-                            }
-                    }
-                with(ctx) {
-                    launch {
-                        try {
-                            m?.react(reactions.stop)
+        if (first) {
+            with(ctx) {
+                launch {
+                    try {
+                        m?.react(reactions.stop)
+
+                        if (chunks.size > 1) {
                             m?.react(reactions.first)
                             m?.react(reactions.previous)
                             m?.react(reactions.next)
                             m?.react(reactions.last)
-                        } catch (e: ContextException) {
                         }
+                    } catch (e: ContextException) {
                     }
                 }
             }
         }
+    }
+
+    private fun listen(message: Message, ctx: CommandProcessingContext) {
+        message.on<MessageReactionAddEvent>()
+                .filter { it.user != ctx.event.jda.selfUser }
+                .timeout(timeout)
+                .doOnError { message.clearReactions().queue({}, {}) }
+                .next()
+                .subscribe {
+                    try {
+                        it.reaction.removeReaction(it.user!!).queue({}, {})
+                    } catch (e: Exception) {
+                    }
+
+                    if (it.user == ctx.executor)
+                        when (it.reactionEmote.name) {
+                            reactions.stop -> {
+                                listener?.dispose()
+                                if (delete) message.delete().queue()
+                                else message.clearReactions().queue({}, {})
+                            }
+                            reactions.first -> launch { sendTo(ctx, 0) }
+                            reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
+                            reactions.next -> launch { sendTo(ctx, min(index + 1, chunks.size - 1)) }
+                            reactions.last -> launch { sendTo(ctx, chunks.size - 1) }
+                        }
+                    else
+                        launch { listen(message, ctx) }
+                }
     }
 }
