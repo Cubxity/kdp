@@ -25,5 +25,5 @@ interface SubCommandData : CommandData {
 
     override val description: String?
 
-    override fun build() = SubCommand(parent, name, description, aliases, path, spec, args)
+    override fun build() = SubCommand(parent, name, description, aliases, args)
 }

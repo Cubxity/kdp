@@ -18,6 +18,8 @@
 
 package dev.cubxity.libs.kdp.utils
 
+import dev.cubxity.libs.kdp.command.CommandData
+import dev.cubxity.libs.kdp.command.SubCommandData
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 
 private val USER_MENTION_REGEX = "<@(!?)(\\d{1,19})>".toRegex()
@@ -47,3 +49,37 @@ fun String.escapeMarkdown() = replace("*", "\\*")
     .replace("`", "\\`")
     .replace("||", "\\||")
     .replace(">", "\\>")
+
+val CommandData.path: String
+    get() = buildString {
+        if (this@path is SubCommandData) {
+            val parents = mutableListOf<CommandData>()
+            var parent: CommandData? = parent
+            while (parent != null) {
+                parents += parent
+                parent = (parent as? SubCommandData)?.parent
+            }
+            parents.reversed().forEach { append(it.name).append(" ") }
+        }
+        append(aliases.first())
+    }
+
+val CommandData.displaySpec: String
+    get() = if (args.isNullOrEmpty()) path else "$path $argsSpec"
+
+/**
+ * Arguments spec
+ */
+val CommandData.argsSpec: String
+    get() = buildString {
+        var first = true
+        args?.forEach { arg ->
+            if (first) first = false
+            else append(" ")
+
+            append(if (arg.required) "<" else "[")
+            append(arg.name)
+            if (arg.vararg) append("...")
+            append(if (arg.required) ">" else "]")
+        }
+    }

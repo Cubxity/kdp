@@ -21,11 +21,6 @@ package dev.cubxity.libs.kdp.command
 interface CommandData {
     val name: String
 
-    val spec: String
-        get() = name
-    val path: String
-        get() = name
-
     val aliases: List<String>
         get() = listOf(name)
 
@@ -34,7 +29,7 @@ interface CommandData {
     val args: List<ParameterData>?
         get() = null
 
-    fun build() = Command(name, description, aliases, args, path, spec)
+    fun build() = Command(name, description, aliases, args)
 
     data class ParameterData(val name: String, val required: Boolean, val vararg: Boolean)
 }

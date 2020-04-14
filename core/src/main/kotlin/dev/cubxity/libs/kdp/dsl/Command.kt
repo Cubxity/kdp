@@ -30,8 +30,6 @@ fun command(spec: String, description: String?) = object : ReadOnlyProperty<Any,
         return object : CommandData {
             override val name
                 get() = aliases.first()
-            override val spec: String
-                get() = spec
             override val aliases: List<String>
                 get() = aliases
             override val description
@@ -68,10 +66,6 @@ fun CommandData.sub(spec: String, description: String? = null) =
                     get() = this@sub
                 override val name
                     get() = aliases.first()
-                override val path: String
-                    get() = "${parent.path} $name"
-                override val spec: String
-                    get() = "${parent.path} $spec".trim()
                 override val aliases: List<String>
                     get() = if (aliases.isEmpty()) listOf(this.name) else aliases.toList()
                 override val description
@@ -95,10 +89,6 @@ fun CommandData.sub(name: String? = null, description: String? = null, vararg al
                 get() = this@sub
             override val name
                 get() = name ?: property.name
-            override val path: String
-                get() = "${parent.path} $name"
-            override val spec: String
-                get() = path
             override val aliases: List<String>
                 get() = if (aliases.isEmpty()) listOf(this.name) else aliases.toList()
             override val description
