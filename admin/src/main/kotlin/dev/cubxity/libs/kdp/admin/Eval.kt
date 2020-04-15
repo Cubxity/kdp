@@ -26,16 +26,18 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
 import javax.script.ScriptEngineManager
 import javax.script.ScriptException
+import kotlin.math.min
 
 private val engine = ScriptEngineManager().getEngineByExtension("kts")
 
-private val imports = arrayOf(
+val imports = arrayListOf(
     "net.dv8tion.jda.api.*",
     "net.dv8tion.jda.api.utils.*",
     "net.dv8tion.jda.internal.entities.*",
     "net.dv8tion.jda.api.entities.*",
     "dev.cubxity.libs.kdp.utils.*",
     "dev.cubxity.libs.kdp.utils.embed.*",
+    "net.dv8tion.jda.internal.*",
     "dev.cubxity.libs.kdp.utils.paginator.*",
     "dev.cubxity.libs.kdp.processing.*",
     "dev.cubxity.libs.kdp.*",
@@ -57,6 +59,7 @@ fun AdminModule.eval() = AdminModule.eval {
 
             hashMapOf(
                 "ctx" to this@handler,
+                "jda" to this@handler.event.jda,
                 "kdp" to kdp,
                 "guild" to guild,
                 "user" to executor,
@@ -66,12 +69,15 @@ fun AdminModule.eval() = AdminModule.eval {
                 bindings[key] = value ?: return@forEach
                 append("val $key = bindings[\"$key\"]!! as ${value::class.simpleName}\n")
             }
+            append("runBlocking {\n")
         }
+
+        val footer = "\n}"
 
         sendTyping()
         val start = System.currentTimeMillis()
         val (success, out) = try {
-            true to engine.eval("$header$code", bindings)
+            true to engine.eval("$header$code$footer", bindings)
         } catch (e: Throwable) {
             false to ExceptionUtils.getStackTrace(if (e is ScriptException) e.cause ?: e else e)
         }
@@ -84,9 +90,12 @@ fun AdminModule.eval() = AdminModule.eval {
                 executor.effectiveAvatarUrl
             )
 
-            +codeBlock("kotlin") { +out.toString() }
+            +codeBlock("kotlin") { unsafe(out.toString().truncate(1000)) }
         }
 
         send(embed)
     }
 }
+
+fun String.truncate(max: Int) = if (length < max) this else substring(0, min(length, max - 3))
+

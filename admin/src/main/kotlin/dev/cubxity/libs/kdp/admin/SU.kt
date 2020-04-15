@@ -23,19 +23,18 @@ import dev.cubxity.libs.kdp.perms.botAdmin
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 import dev.cubxity.libs.kdp.processing.MissingArgumentException
+import dev.cubxity.libs.kdp.processing.ignoreQuotes
+import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 
 private val ARGS_REGEX = "(\"([^\"]+)\"|[^ ]+)( ?)".toRegex()
+private val ARGS_REGEX_NO_QUOTES = "(([^ ]+)|[^ ]+)( ?)".toRegex()
 
 fun AdminModule.su() = AdminModule.su {
     botAdmin = true
     handler {
-        val user: User = args["user"] ?: error("User not found")
-        val command: String = args["command"]!!
-
-        val ctx = createContext(user, command)
         kdp.execute(
-            ctx,
+            createContext(args["user"] ?: error("User not found"), args["command"]!!),
             CommandProcessingPipeline.POST_FILTER,
             CommandProcessingPipeline.MONITORING,
             CommandProcessingPipeline.PROCESS
@@ -43,18 +42,23 @@ fun AdminModule.su() = AdminModule.su {
     }
 }
 
-fun CommandProcessingContext.createContext(user: User, command: String): CommandProcessingContext {
-    val ctx = CommandProcessingContext(kdp, user, channel, message, event)
-    var args = processArguments(command)
+fun CommandProcessingContext.createContext(user: User, command: String, messageChannel: MessageChannel? = null): CommandProcessingContext {
+    val ctx = CommandProcessingContext(kdp, user, messageChannel ?: channel, message, event)
+    ctx.extra.putAll(extra)
+    ctx.prefix = prefix
 
-    if (args.isEmpty()) error("Parsed arguments is empty")
+    var args = processArguments(command, prefix ?: error("Invalid prefix."), ARGS_REGEX)
+    if (args.isEmpty()) error("Empty arguments.")
 
     val cmdName = args[0]
-    val cmd = kdp.moduleManager.modules.mapNotNull { it.commands.find { c -> cmdName in c.aliases } }
-        .firstOrNull() ?: error("Command not found")
+    val cmd = kdp.moduleManager.modules.mapNotNull { it.commands.find { c -> cmdName in c.aliases } }.firstOrNull()
+        ?: error("Unknown command.")
 
     ctx.alias = cmdName
-    args = args.subList(1, args.size)
+    args =
+        (if (cmd.ignoreQuotes) processArguments(command, prefix!!, ARGS_REGEX_NO_QUOTES) else args).let {
+            it.subList(1, it.size)
+        }
 
     var subCommand: SubCommand? = null
     var depth = 0
@@ -64,6 +68,10 @@ fun CommandProcessingContext.createContext(user: User, command: String): Command
         subCommand = sc
         depth++
     }
+
+    if (subCommand?.ignoreQuotes == true)
+        args = processArguments(command, prefix!!, ARGS_REGEX_NO_QUOTES).let { it.subList(1, it.size) }
+
     if (depth > 0) args = args.subList(depth, args.size)
     val effectiveCommand = subCommand ?: cmd
 
@@ -76,8 +84,8 @@ fun CommandProcessingContext.createContext(user: User, command: String): Command
     return ctx
 }
 
-private fun processArguments(content: String) =
-    ARGS_REGEX.findAll(content)
+private fun processArguments(content: String, alias: String, regex: Regex) =
+    regex.findAll(content.removePrefix(alias))
         .mapNotNull {
             it.groupValues.getOrNull(2)?.let { s -> if (s.isEmpty()) it.groupValues.getOrNull(1) else s }
                 ?: it.groupValues.getOrNull(1)
