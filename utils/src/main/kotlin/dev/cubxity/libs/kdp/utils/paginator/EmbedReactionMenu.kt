@@ -37,7 +37,8 @@ class EmbedReactionMenu(
         private val timeout: Duration = Duration.ofSeconds(15),
         private val reactions: PaginatorReactions = PaginatorReactions(),
         private val footer: String? = null,
-        private val delete: Boolean = true
+        private val delete: Boolean = true,
+        private val appendFooter: Boolean = true
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private var listener: Disposable? = null
@@ -48,8 +49,14 @@ class EmbedReactionMenu(
      * @param page page index
      */
     suspend fun sendTo(ctx: CommandProcessingContext, page: Int = 0) {
-        val clone = EmbedBuilder(embeds[page])
-        clone.setFooter("Page ${page + 1} / ${embeds.size}${if (footer == null) "" else " | $footer"}", ctx.executor.effectiveAvatarUrl)
+        val messageEmbed = embeds[page]
+        val clone = EmbedBuilder(messageEmbed)
+        val footer = when {
+            appendFooter -> messageEmbed.footer?.text?.let { " | $it" } ?: ""
+            footer != null -> " | $footer"
+            else -> ""
+        }
+        clone.setFooter("Page ${page + 1} / ${embeds.size}$footer", ctx.executor.effectiveAvatarUrl)
         send(ctx, clone.build(), page)
         index = page
     }
