@@ -38,12 +38,12 @@ class EmbedReactionMenu(
         private val reactions: PaginatorReactions = PaginatorReactions(),
         private val footer: String? = null,
         private val delete: Boolean = true,
-        private val appendFooter: Boolean = true
+        private val appendFooter: Boolean = true,
+        private var msg: Message? = null
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private var listener: Disposable? = null
     private var index = 0
-    private var msg: Message? = null
 
     /**
      * @param page page index
