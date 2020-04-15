@@ -22,6 +22,7 @@ import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import dev.cubxity.libs.kdp.serialization.ArgumentSerializer
 import dev.cubxity.libs.kdp.utils.FuzzyUtils
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 
 class MemberSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerializer<Member> {
@@ -31,7 +32,7 @@ class MemberSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSeriali
         const val DEFAULT_FLAGS = FUZZY
 
         private val REGEX =
-            "(\\d{1,19})|<@(!?)(\\d{1,19})>|@?(?<name>[^#]{2,32})(?:#(?<discriminator>\\d{4}))?".toRegex()
+                "(\\d{1,19})|<@(!?)(\\d{1,19})>|@?(?<name>[^#]{2,32})(?:#(?<discriminator>\\d{4}))?".toRegex()
     }
 
     private val isFuzzy
@@ -42,14 +43,14 @@ class MemberSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSeriali
 
         val id = match.getOrNull(1)?.takeIf { it.isNotEmpty() } ?: match.getOrNull(3)?.takeIf { it.isNotEmpty() }
         return if (id != null)
-            ctx.guild?.getMemberById(id)
+            ctx.guild?.getMemberById(id.toLongOrNull() ?: return null)
         else {
             val n = match[4]
             val d = match.getOrNull(5)?.takeIf { it.isNotEmpty() }
             ctx.guild?.memberCache?.let {
                 it.find { m -> m.user.name == n && (d == null || m.user.discriminator == d) }
-                    ?: if (isFuzzy) FuzzyUtils.extract(n, it, Member::getEffectiveName)?.item
-                    else null
+                        ?: if (isFuzzy) FuzzyUtils.extract(n, it, Member::getEffectiveName)?.item
+                        else null
             }
         }
     }
@@ -62,7 +63,7 @@ class UserSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
         const val DEFAULT_FLAGS = FUZZY
 
         private val REGEX =
-            "(\\d{1,19})|<@(!?)(\\d{1,19})>|@?(?<name>[^#]{2,32})(?:#(?<discriminator>\\d{4}))?".toRegex()
+                "(\\d{1,19})|<@(!?)(\\d{1,19})>|@?(?<name>[^#]{2,32})(?:#(?<discriminator>\\d{4}))?".toRegex()
     }
 
     private val isFuzzy
@@ -73,14 +74,41 @@ class UserSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
 
         val id = match.getOrNull(1)?.takeIf { it.isNotEmpty() } ?: match.getOrNull(3)?.takeIf { it.isNotEmpty() }
         return if (id != null)
-            ctx.event.jda.getUserById(id)
+            ctx.event.jda.getUserById(id.toLongOrNull() ?: return null)
         else {
             val n = match[4]
             val d = match.getOrNull(5)?.takeIf { it.isNotEmpty() }
             val users = ctx.guild?.memberCache?.mapNotNull { it.user }
             users?.find { it.name == n && (d == null || it.discriminator == d) }
-                ?: if (isFuzzy) FuzzyUtils.extract(n, users ?: listOf(), User::getName)?.item
-                else null
+                    ?: if (isFuzzy) FuzzyUtils.extract(n, users ?: listOf(), User::getName)?.item
+                    else null
+        }
+    }
+}
+
+class ChannelSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerializer<MessageChannel> {
+    companion object {
+        const val FUZZY = 0b1
+        const val DEFAULT_FLAGS = FUZZY
+
+        private val REGEX = "(?<id>\\d{1,19})|<#(!?)(?<tag>\\d{1,19})>|#?(?<name>[^#]{2,32})?".toRegex()
+    }
+
+    private val isFuzzy
+        get() = flags and FUZZY != 0
+
+    override fun serialize(ctx: CommandProcessingContext, s: String): MessageChannel? {
+        val match = REGEX.matchEntire(s)?.groups ?: return null
+
+        val id = match["id"] ?: match["tag"]
+        return if (id != null)
+            ctx.event.jda.getTextChannelById(id.value.toLongOrNull() ?: return null)
+        else {
+            val name = match["name"]?.value ?: return null
+            val channels = ctx.guild?.textChannels
+            channels?.find { it.name.equals(name, true) }
+                    ?: if (isFuzzy) FuzzyUtils.extract(name, channels ?: listOf(), MessageChannel::getName)?.item
+                    else null
         }
     }
 }
