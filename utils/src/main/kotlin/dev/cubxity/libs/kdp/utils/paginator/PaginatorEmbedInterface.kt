@@ -40,12 +40,13 @@ class PaginatorEmbedInterface(
     private val footer: String? = null,
     private val delete: Boolean = true,
     private val timeout: Duration = Duration.ofSeconds(15),
-    private var msg: Message? = null
+    private val editMessage: Message? = null
 ) : CoroutineScope{
     override val coroutineContext = Dispatchers.Default + Job()
     private val chunks = paginator.chunks
     private var listener: Disposable? = null
     private var index = 0
+    private var msg: Message? = null
 
     /**
      * @param page page index
@@ -60,12 +61,12 @@ class PaginatorEmbedInterface(
 
     @Suppress("SuspendFunctionOnCoroutineScope")
     private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed, page: Int)  {
-        val msg = msg
         val first = msg == null
+        val msg = msg ?: editMessage
         // TODO
         // Not sending via ctx.send because I have not implemented ctx.edit
         val m = if (msg != null) {
-            if (index != page) withContext(Dispatchers.IO) { msg.editMessage(embed).complete() } else msg
+            if (first || index != page) withContext(Dispatchers.IO) { msg.editMessage(embed).complete() } else msg
         } else withContext(Dispatchers.IO) { ctx.channel.sendMessage(embed).complete() }
         this@PaginatorEmbedInterface.msg = m
         try {

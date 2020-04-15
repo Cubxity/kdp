@@ -39,11 +39,12 @@ class EmbedReactionMenu(
         private val footer: String? = null,
         private val delete: Boolean = true,
         private val appendFooter: Boolean = true,
-        private var msg: Message? = null
+        private val editMessage: Message? = null
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private var listener: Disposable? = null
     private var index = 0
+    private var msg: Message? = null
 
     /**
      * @param page page index
@@ -63,12 +64,12 @@ class EmbedReactionMenu(
 
     @Suppress("SuspendFunctionOnCoroutineScope")
     private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed, page: Int) {
-        val msg = msg
         val first = msg == null
+        val msg = msg ?: editMessage
         // TODO
         // Not sending via ctx.send because I have not implemented ctx.edit
         val m = if (msg != null) {
-            if (index != page) withContext(Dispatchers.IO) { msg.editMessage(embed).complete() } else msg
+            if (first || index != page) withContext(Dispatchers.IO) { msg.editMessage(embed).complete() } else msg
         } else withContext(Dispatchers.IO) { ctx.channel.sendMessage(embed).complete() }
         this@EmbedReactionMenu.msg = m
         try {
