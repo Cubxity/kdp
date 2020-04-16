@@ -23,6 +23,7 @@ import dev.cubxity.libs.kdp.serialization.ArgumentSerializer
 import dev.cubxity.libs.kdp.utils.FuzzyUtils
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 
 class MemberSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerializer<Member> {
@@ -108,6 +109,33 @@ class ChannelSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerial
             val channels = ctx.guild?.textChannels
             channels?.find { it.name.equals(name, true) }
                     ?: if (isFuzzy) FuzzyUtils.extract(name, channels ?: listOf(), MessageChannel::getName)?.item
+                    else null
+        }
+    }
+}
+
+class RoleSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerializer<Role> {
+    companion object {
+        const val FUZZY = 0b1
+        const val DEFAULT_FLAGS = FUZZY
+
+        private val REGEX = "(?<id>\\d{1,19})|<@&(!?)(?<tag>\\d{1,19})>|(?<name>[^#]{2,32})?".toRegex()
+    }
+
+    private val isFuzzy
+        get() = flags and FUZZY != 0
+
+    override fun serialize(ctx: CommandProcessingContext, s: String): Role? {
+        val match = REGEX.matchEntire(s)?.groups ?: return null
+
+        val id = match["id"] ?: match["tag"]
+        return if (id != null)
+            ctx.event.jda.getRoleById(id.value.toLongOrNull() ?: return null)
+        else {
+            val name = match["name"]?.value ?: return null
+            val roles = ctx.guild?.roles
+            roles?.find { it.name.equals(name, true) }
+                    ?: if (isFuzzy) FuzzyUtils.extract(name, roles ?: listOf(), Role::getName)?.item
                     else null
         }
     }

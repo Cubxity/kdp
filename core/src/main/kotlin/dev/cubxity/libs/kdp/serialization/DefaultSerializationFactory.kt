@@ -29,5 +29,6 @@ class DefaultSerializationFactory : SerializationFactory() {
         register(UserSerializer())
         register(MemberSerializer())
         register(ChannelSerializer())
+        register(RoleSerializer())
     }
 }
