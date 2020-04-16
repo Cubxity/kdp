@@ -22,6 +22,7 @@ dependencies {
     api("net.dv8tion:JDA:4.1.1_107")
     api("club.minnced:jda-reactor:1.0.0")
     api("org.apache.commons:commons-text:1.8")
+    api("me.xdrop:fuzzywuzzy:1.2.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
 }

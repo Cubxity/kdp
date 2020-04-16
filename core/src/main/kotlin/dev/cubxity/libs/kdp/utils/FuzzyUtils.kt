@@ -18,17 +18,13 @@
 
 package dev.cubxity.libs.kdp.utils
 
-import org.apache.commons.text.similarity.FuzzyScore
-import java.util.*
+import me.xdrop.fuzzywuzzy.FuzzySearch
 
 object FuzzyUtils {
-    private val fuzzyScore = FuzzyScore(Locale.ENGLISH)
-
-    fun <T> extract(query: String, items: Iterable<T>, toString: (T) -> String) =
-            query.toLowerCase().let { q ->
-                items.map { Match(it, fuzzyScore.fuzzyScore(toString(it).toLowerCase(), q)) }
-                        .maxBy { it.score }
-            }
+    fun <T> extract(query: String, items: Collection<T>, toString: (T) -> String) =
+            FuzzySearch.extractOne(query.toLowerCase(), items, toString)
+                    .takeIf { it.score > 40 }
+                    ?.let { Match<T>(it.referent, it.score) }
 //        items.map { Match(it, query.commonPrefixWith(toString(it), true).length) }
 //            .maxBy { it.score }
 

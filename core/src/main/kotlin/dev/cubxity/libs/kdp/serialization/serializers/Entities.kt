@@ -50,7 +50,7 @@ class MemberSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSeriali
             val d = match.getOrNull(5)?.takeIf { it.isNotEmpty() }
             ctx.guild?.memberCache?.let {
                 it.find { m -> m.user.name == n && (d == null || m.user.discriminator == d) }
-                        ?: if (isFuzzy) FuzzyUtils.extract(n, it, Member::getEffectiveName)?.item
+                        ?: if (isFuzzy) FuzzyUtils.extract(n, it.asList(), Member::getEffectiveName)?.item
                         else null
             }
         }
