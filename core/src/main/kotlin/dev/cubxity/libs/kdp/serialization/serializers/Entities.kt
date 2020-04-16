@@ -119,7 +119,7 @@ class RoleSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
         const val FUZZY = 0b1
         const val DEFAULT_FLAGS = FUZZY
 
-        private val REGEX = "(?<id>\\d{1,19})|<@&(!?)(?<tag>\\d{1,19})>|(?<name>[^#]{2,32})?".toRegex()
+        private val REGEX = "(?<id>\\d{1,19})|<@&(!?)(?<tag>\\d{1,19})>|(?<name>[^#])?".toRegex()
     }
 
     private val isFuzzy
