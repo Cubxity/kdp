@@ -92,7 +92,7 @@ class ChannelSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerial
         const val FUZZY = 0b1
         const val DEFAULT_FLAGS = FUZZY
 
-        private val REGEX = "(?<id>\\d{1,19})|<#(!?)(?<tag>\\d{1,19})>|#?(?<name>[^#]{2,32})?".toRegex()
+        private val REGEX = "(?<id>\\d{1,19})|<#(!?)(?<tag>\\d{1,19})>|#?(?<name>[^#]*)?".toRegex()
     }
 
     private val isFuzzy
@@ -119,7 +119,7 @@ class RoleSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
         const val FUZZY = 0b1
         const val DEFAULT_FLAGS = FUZZY
 
-        private val REGEX = "(?<id>\\d{1,19})|<@&(!?)(?<tag>\\d{1,19})>|(?<name>[^#])?".toRegex()
+        private val REGEX = "(?<id>\\d{1,19})|<@&(!?)(?<tag>\\d{1,19})>|(?<name>[^#]*)?".toRegex()
     }
 
     private val isFuzzy
@@ -128,9 +128,9 @@ class RoleSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
     override fun serialize(ctx: CommandProcessingContext, s: String): Role? {
         val match = REGEX.matchEntire(s)?.groups ?: return null
 
-        val id = match["id"] ?: match["tag"]
+        val id = match["id"]?.value?.toLongOrNull() ?: match["tag"]?.value?.toLongOrNull()
         return if (id != null)
-            ctx.event.jda.getRoleById(id.value.toLongOrNull() ?: return null)
+            ctx.event.jda.getRoleById(id)
         else {
             val name = match["name"]?.value ?: return null
             val roles = ctx.guild?.roles
