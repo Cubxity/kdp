@@ -22,7 +22,7 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 
 object FuzzyUtils {
     fun <T> extract(query: String, items: Collection<T>, toString: (T) -> String) =
-            FuzzySearch.extractOne(query.toLowerCase(), items, toString)
+            FuzzySearch.extractOne(query.toLowerCase(), items) { toString.invoke(it).toLowerCase() }
                     .takeIf { it.score > 40 }
                     ?.let { Match<T>(it.referent, it.score) }
 //        items.map { Match(it, query.commonPrefixWith(toString(it), true).length) }
