@@ -51,6 +51,11 @@ class Processor(val kdp: KDP) : CoroutineScope {
     var ignoreBots = true
 
     /**
+     * Whether to ignore the case of the prefix.
+     */
+    var ignorePrefixCase = false
+
+    /**
      * Factory to provide prefixes for the specified message event
      */
     var prefixFactory: PrefixFactory = SimplePrefixFactory { listOf(prefix) }
@@ -102,7 +107,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
                             return@with
                         }
                     }
-                    val prefix = prefixes.find { content.startsWith(it) }
+                    val prefix = prefixes.find { content.startsWith(it, ignoreCase = ignorePrefixCase) }
                     if (prefix == null) {
                         finish()
                         return@with
