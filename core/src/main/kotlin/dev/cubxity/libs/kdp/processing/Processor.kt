@@ -25,6 +25,7 @@ import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.command.SubCommand
 import dev.cubxity.libs.kdp.feature.KDPFeature
 import dev.cubxity.libs.kdp.feature.install
+import dev.cubxity.libs.kdp.utils.removeCasedPrefix
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -183,7 +184,7 @@ class Processor(val kdp: KDP) : CoroutineScope {
     }
 
     private fun processArguments(content: String, alias: String, regex: Regex) =
-        regex.findAll(content.removePrefix(alias))
+        regex.findAll(content.removeCasedPrefix(alias))
             .mapNotNull {
                 it.groupValues.getOrNull(2)?.let { s -> if (s.isEmpty()) it.groupValues.getOrNull(1) else s }
                     ?: it.groupValues.getOrNull(1)

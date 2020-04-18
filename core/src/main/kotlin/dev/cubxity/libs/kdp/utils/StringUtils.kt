@@ -83,3 +83,14 @@ val CommandData.argsSpec: String
             append(if (arg.required) ">" else "]")
         }
     }
+
+/**
+ * If this string starts with the given [prefix], returns a copy of this string
+ * with the prefix removed. Otherwise, returns this string.
+ */
+fun String.removeCasedPrefix(prefix: CharSequence): String {
+    if (startsWith(prefix, ignoreCase = true)) {
+        return substring(prefix.length)
+    }
+    return this
+}
