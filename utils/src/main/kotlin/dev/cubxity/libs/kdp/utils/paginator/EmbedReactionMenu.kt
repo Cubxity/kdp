@@ -50,16 +50,20 @@ class EmbedReactionMenu(
      * @param page page index
      */
     suspend fun sendTo(ctx: CommandProcessingContext, page: Int = 0) {
-        val messageEmbed = embeds[page]
-        val clone = EmbedBuilder(messageEmbed)
-        val footer = when {
-            appendFooter -> messageEmbed.footer?.text?.let { " | $it" } ?: ""
-            footer != null -> " | $footer"
-            else -> ""
+        try {
+            val messageEmbed = embeds[page]
+            val clone = EmbedBuilder(messageEmbed)
+            val footer = when {
+                appendFooter -> messageEmbed.footer?.text?.let { " | $it" } ?: ""
+                footer != null -> " | $footer"
+                else -> ""
+            }
+            clone.setFooter("Page ${page + 1} / ${embeds.size}$footer", ctx.executor.effectiveAvatarUrl)
+            send(ctx, clone.build(), page)
+            index = page
+        } catch (e: Exception) {
+            throw ReactionMenuError()
         }
-        clone.setFooter("Page ${page + 1} / ${embeds.size}$footer", ctx.executor.effectiveAvatarUrl)
-        send(ctx, clone.build(), page)
-        index = page
     }
 
     @Suppress("SuspendFunctionOnCoroutineScope")
@@ -112,7 +116,7 @@ class EmbedReactionMenu(
                         when (it.reactionEmote.name) {
                             reactions.stop -> {
                                 listener?.dispose()
-                                if (delete) message.delete().queue()
+                                if (delete) message.delete().queue({}, {})
                                 else message.clearReactions().queue({}, {})
                             }
                             reactions.first -> launch { sendTo(ctx, 0) }
@@ -125,3 +129,5 @@ class EmbedReactionMenu(
                 }
     }
 }
+
+class ReactionMenuError : IllegalStateException("Reaction menu error")

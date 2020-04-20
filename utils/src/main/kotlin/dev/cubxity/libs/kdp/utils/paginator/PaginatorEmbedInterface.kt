@@ -34,14 +34,14 @@ import kotlin.math.min
 
 @Suppress("UNUSED")
 class PaginatorEmbedInterface(
-    paginator: Paginator,
-    private val embed: EmbedBuilder = EmbedBuilder(),
-    private val reactions: PaginatorReactions = PaginatorReactions(),
-    private val footer: String? = null,
-    private val delete: Boolean = true,
-    private val timeout: Duration = Duration.ofSeconds(15),
-    private val editMessage: Message? = null
-) : CoroutineScope{
+        paginator: Paginator,
+        private val embed: EmbedBuilder = EmbedBuilder(),
+        private val reactions: PaginatorReactions = PaginatorReactions(),
+        private val footer: String? = null,
+        private val delete: Boolean = true,
+        private val timeout: Duration = Duration.ofSeconds(15),
+        private val editMessage: Message? = null
+) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private val chunks = paginator.chunks
     private var listener: Disposable? = null
@@ -52,15 +52,19 @@ class PaginatorEmbedInterface(
      * @param page page index
      */
     suspend fun sendTo(ctx: CommandProcessingContext, page: Int = 0) {
-        val clone = EmbedBuilder(embed)
-        clone.setDescription(chunks[page])
-        clone.setFooter("Page ${page + 1}/${chunks.size}${if (footer == null) "" else " | $footer"}")
-        send(ctx, clone.build(), page)
-        index = page
+        try {
+            val clone = EmbedBuilder(embed)
+            clone.setDescription(chunks[page])
+            clone.setFooter("Page ${page + 1}/${chunks.size}${if (footer == null) "" else " | $footer"}")
+            send(ctx, clone.build(), page)
+            index = page
+        } catch (e: Exception) {
+            throw ReactionMenuError()
+        }
     }
 
     @Suppress("SuspendFunctionOnCoroutineScope")
-    private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed, page: Int)  {
+    private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed, page: Int) {
         val first = msg == null
         val msg = msg ?: editMessage
         // TODO
