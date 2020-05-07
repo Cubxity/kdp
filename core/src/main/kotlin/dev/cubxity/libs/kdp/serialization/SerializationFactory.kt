@@ -23,7 +23,7 @@ import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 open class SerializationFactory {
     val serializers = mutableMapOf<Class<*>, ArgumentSerializer<*>>()
 
-    inline fun <reified T> serialize(ctx: CommandProcessingContext, s: String): T? {
+    suspend inline fun <reified T> serialize(ctx: CommandProcessingContext, s: String): T? {
         if (s is T) return s
         return serializers[T::class.java]?.serialize(ctx, s) as? T?
     }

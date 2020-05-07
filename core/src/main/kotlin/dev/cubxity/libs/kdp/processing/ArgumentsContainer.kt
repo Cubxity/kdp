@@ -18,10 +18,17 @@
 
 package dev.cubxity.libs.kdp.processing
 
+import kotlinx.coroutines.runBlocking
+
 class ArgumentsContainer(val ctx: CommandProcessingContext) {
     val cache: MutableMap<Int, Any?> = mutableMapOf()
 
-    inline operator fun <reified T> get(name: String): T? {
+    inline operator fun <reified T> get(name: String) =
+            runBlocking {
+                find<T>(name)
+            }
+
+    suspend inline fun <reified T> find(name: String): T? {
         val spec = ctx.command?.args ?: error("Command does not have an argument spec. Use get(int) instead.")
         val arg = spec.find { it.name == name } ?: error("Argument with name $name not found.")
         val i = spec.indexOf(arg)
@@ -38,7 +45,12 @@ class ArgumentsContainer(val ctx: CommandProcessingContext) {
         return v
     }
 
-    inline operator fun <reified T> get(i: Int): T? {
+    inline operator fun <reified T> get(i: Int) =
+            runBlocking {
+                find<T>(i)
+            }
+
+    suspend inline fun <reified T> find(i: Int): T? {
         cache[i]?.also { return it as T? }
 
         val rawArgs = ctx.rawArgs ?: error("Context's arguments has not been parsed.")
