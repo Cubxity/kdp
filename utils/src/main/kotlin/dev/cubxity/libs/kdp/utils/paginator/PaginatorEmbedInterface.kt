@@ -22,8 +22,8 @@ import club.minnced.jda.reactor.on
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.exceptions.ContextException
 import reactor.core.Disposable
@@ -40,7 +40,8 @@ class PaginatorEmbedInterface(
     private val footer: String? = null,
     private val delete: Boolean = true,
     private val timeout: Duration = Duration.ofSeconds(15),
-    private val editMessage: Message? = null
+    private val editMessage: Message? = null,
+    private val clearContent: Boolean = true
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private val chunks = paginator.chunks
@@ -55,12 +56,18 @@ class PaginatorEmbedInterface(
         val clone = EmbedBuilder(embed)
         clone.setDescription(chunks[page])
         clone.setFooter("Page ${page + 1}/${chunks.size}${if (footer == null) "" else " | $footer"}")
-        send(ctx, clone.build(), page)
+        send(
+            ctx,
+            MessageBuilder(clone)
+                .let { if (clearContent) it.setContent(" ") else it }
+                .build(),
+            page
+        )
         index = page
     }
 
     @Suppress("SuspendFunctionOnCoroutineScope")
-    private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed, page: Int) {
+    private suspend fun send(ctx: CommandProcessingContext, embed: Message, page: Int) {
         val first = msg == null
         val msg = msg ?: editMessage
         // TODO

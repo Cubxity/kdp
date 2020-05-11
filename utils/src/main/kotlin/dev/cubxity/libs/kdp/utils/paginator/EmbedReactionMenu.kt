@@ -22,6 +22,7 @@ import club.minnced.jda.reactor.on
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
@@ -39,7 +40,8 @@ class EmbedReactionMenu(
     private val footer: String? = null,
     private val delete: Boolean = true,
     private val appendFooter: Boolean = true,
-    private val editMessage: Message? = null
+    private val editMessage: Message? = null,
+    private val clearContent: Boolean = true
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private var listener: Disposable? = null
@@ -52,18 +54,26 @@ class EmbedReactionMenu(
     suspend fun sendTo(ctx: CommandProcessingContext, page: Int = 0) {
         val messageEmbed = embeds[page]
         val clone = EmbedBuilder(messageEmbed)
+
         val footer = when {
             appendFooter -> messageEmbed.footer?.text?.let { " | $it" } ?: ""
             footer != null -> " | $footer"
             else -> ""
         }
         clone.setFooter("Page ${page + 1} / ${embeds.size}$footer", ctx.executor.effectiveAvatarUrl)
-        send(ctx, clone.build(), page)
+
+        send(
+            ctx,
+            MessageBuilder(clone)
+                .let { if (clearContent) it.setContent(" ") else it }
+                .build(),
+            page
+        )
         index = page
     }
 
     @Suppress("SuspendFunctionOnCoroutineScope")
-    private suspend fun send(ctx: CommandProcessingContext, embed: MessageEmbed, page: Int) {
+    private suspend fun send(ctx: CommandProcessingContext, embed: Message, page: Int) {
         val first = msg == null
         val msg = msg ?: editMessage
         // TODO
