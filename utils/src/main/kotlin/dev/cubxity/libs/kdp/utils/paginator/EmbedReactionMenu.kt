@@ -33,13 +33,13 @@ import kotlin.math.max
 import kotlin.math.min
 
 class EmbedReactionMenu(
-        private val embeds: Array<MessageEmbed>,
-        private val timeout: Duration = Duration.ofSeconds(15),
-        private val reactions: PaginatorReactions = PaginatorReactions(),
-        private val footer: String? = null,
-        private val delete: Boolean = true,
-        private val appendFooter: Boolean = true,
-        private val editMessage: Message? = null
+    private val embeds: Array<MessageEmbed>,
+    private val timeout: Duration = Duration.ofSeconds(15),
+    private val reactions: PaginatorReactions = PaginatorReactions(),
+    private val footer: String? = null,
+    private val delete: Boolean = true,
+    private val appendFooter: Boolean = true,
+    private val editMessage: Message? = null
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private var listener: Disposable? = null
@@ -50,20 +50,16 @@ class EmbedReactionMenu(
      * @param page page index
      */
     suspend fun sendTo(ctx: CommandProcessingContext, page: Int = 0) {
-        try {
-            val messageEmbed = embeds[page]
-            val clone = EmbedBuilder(messageEmbed)
-            val footer = when {
-                appendFooter -> messageEmbed.footer?.text?.let { " | $it" } ?: ""
-                footer != null -> " | $footer"
-                else -> ""
-            }
-            clone.setFooter("Page ${page + 1} / ${embeds.size}$footer", ctx.executor.effectiveAvatarUrl)
-            send(ctx, clone.build(), page)
-            index = page
-        } catch (e: Exception) {
-            throw ReactionMenuError()
+        val messageEmbed = embeds[page]
+        val clone = EmbedBuilder(messageEmbed)
+        val footer = when {
+            appendFooter -> messageEmbed.footer?.text?.let { " | $it" } ?: ""
+            footer != null -> " | $footer"
+            else -> ""
         }
+        clone.setFooter("Page ${page + 1} / ${embeds.size}$footer", ctx.executor.effectiveAvatarUrl)
+        send(ctx, clone.build(), page)
+        index = page
     }
 
     @Suppress("SuspendFunctionOnCoroutineScope")
@@ -102,32 +98,30 @@ class EmbedReactionMenu(
 
     private fun listen(message: Message, ctx: CommandProcessingContext) {
         message.on<MessageReactionAddEvent>()
-                .filter { it.user != ctx.event.jda.selfUser }
-                .timeout(timeout)
-                .doOnError { message.clearReactions().queue({}, {}) }
-                .next()
-                .subscribe {
-                    try {
-                        it.reaction.removeReaction(it.user!!).queue({}, {})
-                    } catch (e: Exception) {
-                    }
-
-                    if (it.user == ctx.executor)
-                        when (it.reactionEmote.name) {
-                            reactions.stop -> {
-                                listener?.dispose()
-                                if (delete) message.delete().queue({}, {})
-                                else message.clearReactions().queue({}, {})
-                            }
-                            reactions.first -> launch { sendTo(ctx, 0) }
-                            reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
-                            reactions.next -> launch { sendTo(ctx, min(index + 1, embeds.size - 1)) }
-                            reactions.last -> launch { sendTo(ctx, embeds.size - 1) }
-                        }
-                    else
-                        launch { listen(message, ctx) }
+            .filter { it.user != ctx.event.jda.selfUser }
+            .timeout(timeout)
+            .doOnError { message.clearReactions().queue({}, {}) }
+            .next()
+            .subscribe {
+                try {
+                    it.reaction.removeReaction(it.user!!).queue({}, {})
+                } catch (e: Exception) {
                 }
+
+                if (it.user == ctx.executor)
+                    when (it.reactionEmote.name) {
+                        reactions.stop -> {
+                            listener?.dispose()
+                            if (delete) message.delete().queue({}, {})
+                            else message.clearReactions().queue({}, {})
+                        }
+                        reactions.first -> launch { sendTo(ctx, 0) }
+                        reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
+                        reactions.next -> launch { sendTo(ctx, min(index + 1, embeds.size - 1)) }
+                        reactions.last -> launch { sendTo(ctx, embeds.size - 1) }
+                    }
+                else
+                    launch { listen(message, ctx) }
+            }
     }
 }
-
-class ReactionMenuError : IllegalStateException("Reaction menu error")

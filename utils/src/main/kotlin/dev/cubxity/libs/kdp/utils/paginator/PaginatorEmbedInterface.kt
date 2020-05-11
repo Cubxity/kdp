@@ -34,13 +34,13 @@ import kotlin.math.min
 
 @Suppress("UNUSED")
 class PaginatorEmbedInterface(
-        paginator: Paginator,
-        private val embed: EmbedBuilder = EmbedBuilder(),
-        private val reactions: PaginatorReactions = PaginatorReactions(),
-        private val footer: String? = null,
-        private val delete: Boolean = true,
-        private val timeout: Duration = Duration.ofSeconds(15),
-        private val editMessage: Message? = null
+    paginator: Paginator,
+    private val embed: EmbedBuilder = EmbedBuilder(),
+    private val reactions: PaginatorReactions = PaginatorReactions(),
+    private val footer: String? = null,
+    private val delete: Boolean = true,
+    private val timeout: Duration = Duration.ofSeconds(15),
+    private val editMessage: Message? = null
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.Default + Job()
     private val chunks = paginator.chunks
@@ -52,15 +52,11 @@ class PaginatorEmbedInterface(
      * @param page page index
      */
     suspend fun sendTo(ctx: CommandProcessingContext, page: Int = 0) {
-        try {
-            val clone = EmbedBuilder(embed)
-            clone.setDescription(chunks[page])
-            clone.setFooter("Page ${page + 1}/${chunks.size}${if (footer == null) "" else " | $footer"}")
-            send(ctx, clone.build(), page)
-            index = page
-        } catch (e: Exception) {
-            throw ReactionMenuError()
-        }
+        val clone = EmbedBuilder(embed)
+        clone.setDescription(chunks[page])
+        clone.setFooter("Page ${page + 1}/${chunks.size}${if (footer == null) "" else " | $footer"}")
+        send(ctx, clone.build(), page)
+        index = page
     }
 
     @Suppress("SuspendFunctionOnCoroutineScope")
@@ -99,30 +95,30 @@ class PaginatorEmbedInterface(
 
     private fun listen(message: Message, ctx: CommandProcessingContext) {
         message.on<MessageReactionAddEvent>()
-                .filter { it.user != ctx.event.jda.selfUser }
-                .timeout(timeout)
-                .doOnError { message.clearReactions().queue({}, {}) }
-                .next()
-                .subscribe {
-                    try {
-                        it.reaction.removeReaction(it.user!!).queue({}, {})
-                    } catch (e: Exception) {
-                    }
-
-                    if (it.user == ctx.executor)
-                        when (it.reactionEmote.name) {
-                            reactions.stop -> {
-                                listener?.dispose()
-                                if (delete) message.delete().queue()
-                                else message.clearReactions().queue({}, {})
-                            }
-                            reactions.first -> launch { sendTo(ctx, 0) }
-                            reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
-                            reactions.next -> launch { sendTo(ctx, min(index + 1, chunks.size - 1)) }
-                            reactions.last -> launch { sendTo(ctx, chunks.size - 1) }
-                        }
-                    else
-                        launch { listen(message, ctx) }
+            .filter { it.user != ctx.event.jda.selfUser }
+            .timeout(timeout)
+            .doOnError { message.clearReactions().queue({}, {}) }
+            .next()
+            .subscribe {
+                try {
+                    it.reaction.removeReaction(it.user!!).queue({}, {})
+                } catch (e: Exception) {
                 }
+
+                if (it.user == ctx.executor)
+                    when (it.reactionEmote.name) {
+                        reactions.stop -> {
+                            listener?.dispose()
+                            if (delete) message.delete().queue()
+                            else message.clearReactions().queue({}, {})
+                        }
+                        reactions.first -> launch { sendTo(ctx, 0) }
+                        reactions.previous -> launch { sendTo(ctx, max(index - 1, 0)) }
+                        reactions.next -> launch { sendTo(ctx, min(index + 1, chunks.size - 1)) }
+                        reactions.last -> launch { sendTo(ctx, chunks.size - 1) }
+                    }
+                else
+                    launch { listen(message, ctx) }
+            }
     }
 }
