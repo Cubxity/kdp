@@ -23,8 +23,9 @@ import dev.cubxity.libs.kdp.command.Command
 import dev.cubxity.libs.kdp.command.CommandData
 import dev.cubxity.libs.kdp.command.SubCommand
 import dev.cubxity.libs.kdp.command.SubCommandData
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import reactor.core.Disposable
-import kotlin.math.abs
 
 /**
  * Represents a module. A module may contain commands
@@ -35,6 +36,7 @@ import kotlin.math.abs
 open class Module(val kdp: KDP, val name: String, val description: String = "No description provided.") {
     val commands = mutableListOf<Command>()
     val listeners = mutableListOf<Disposable>()
+    val jobs = mutableListOf<Job>()
 
     /**
      * Operator function to construct the command or sub command command and configure it.
@@ -68,7 +70,7 @@ open class Module(val kdp: KDP, val name: String, val description: String = "No 
             cmd
         }
 
-    suspend fun init() {
+    open suspend fun init() {
 
     }
 
@@ -76,5 +78,7 @@ open class Module(val kdp: KDP, val name: String, val description: String = "No 
         commands.clear()
         listeners.forEach { it.dispose() }
         listeners.clear()
+        jobs.forEach { it.cancelAndJoin() }
+        jobs.clear()
     }
 }
