@@ -16,13 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
-    api("net.dv8tion:JDA:4.1.1_157")
-    api("club.minnced:jda-reactor:1.0.0")
-    api("org.apache.commons:commons-text:1.8")
-    api("me.xdrop:fuzzywuzzy:1.2.0")
+package dev.cubxity.libs.kdp.utils.delegates
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
+import dev.cubxity.libs.kdp.command.Command
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
+
+class NullableCommandFlagDelegate<T>(private val name: String? = null) :
+    ReadWriteProperty<Command, T?> {
+    override fun getValue(thisRef: Command, property: KProperty<*>): T? =
+        thisRef.flags[name ?: property.name] as? T
+
+    override fun setValue(thisRef: Command, property: KProperty<*>, value: T?) {
+        if (value != null) {
+            thisRef.flags[name ?: property.name] = value as Any
+        } else {
+            thisRef.flags -= name ?: property.name
+        }
+    }
 }

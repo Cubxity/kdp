@@ -16,13 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
-    api("net.dv8tion:JDA:4.1.1_157")
-    api("club.minnced:jda-reactor:1.0.0")
-    api("org.apache.commons:commons-text:1.8")
-    api("me.xdrop:fuzzywuzzy:1.2.0")
+package dev.cubxity.libs.kdp.utils.delegates
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
+import dev.cubxity.libs.kdp.processing.CommandProcessingContext
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
+
+class CommandProcessingContextExtraDelegate<T>(private val name: String? = null) :
+    ReadWriteProperty<CommandProcessingContext, T?> {
+    override fun getValue(thisRef: CommandProcessingContext, property: KProperty<*>): T? =
+        thisRef.extra[name ?: property.name] as? T
+
+    override fun setValue(thisRef: CommandProcessingContext, property: KProperty<*>, value: T?) {
+        if (value != null) {
+            thisRef.extra[name ?: property.name] = value as Any
+        } else {
+            thisRef.extra -= name ?: property.name
+        }
+    }
 }

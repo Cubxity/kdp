@@ -22,7 +22,7 @@ plugins {
 }
 
 group = "dev.cubxity.libs.kdp"
-version = "0.1"
+version = "1.0.0-SNAPSHOT-1"
 
 repositories {
     mavenCentral()

@@ -20,6 +20,7 @@ package dev.cubxity.libs.kdp.utils.paginator
 
 import club.minnced.jda.reactor.on
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
+import dev.cubxity.libs.kdp.utils.await
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -73,8 +74,10 @@ class PaginatorEmbedInterface(
         // TODO
         // Not sending via ctx.send because I have not implemented ctx.edit
         val m = if (msg != null) {
-            if (first || index != page) withContext(Dispatchers.IO) { msg.editMessage(embed).complete() } else msg
-        } else withContext(Dispatchers.IO) { ctx.channel.sendMessage(embed).complete() }
+            if (first || index != page) msg.editMessage(embed).await() else msg
+        } else {
+            ctx.channel.sendMessage(embed).await()
+        }
         this@PaginatorEmbedInterface.msg = m
         try {
             listen(m, ctx)
@@ -85,13 +88,13 @@ class PaginatorEmbedInterface(
             with(ctx) {
                 launch {
                     try {
-                        m?.react(reactions.stop)
+                        m?.addReaction(reactions.stop)?.await()
 
                         if (chunks.size > 1) {
-                            m?.react(reactions.first)
-                            m?.react(reactions.previous)
-                            m?.react(reactions.next)
-                            m?.react(reactions.last)
+                            m?.addReaction(reactions.first)?.await()
+                            m?.addReaction(reactions.previous)?.await()
+                            m?.addReaction(reactions.next)?.await()
+                            m?.addReaction(reactions.last)?.await()
                         }
                     } catch (e: ContextException) {
                     }

@@ -21,6 +21,7 @@ package dev.cubxity.libs.kdp.utils
 import dev.cubxity.libs.kdp.command.CommandData
 import dev.cubxity.libs.kdp.command.SubCommandData
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
+import net.dv8tion.jda.api.utils.MarkdownSanitizer
 
 private val USER_MENTION_REGEX = "<@(!?)(\\d{1,19})>".toRegex()
 private val ROLE_MENTION_REGEX = "<@&(\\d{1,19})>".toRegex()
@@ -44,11 +45,10 @@ fun String.sanitize(ctx: CommandProcessingContext): String {
     return s
 }
 
-fun String.escapeMarkdown() = replace("*", "\\*")
-    .replace("_", "\\_")
-    .replace("`", "\\`")
-    .replace("||", "\\||")
-    .replace(">", "\\>")
+@Deprecated("Use sanitizeMarkdown", ReplaceWith("sanitizeMarkdown()"))
+fun String.escapeMarkdown() = sanitizeMarkdown()
+
+fun String.sanitizeMarkdown() = MarkdownSanitizer.escape(this)
 
 val CommandData.path: String
     get() = buildString {

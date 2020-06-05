@@ -18,6 +18,7 @@
 
 package dev.cubxity.libs.kdp.admin
 
+import dev.cubxity.libs.kdp.dsl.sendTyping
 import dev.cubxity.libs.kdp.perms.botAdmin
 import dev.cubxity.libs.kdp.processing.ignoreQuotes
 import dev.cubxity.libs.kdp.utils.embed.codeBlock

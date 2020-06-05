@@ -19,8 +19,8 @@
 package dev.cubxity.libs.kdp.utils.embed
 
 import dev.cubxity.libs.kdp.utils.BuilderTagMarker
-import dev.cubxity.libs.kdp.utils.escapeMarkdown
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.utils.MarkdownSanitizer
 
 /**
  * @author Cubxity
@@ -30,30 +30,18 @@ class MarkdownBuilder : MDString {
     private val builder = StringBuilder()
 
     operator fun String.unaryPlus() {
-        builder.append(escapeMarkdown())
+        builder.append(MarkdownSanitizer.sanitize(this))
+    }
+
+    operator fun Any.unaryPlus() {
+        +toString()
     }
 
     operator fun MDString.unaryPlus() {
-        builder.append(toString())
+        builder.append(toString()) // Skip sanitizing
     }
 
-    operator fun User.unaryPlus() {
-        builder.append(asMention)
-    }
-
-    operator fun Member.unaryPlus() {
-        builder.append(asMention)
-    }
-
-    operator fun Role.unaryPlus() {
-        builder.append(asMention)
-    }
-
-    operator fun Emote.unaryPlus() {
-        builder.append(asMention)
-    }
-
-    operator fun TextChannel.unaryPlus() {
+    operator fun IMentionable.unaryPlus() {
         builder.append(asMention)
     }
 
@@ -61,8 +49,8 @@ class MarkdownBuilder : MDString {
      * Appends [s] into [builder]
      * @return this instance for chaining
      */
-    fun append(s: String): MarkdownBuilder {
-        builder.append(s.escapeMarkdown())
+    fun append(s: String, sanitize: Boolean = false): MarkdownBuilder {
+        builder.append(if (sanitize) s else MarkdownSanitizer.sanitize(s))
         return this
     }
 
@@ -70,10 +58,8 @@ class MarkdownBuilder : MDString {
      * Appends [s] into [builder] without escaping
      * @return this instance for chaining
      */
-    fun unsafe(s: String): MarkdownBuilder {
-        builder.append(s)
-        return this
-    }
+    @Deprecated("Use appendUnsafe", ReplaceWith("append(s, sanitize = true)"))
+    fun unsafe(s: String) = append(s, sanitize = true)
 
     /**
      * Returns [builder]
@@ -82,7 +68,7 @@ class MarkdownBuilder : MDString {
 }
 
 /**
- * String that has been already escaped
+ * String that has already been sanitized
  */
 interface MDString
 
@@ -96,5 +82,12 @@ fun String.asMDString() = SimpleMDString(this)
  * @param opt callback to configure [MarkdownBuilder]
  */
 @BuilderTagMarker
-fun markdown(opt: MarkdownBuilder.() -> Unit = {}) =
+inline fun markdown(opt: MarkdownBuilder.() -> Unit = {}) =
     MarkdownBuilder().apply(opt)
+
+/**
+ * @param opt callback to configure [MarkdownBuilder]
+ */
+@BuilderTagMarker
+inline fun buildMarkdown(opt: MarkdownBuilder.() -> Unit = {}) =
+    MarkdownBuilder().apply(opt).toString()

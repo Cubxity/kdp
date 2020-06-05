@@ -25,8 +25,6 @@ import kotlinx.coroutines.coroutineScope
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @Suppress("UNUSED", "MemberVisibilityCanBePrivate")
 class CommandProcessingContext(
@@ -128,49 +126,6 @@ class CommandProcessingContext(
             .also { kdp.respondPipeline.execute(it) }
             .sentMessage
     }
-
-    /**
-     * React with [emote] on [message]
-     * @return true if the reaction was successful, otherwise false
-     */
-    suspend fun react(emote: Emote): Boolean =
-        suspendCoroutine { c -> message.addReaction(emote).queue({ c.resume(true) }, { c.resume(false) }) }
-
-    /**
-     * React with [emote] on the receiver
-     */
-    suspend fun Message.react(emote: Emote): Boolean =
-        suspendCoroutine { c -> addReaction(emote).queue({ c.resume(true) }, { c.resume(false) }) }
-
-    /**
-     * React with [unicode] on [message]
-     */
-    suspend fun react(unicode: String): Boolean =
-        suspendCoroutine { c -> message.addReaction(unicode).queue({ c.resume(true) }, { c.resume(false) }) }
-
-    /**
-     * React with [unicode] on the receiver
-     */
-    suspend fun Message.react(unicode: String): Boolean =
-        suspendCoroutine { c -> addReaction(unicode).queue({ c.resume(true) }, { c.resume(false) }) }
-
-    /**
-     * Deletes [message]
-     */
-    suspend fun delete(): Boolean =
-        suspendCoroutine { c -> message.delete().queue({ c.resume(true) }, { c.resume(false) }) }
-
-    /**
-     * Deletes the message on the receiver
-     */
-    suspend fun Message.delete(): Boolean =
-        suspendCoroutine { c -> delete().queue({ c.resume(true) }, { c.resume(false) }) }
-
-    /**
-     * Send typing signal to [channel]
-     */
-    suspend fun sendTyping(): Boolean =
-        suspendCoroutine { c -> channel.sendTyping().queue({ c.resume(true) }, { c.resume(false) }) }
 
     @Throws(CommandException::class)
     fun error(message: String): Nothing = throw CommandException(message)

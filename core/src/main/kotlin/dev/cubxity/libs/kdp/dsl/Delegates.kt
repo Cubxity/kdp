@@ -16,13 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
-    api("net.dv8tion:JDA:4.1.1_157")
-    api("club.minnced:jda-reactor:1.0.0")
-    api("org.apache.commons:commons-text:1.8")
-    api("me.xdrop:fuzzywuzzy:1.2.0")
+package dev.cubxity.libs.kdp.dsl
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
-}
+import dev.cubxity.libs.kdp.utils.delegates.CommandFlagDelegate
+import dev.cubxity.libs.kdp.utils.delegates.NullableCommandFlagDelegate
+import dev.cubxity.libs.kdp.utils.delegates.CommandProcessingContextExtraDelegate
+
+fun <T> extra(name: String? = null) =
+    CommandProcessingContextExtraDelegate<T>(name)
+
+fun <T> flag(name: String? = null) =
+    NullableCommandFlagDelegate<T>(name)
+
+fun <T> flag(name: String? = null, default: T) =
+    CommandFlagDelegate<T>(name, default)
+
+fun <T> flag(name: String? = null, default: () -> T) =
+    CommandFlagDelegate<T>(name, default)

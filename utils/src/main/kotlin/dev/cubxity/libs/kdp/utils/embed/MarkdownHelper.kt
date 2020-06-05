@@ -16,131 +16,151 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("NOTHING_TO_INLINE")
+
 package dev.cubxity.libs.kdp.utils.embed
 
 import dev.cubxity.libs.kdp.utils.BuilderTagMarker
 import dev.cubxity.libs.kdp.utils.escapeMarkdown
+import net.dv8tion.jda.api.utils.MarkdownUtil
 
 /**
  * Wraps [text] in bold
  */
 @BuilderTagMarker
-fun bold(text: String, escape: Boolean = true) = "**${text.escapeMarkdown()}**".asMDString()
+inline fun bold(text: String) = text.bold
 
 
 /**
  * Wraps text produced in [opt] in bold
- * Note: text produced in [opt] might breaks the bold
  */
 @BuilderTagMarker
-fun bold(opt: MarkdownBuilder.() -> Unit) = "**${MarkdownBuilder().apply(opt)}**".asMDString()
+inline fun bold(opt: MarkdownBuilder.() -> Unit) = buildMarkdown(opt).bold
 
 @BuilderTagMarker
-val String.bold
-    get() = "**${escapeMarkdown()}**".asMDString()
+inline val String.bold
+    get() = MarkdownUtil.bold(this).asMDString()
 
 /**
  * Wraps [text] in italic
  */
 @BuilderTagMarker
-fun italic(text: String) = "*${text.escapeMarkdown()}*".asMDString()
+inline fun italic(text: String) =
+    text.italic
 
 @BuilderTagMarker
-val String.italic
-    get() = "*${escapeMarkdown()}*".asMDString()
+inline val String.italic
+    get() = MarkdownUtil.italics(this).asMDString()
 
 /**
  * Wraps text produced in [opt] in italic
- * Note: text produced in [opt] might breaks the italic
  */
 @BuilderTagMarker
-fun italic(opt: MarkdownBuilder.() -> Unit) = "*${MarkdownBuilder().apply(opt)}*".asMDString()
+inline fun italic(opt: MarkdownBuilder.() -> Unit) = buildMarkdown(opt).italic
 
 /**
  * Wraps [text] in underline
  */
 @BuilderTagMarker
-fun underline(text: String) = "__${text.escapeMarkdown()}__".asMDString()
+inline fun underline(text: String) = text.underline
+
+/**
+ * Wraps text produced in [opt] in underline
+ */
+@BuilderTagMarker
+inline fun underline(opt: MarkdownBuilder.() -> Unit) = buildMarkdown(opt).underline
+
+@BuilderTagMarker
+inline val String.underline
+    get() = MarkdownUtil.underline(this).asMDString()
+
+/**
+ * Wraps [text] in underline
+ */
+@BuilderTagMarker
+inline fun strikethrough(text: String) = text.strikethrough
 
 /**
  * Wraps text produced in [opt] in underline
  * Note: text produced in [opt] might breaks the underline
  */
 @BuilderTagMarker
-fun underline(opt: MarkdownBuilder.() -> Unit) = "__${MarkdownBuilder().apply(opt)}__".asMDString()
-
-@BuilderTagMarker
-val String.underline
-    get() = "__${escapeMarkdown()}__".asMDString()
-
-/**
- * Wraps [text] in underline
- */
-@BuilderTagMarker
-fun strikethrough(text: String) = "~~${text.escapeMarkdown()}~~".asMDString()
-
-/**
- * Wraps text produced in [opt] in underline
- * Note: text produced in [opt] might breaks the underline
- */
-@BuilderTagMarker
-fun strikethrough(opt: MarkdownBuilder.() -> Unit) = "~~${MarkdownBuilder().apply(opt)}~~".asMDString()
+inline fun strikethrough(opt: MarkdownBuilder.() -> Unit) = buildMarkdown(opt).strikethrough
 
 @BuilderTagMarker
 val String.strikethrough
-    get() = "~~${escapeMarkdown()}~~".asMDString()
+    get() = MarkdownUtil.strike(this).asMDString()
 
 /**
  * Wraps [text] in code
  */
 @BuilderTagMarker
-fun code(text: String) = "`${text.escapeMarkdown()}`".asMDString()
+inline fun code(text: String) =
+    text.code
 
 /**
  * Wraps text produced in [opt] in code
- * Note: text produced in [opt] might breaks the code
  */
 @BuilderTagMarker
-fun code(opt: MarkdownBuilder.() -> Unit) = "`${MarkdownBuilder().apply(opt)}`".asMDString()
+inline fun code(opt: MarkdownBuilder.() -> Unit) = buildMarkdown(opt).code
 
 @BuilderTagMarker
-val String.code
-    get() = "`${escapeMarkdown()}`".asMDString()
+inline val String.code
+    get() = MarkdownUtil.monospace(this).asMDString()
 
 /**
  * Wraps [text] in codeBlock
  */
 @BuilderTagMarker
-fun codeBlock(text: String) = "```\n${text.escapeMarkdown()}\n```".asMDString()
-
-/**
- * Wraps text produced in [opt] in codeBlock
- * Note: text produced in [opt] might breaks the codeBlock
- */
-@BuilderTagMarker
-fun codeBlock(language: String = "", opt: MarkdownBuilder.() -> Unit) =
-    "```$language\n${MarkdownBuilder().apply(opt)}\n```".asMDString()
+inline fun codeBlock(text: String) = MarkdownUtil.codeblock(text).asMDString()
 
 /**
  * Wraps [text] in codeBlock
  */
 @BuilderTagMarker
-fun spoiler(text: String) = "||${text.escapeMarkdown()}||".asMDString()
+inline fun codeBlock(text: String, language: String) = MarkdownUtil.codeblock(language, text).asMDString()
 
 /**
  * Wraps text produced in [opt] in codeBlock
- * Note: text produced in [opt] might breaks the codeBlock
  */
 @BuilderTagMarker
-fun spoiler(opt: MarkdownBuilder.() -> Unit) =
-    "||${MarkdownBuilder().apply(opt)}||".asMDString()
+inline fun codeBlock(language: String = "", opt: MarkdownBuilder.() -> Unit) =
+    MarkdownUtil.codeblock(language, buildMarkdown(opt)).asMDString()
+
+/**
+ * Wraps [text] in quote
+ */
+@BuilderTagMarker
+inline fun quote(text: String) = text.quote
+
+/**
+ * Wraps text produced in [opt] in quote
+ */
+@BuilderTagMarker
+inline fun quote(opt: MarkdownBuilder.() -> Unit) = buildMarkdown(opt).quote
 
 @BuilderTagMarker
-val String.spoiler
-    get() = "||${escapeMarkdown()}||".asMDString()
+inline val String.quote
+    get() = MarkdownUtil.quote(this).asMDString()
+
+/**
+ * Wraps [text] in codeBlock
+ */
+@BuilderTagMarker
+inline fun spoiler(text: String) = text.spoiler
+
+/**
+ * Wraps text produced in [opt] in codeBlock
+ */
+@BuilderTagMarker
+inline fun spoiler(opt: MarkdownBuilder.() -> Unit) = buildMarkdown(opt).spoiler
+
+@BuilderTagMarker
+inline val String.spoiler
+    get() = MarkdownUtil.spoiler(this).asMDString()
 
 /**
  * Creates a link
  */
 @BuilderTagMarker
-fun link(alt: String, url: String) = "[${alt.escapeMarkdown()}]($url)".asMDString()
+fun link(alt: String, url: String) = MarkdownUtil.maskedLink(alt, url).asMDString()

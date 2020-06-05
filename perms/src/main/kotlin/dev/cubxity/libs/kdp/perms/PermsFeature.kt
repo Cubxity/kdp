@@ -20,6 +20,7 @@ package dev.cubxity.libs.kdp.perms
 
 import dev.cubxity.libs.kdp.KDP
 import dev.cubxity.libs.kdp.command.Command
+import dev.cubxity.libs.kdp.dsl.flag
 import dev.cubxity.libs.kdp.feature.KDPFeature
 import dev.cubxity.libs.kdp.feature.install
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
@@ -84,14 +85,6 @@ class PermsFeature(kdp: KDP) {
 fun KDP.perms(opt: PermsFeature.() -> Unit = {}): PermsFeature = (features[PermsFeature.key] as PermsFeature?
     ?: install(PermsFeature)).apply(opt)
 
-var Command.guildPermissions: List<Permission>
-    get() = flags[PermsFeature.FLAG_GUILD_PERMISSIONS] as? List<Permission> ?: emptyList()
-    set(value) {
-        flags[PermsFeature.FLAG_GUILD_PERMISSIONS] = value
-    }
+var Command.guildPermissions: List<Permission> by flag(PermsFeature.FLAG_GUILD_PERMISSIONS) { emptyList<Permission>() }
 
-var Command.botAdmin: Boolean
-    get() = flags[PermsFeature.FLAG_BOT_ADMIN] as? Boolean ?: false
-    set(value) {
-        flags[PermsFeature.FLAG_BOT_ADMIN] = value
-    }
+var Command.botAdmin: Boolean by flag(PermsFeature.FLAG_BOT_ADMIN, false)
