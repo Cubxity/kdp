@@ -21,5 +21,6 @@ package dev.cubxity.libs.kdp.dsl
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import dev.cubxity.libs.kdp.utils.await
 
-suspend fun CommandProcessingContext.sendTyping(): Void =
+suspend fun CommandProcessingContext.sendTyping() {
     channel.sendTyping().await()
+}
