@@ -18,9 +18,9 @@
 
 dependencies {
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
-    api("net.dv8tion:JDA:4.1.1_157")
-    api("club.minnced:jda-reactor:1.0.0")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.9")
+    api("net.dv8tion:JDA:4.2.0_195")
+    api("club.minnced:jda-reactor:1.2.0")
     api("org.apache.commons:commons-text:1.8")
     api("me.xdrop:fuzzywuzzy:1.2.0")
 

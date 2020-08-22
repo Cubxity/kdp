@@ -91,7 +91,7 @@ fun AdminModule.eval() = AdminModule.eval {
                 executor.effectiveAvatarUrl
             )
 
-            +codeBlock("kotlin") { unsafe(out.toString().truncate(1000)) }
+            +codeBlock("kotlin") { append(out?.toString()?.truncate(1000) ?: "null") }
         }
 
         send(embed)
