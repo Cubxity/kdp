@@ -22,5 +22,5 @@ plugins {
 
 dependencies {
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx", "kotlinx-coroutines-jdk8", "1.3.9")
+    api("org.jetbrains.kotlinx", "kotlinx-coroutines-jdk8", "1.4.0")
 }
