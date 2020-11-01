@@ -16,16 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.engine
-
-import dev.cubxity.kdp.KDP
+package dev.cubxity.kdp.pipeline
 
 /**
- * Factory interface for creating [KDPEngine] instances.
+ * Represents a phase in a [pipeline][Pipeline].
  */
-interface KDPEngineFactory<out TEngine : KDPEngine, TConfiguration : KDPEngine.Configuration> {
-    /**
-     * Creates an engine from the given [configure] block.
-     */
-    fun create(kdp: KDP, configure: TConfiguration.() -> Unit): TEngine
+class PipelinePhase(val name: String) {
+    override fun toString(): String = "Phase('$name')"
 }

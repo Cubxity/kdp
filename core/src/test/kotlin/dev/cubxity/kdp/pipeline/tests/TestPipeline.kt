@@ -16,16 +16,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.engine
+package dev.cubxity.kdp.pipeline.tests
 
-import dev.cubxity.kdp.KDP
+import dev.cubxity.kdp.pipeline.Pipeline
+import dev.cubxity.kdp.pipeline.PipelinePhase
 
-/**
- * Factory interface for creating [KDPEngine] instances.
- */
-interface KDPEngineFactory<out TEngine : KDPEngine, TConfiguration : KDPEngine.Configuration> {
-    /**
-     * Creates an engine from the given [configure] block.
-     */
-    fun create(kdp: KDP, configure: TConfiguration.() -> Unit): TEngine
+class TestPipeline : Pipeline<Int, Unit>(One, Two, Three) {
+    companion object TestPhase {
+        val One = PipelinePhase("One")
+        val Two = PipelinePhase("Two")
+        val Three = PipelinePhase("Three")
+    }
 }

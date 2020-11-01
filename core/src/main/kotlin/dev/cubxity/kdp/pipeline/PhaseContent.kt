@@ -16,16 +16,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.engine
+package dev.cubxity.kdp.pipeline
 
-import dev.cubxity.kdp.KDP
+internal class PhaseContent<TSubject : Any, Call : Any>(val phase: PipelinePhase) {
+    private val _interceptors: MutableList<PipelineInterceptor<TSubject, Call>> = ArrayList()
 
-/**
- * Factory interface for creating [KDPEngine] instances.
- */
-interface KDPEngineFactory<out TEngine : KDPEngine, TConfiguration : KDPEngine.Configuration> {
-    /**
-     * Creates an engine from the given [configure] block.
-     */
-    fun create(kdp: KDP, configure: TConfiguration.() -> Unit): TEngine
+    val interceptors: List<PipelineInterceptor<TSubject, Call>>
+        get() = _interceptors
+
+    fun addInterceptor(interceptor: PipelineInterceptor<TSubject, Call>) {
+        _interceptors += interceptor
+    }
 }
