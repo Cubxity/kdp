@@ -1,2 +1,5 @@
 rootProject.name = "kdp"
-include(":core")
+include(
+    ":kdp-core",
+    ":kdp-engines:kdp-jda"
+)
