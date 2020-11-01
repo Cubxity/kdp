@@ -19,6 +19,7 @@
 package dev.cubxity.kdp.engine
 
 import dev.cubxity.kdp.annotation.KDPUnsafe
+import dev.cubxity.kdp.gateway.Intents
 
 /**
  * Engine which provides Discord API.
@@ -32,6 +33,11 @@ interface KDPEngine {
          * The token used for logging into Discord.
          */
         lateinit var token: String
+
+        /**
+         * Enabled gateway [intents][Intents].
+         */
+        var intents: Intents = Intents.nonPrivileged
     }
 
     /**
