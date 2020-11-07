@@ -35,7 +35,7 @@ enum class Intent(val code: Int) {
     GUILD_MESSAGES(1 shl 9),
     GUILD_MESSAGE_REACTIONS(1 shl 10),
     GUILD_MESSAGE_TYPING(1 shl 11),
-    DIRECT_MESSAGE(1 shl 12),
+    DIRECT_MESSAGES(1 shl 12),
     DIRECT_MESSAGE_REACTIONS(1 shl 13),
     DIRECT_MESSAGE_TYPING(1 shl 14)
 }

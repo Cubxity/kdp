@@ -50,6 +50,14 @@ interface KDPEngine {
     /**
      * Logs in to the Discord gateway.
      * See: https://discord.com/developers/docs/topics/gateway.
+     *
+     * @param await suspends the call until the gateway connection is established.
+     * @return the current instance of [KDPEngine], for convenience.
      */
-    suspend fun login()
+    suspend fun login(await: Boolean = true): KDPEngine
+
+    /**
+     * Shuts down the connection and the underlying API.
+     */
+    suspend fun shutdown()
 }
