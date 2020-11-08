@@ -18,24 +18,19 @@
 
 package dev.cubxity.kdp.entity
 
-/**
- * Represents an image, such as [avatar][User.Avatar] and [icon][Guild.Icon].
- */
-interface ImageHolder {
-    val id: String?
+import dev.cubxity.kdp.KDP
+import dev.cubxity.kdp.KDPObject
+import dev.cubxity.kdp.engine.KDPEngine
 
-    operator fun get(format: ImageFormat): String
-}
+data class Icon<TEngine : KDPEngine<TEngine>>(
+    override val kdp: KDP<TEngine>,
+    val guild: Guild<TEngine>,
+    override val id: String
+) : KDPObject<TEngine>, ImageHolder {
+    override fun get(format: ImageFormat): String =
+        id.let { ICON_URL.format(guild.id, it, format.extension) }
 
-inline val ImageHolder.isAnimated: Boolean
-    get() = id?.startsWith("a_") == true
-
-inline val ImageHolder.url: String
-    get() = if (isAnimated) this[ImageFormat.GIF] else this[ImageFormat.PNG]
-
-enum class ImageFormat(val extension: String) {
-    JPEG("jpeg"),
-    PNG("png"),
-    WEBP("webp"),
-    GIF("gif")
+    companion object {
+        const val ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s"
+    }
 }

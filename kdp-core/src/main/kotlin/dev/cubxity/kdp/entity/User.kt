@@ -50,10 +50,7 @@ interface User<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
         inline val defaultUrl: String
             get() = DEFAULT_AVATAR_URL.format(user.id)
 
-        inline val url: String
-            get() = id?.let { AVATAR_URL.format(user.id.value, it, if (isAnimated) "gif" else "png") } ?: defaultUrl
-
-        override fun get(format: ImageFormat): String? =
+        override fun get(format: ImageFormat): String =
             id?.let { AVATAR_URL.format(user.id.value, it, format.extension) } ?: defaultUrl
 
         companion object {

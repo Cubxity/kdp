@@ -18,24 +18,31 @@
 
 package dev.cubxity.kdp.entity
 
-/**
- * Represents an image, such as [avatar][User.Avatar] and [icon][Guild.Icon].
- */
-interface ImageHolder {
-    val id: String?
+import dev.cubxity.kdp.KDPObject
+import dev.cubxity.kdp.engine.KDPEngine
 
-    operator fun get(format: ImageFormat): String
-}
+interface VoiceState<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
+    val guildId: Snowflake?
 
-inline val ImageHolder.isAnimated: Boolean
-    get() = id?.startsWith("a_") == true
+    val channelId: Snowflake?
 
-inline val ImageHolder.url: String
-    get() = if (isAnimated) this[ImageFormat.GIF] else this[ImageFormat.PNG]
+    val userId: Snowflake
 
-enum class ImageFormat(val extension: String) {
-    JPEG("jpeg"),
-    PNG("png"),
-    WEBP("webp"),
-    GIF("gif")
+    val member: Member<TEngine>?
+
+    val sessionId: String
+
+    val isDeaf: Boolean
+
+    val isMute: Boolean
+
+    val isSelfDeaf: Boolean
+
+    val isSelfMute: Boolean
+
+    val isSelfStream: Boolean?
+
+    val isSelfVideo: Boolean
+
+    val isSuppress: Boolean
 }
