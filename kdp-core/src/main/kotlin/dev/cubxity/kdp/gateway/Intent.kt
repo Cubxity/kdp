@@ -23,21 +23,21 @@ package dev.cubxity.kdp.gateway
  * See: https://discord.com/developers/docs/topics/gateway#gateway-intents.
  */
 enum class Intent(val code: Int) {
-    GUILD(1 shl 0),
-    GUILD_MEMBERS(1 shl 1),
-    GUILD_BANS(1 shl 2),
-    GUILD_EMOJI(1 shl 3),
-    GUILD_INTEGRATIONS(1 shl 4),
-    GUILD_WEBHOOKS(1 shl 5),
-    GUILD_INVITES(1 shl 6),
-    GUILD_VOICE_STATES(1 shl 7),
-    GUILD_PRESENCES(1 shl 8),
-    GUILD_MESSAGES(1 shl 9),
-    GUILD_MESSAGE_REACTIONS(1 shl 10),
-    GUILD_MESSAGE_TYPING(1 shl 11),
-    DIRECT_MESSAGES(1 shl 12),
-    DIRECT_MESSAGE_REACTIONS(1 shl 13),
-    DIRECT_MESSAGE_TYPING(1 shl 14)
+    Guild(1 shl 0),
+    GuildMembers(1 shl 1),
+    GuildBans(1 shl 2),
+    GuildEmoji(1 shl 3),
+    GuildIntegrations(1 shl 4),
+    GuildWebhooks(1 shl 5),
+    GuildInvites(1 shl 6),
+    GuildVoiceStates(1 shl 7),
+    GuildPresences(1 shl 8),
+    GuildMessages(1 shl 9),
+    GuildMessageReactions(1 shl 10),
+    GuildMessageTyping(1 shl 11),
+    DirectMessages(1 shl 12),
+    DirectMessageReactions(1 shl 13),
+    DirectMessageTyping(1 shl 14)
 }
 
 /**
@@ -45,7 +45,7 @@ enum class Intent(val code: Int) {
  */
 inline class Intents(val code: Int) {
     /**
-     * List of [intents][Intents] that are enabled.
+     * List of [intents][Intent] that are enabled.
      */
     val intents: List<Intent>
         get() = Intent.values().filter { it in this }
@@ -75,8 +75,8 @@ inline class Intents(val code: Int) {
             get() = invoke {
                 Intent.values().forEach { +it }
 
-                -Intent.GUILD_PRESENCES
-                -Intent.GUILD_MEMBERS
+                -Intent.GuildPresences
+                -Intent.GuildMembers
             }
 
         inline val none: Intents

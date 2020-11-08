@@ -66,20 +66,20 @@ class JDAEngine(
 
     private fun mapIntents(): List<GatewayIntent> = configuration.intents.intents.mapNotNull {
         when (it) {
-            Intent.GUILD -> null // Not supported
-            Intent.GUILD_MEMBERS -> GatewayIntent.GUILD_MEMBERS
-            Intent.GUILD_BANS -> GatewayIntent.GUILD_BANS
-            Intent.GUILD_EMOJI -> GatewayIntent.GUILD_EMOJIS
-            Intent.GUILD_INTEGRATIONS, Intent.GUILD_WEBHOOKS -> null // Unused
-            Intent.GUILD_INVITES -> GatewayIntent.GUILD_INVITES
-            Intent.GUILD_VOICE_STATES -> GatewayIntent.GUILD_VOICE_STATES
-            Intent.GUILD_PRESENCES -> GatewayIntent.GUILD_PRESENCES
-            Intent.GUILD_MESSAGES -> GatewayIntent.GUILD_MESSAGES
-            Intent.GUILD_MESSAGE_REACTIONS -> GatewayIntent.GUILD_MESSAGE_REACTIONS
-            Intent.GUILD_MESSAGE_TYPING -> GatewayIntent.GUILD_MESSAGE_TYPING
-            Intent.DIRECT_MESSAGES -> GatewayIntent.DIRECT_MESSAGES
-            Intent.DIRECT_MESSAGE_REACTIONS -> GatewayIntent.DIRECT_MESSAGE_REACTIONS
-            Intent.DIRECT_MESSAGE_TYPING -> GatewayIntent.DIRECT_MESSAGE_TYPING
+            Intent.Guild -> null // Not supported
+            Intent.GuildMembers -> GatewayIntent.GUILD_MEMBERS
+            Intent.GuildBans -> GatewayIntent.GUILD_BANS
+            Intent.GuildEmoji -> GatewayIntent.GUILD_EMOJIS
+            Intent.GuildIntegrations, Intent.GuildWebhooks -> null // Unused
+            Intent.GuildInvites -> GatewayIntent.GUILD_INVITES
+            Intent.GuildVoiceStates -> GatewayIntent.GUILD_VOICE_STATES
+            Intent.GuildPresences -> GatewayIntent.GUILD_PRESENCES
+            Intent.GuildMessages -> GatewayIntent.GUILD_MESSAGES
+            Intent.GuildMessageReactions -> GatewayIntent.GUILD_MESSAGE_REACTIONS
+            Intent.GuildMessageTyping -> GatewayIntent.GUILD_MESSAGE_TYPING
+            Intent.DirectMessages -> GatewayIntent.DIRECT_MESSAGES
+            Intent.DirectMessageReactions -> GatewayIntent.DIRECT_MESSAGE_REACTIONS
+            Intent.DirectMessageTyping -> GatewayIntent.DIRECT_MESSAGE_TYPING
         }
     }
 }
