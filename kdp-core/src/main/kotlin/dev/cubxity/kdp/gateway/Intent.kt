@@ -80,7 +80,7 @@ inline class Intents(val code: Int) {
             }
 
         inline val none: Intents
-            get() = invoke()
+            get() = Intents(0)
 
         inline operator fun invoke(builder: Builder.() -> Unit = {}): Intents =
             Builder().apply(builder).build()

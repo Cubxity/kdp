@@ -18,16 +18,77 @@
 
 package dev.cubxity.kdp
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
+import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.engine.KDPEngineEnvironment
+import dev.cubxity.kdp.engine.KDPEngineEnvironmentImpl
+import dev.cubxity.kdp.engine.KDPEngineFactory
+import dev.cubxity.kdp.processing.ProcessingPipeline
+import kotlinx.coroutines.*
+import mu.KotlinLogging
 import kotlin.coroutines.CoroutineContext
 
-class KDP(
+class KDP<TEngine : KDPEngine<TEngine>>(
     parentCoroutineContext: CoroutineContext = Dispatchers.Default
-) : CoroutineScope {
+) : ProcessingPipeline(), CoroutineScope {
     private val job = SupervisorJob(parentCoroutineContext[Job])
+    private var _engine: TEngine? = null
 
     override val coroutineContext: CoroutineContext = parentCoroutineContext + job
+
+    val engine: TEngine
+        get() = _engine ?: error("KDP has not been started")
+
+    fun start(engine: TEngine) {
+        if (!isActive) error("KDP has already been disposed")
+
+        if (_engine !== null) {
+            if (_engine !== engine) {
+                error("KDP has already been started with another engine")
+            } else {
+                return
+            }
+        }
+
+        _engine = engine
+    }
+
+    fun dispose() {
+        job.cancel()
+        _engine = null
+    }
+}
+
+/**
+ * Initializes [KDP] with the given [factory].
+ *
+ * @param token the token used for logging into Discord.
+ * @param configure configuration block for the engine.
+ * @param module KDP module block.
+ */
+fun <TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> kdp(
+    factory: KDPEngineFactory<TEngine, TConfiguration>,
+    token: String,
+    parentCoroutineContext: CoroutineContext = Dispatchers.Default,
+    configure: TConfiguration.() -> Unit = {},
+    module: KDP<TEngine>.() -> Unit = {}
+): TEngine {
+    val environment = KDPEngineEnvironmentImpl(
+        parentCoroutineContext,
+        KotlinLogging.logger("KDP"),
+        token,
+        listOf(module)
+    )
+
+    return kdp(factory, environment, configure)
+}
+
+/**
+ * Creates [KDP] with the given [factory], [environment] and [configure] block.
+ */
+fun <TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> kdp(
+    factory: KDPEngineFactory<TEngine, TConfiguration>,
+    environment: KDPEngineEnvironment<TEngine>,
+    configure: TConfiguration.() -> Unit = {}
+): TEngine {
+    return factory.create(environment, configure)
 }

@@ -18,12 +18,29 @@
 
 package dev.cubxity.kdp.engine
 
-/**
- * Factory interface for creating [KDPEngine] instances.
- */
-interface KDPEngineFactory<TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> {
+import dev.cubxity.kdp.KDP
+import dev.cubxity.kdp.KDPEnvironment
+
+interface KDPEngineEnvironment<TEngine : KDPEngine<TEngine>> : KDPEnvironment {
     /**
-     * Creates an engine from the given [configure] block.
+     * Token used for logging into Discord.
      */
-    fun create(environment: KDPEngineEnvironment<TEngine>, configure: TConfiguration.() -> Unit): TEngine
+    val token: String
+
+    /**
+     * Running [KDP].
+     *
+     * @throws IllegalStateException if KDP hasn't been initialized.
+     */
+    val kdp: KDP<TEngine>
+
+    /**
+     * Starts [KDPEngineEnvironment] and creates KDP.
+     */
+    fun start(engine: TEngine)
+
+    /**
+     * Stops [KDPEngineEnvironment] and destroys the running KDP.
+     */
+    fun stop()
 }

@@ -18,27 +18,33 @@
 
 package dev.cubxity.kdp.engine
 
+import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.gateway.Intents
 
 /**
  * Engine which provides Discord API.
  */
-interface KDPEngine {
+interface KDPEngine<TEngine : KDPEngine<TEngine>> {
     /**
      * Configuration for the [KDPEngine].
      */
     open class Configuration {
         /**
-         * The token used for logging into Discord.
-         */
-        lateinit var token: String
-
-        /**
          * Enabled gateway [intents][Intents].
          */
         var intents: Intents = Intents.nonPrivileged
     }
+
+    /**
+     * Environment which this engine is running.
+     */
+    val environment: KDPEngineEnvironment<TEngine>
+
+    /**
+     * Currently running KDP instance.
+     */
+    val kdp: KDP<TEngine> get() = environment.kdp
 
     /**
      * Retrieve the underlying API used by the engine.
@@ -54,7 +60,7 @@ interface KDPEngine {
      * @param await suspends the call until the gateway connection is established.
      * @return the current instance of [KDPEngine], for convenience.
      */
-    suspend fun login(await: Boolean = true): KDPEngine
+    suspend fun login(await: Boolean = true): TEngine
 
     /**
      * Shuts down the connection and the underlying API.

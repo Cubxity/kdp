@@ -19,15 +19,20 @@
 package dev.cubxity.kdp.engines.jda
 
 import dev.cubxity.kdp.annotation.KDPUnsafe
-import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.engine.BaseKDPEngine
+import dev.cubxity.kdp.engine.KDPEngineEnvironment
 import dev.cubxity.kdp.gateway.Intent
+import dev.cubxity.kdp.kdp
 import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 
-class JDAEngine(configure: Configuration.() -> Unit) : KDPEngine {
-    class Configuration : KDPEngine.Configuration()
+class JDAEngine(
+    environment: KDPEngineEnvironment<JDAEngine>,
+    configure: Configuration.() -> Unit
+) : BaseKDPEngine<JDAEngine>(environment) {
+    class Configuration : BaseKDPEngine.Configuration()
 
     private val configuration = Configuration().apply(configure)
     private var jda: JDA? = null
@@ -36,8 +41,8 @@ class JDAEngine(configure: Configuration.() -> Unit) : KDPEngine {
     override val unsafe: JDA
         get() = jda ?: error("JDA has not been started")
 
-    override suspend fun login(await: Boolean): KDPEngine {
-        val jda = JDABuilder.create(configuration.token, mapIntents()).build()
+    override suspend fun login(await: Boolean): JDAEngine {
+        val jda = JDABuilder.create(environment.token, mapIntents()).build()
         this.jda = jda
 
         if (await) {
@@ -77,4 +82,10 @@ class JDAEngine(configure: Configuration.() -> Unit) : KDPEngine {
             Intent.DIRECT_MESSAGE_TYPING -> GatewayIntent.DIRECT_MESSAGE_TYPING
         }
     }
+}
+
+suspend fun main() {
+    kdp(JDA, "Joe") {
+        // Your logic here
+    }.login()
 }

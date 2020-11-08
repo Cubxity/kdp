@@ -16,14 +16,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.engine
+package dev.cubxity.kdp
 
-/**
- * Factory interface for creating [KDPEngine] instances.
- */
-interface KDPEngineFactory<TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> {
+import mu.KLogger
+import kotlin.coroutines.CoroutineContext
+
+interface KDPEnvironment {
     /**
-     * Creates an engine from the given [configure] block.
+     * Parent coroutine context for KDP.
      */
-    fun create(environment: KDPEngineEnvironment<TEngine>, configure: TConfiguration.() -> Unit): TEngine
+    val parentCoroutineContext: CoroutineContext
+
+    /**
+     * Instance of [KLogger] to be used for logging.
+     */
+    val log: KLogger
 }

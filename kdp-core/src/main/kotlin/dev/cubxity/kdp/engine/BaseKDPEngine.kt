@@ -18,12 +18,8 @@
 
 package dev.cubxity.kdp.engine
 
-/**
- * Factory interface for creating [KDPEngine] instances.
- */
-interface KDPEngineFactory<TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> {
-    /**
-     * Creates an engine from the given [configure] block.
-     */
-    fun create(environment: KDPEngineEnvironment<TEngine>, configure: TConfiguration.() -> Unit): TEngine
+abstract class BaseKDPEngine<TEngine : KDPEngine<TEngine>>(
+    override val environment: KDPEngineEnvironment<TEngine>
+) : KDPEngine<TEngine> {
+    open class Configuration : KDPEngine.Configuration()
 }

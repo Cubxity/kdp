@@ -16,14 +16,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.engine
+package dev.cubxity.kdp.engines.jda
 
-/**
- * Factory interface for creating [KDPEngine] instances.
- */
-interface KDPEngineFactory<TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> {
-    /**
-     * Creates an engine from the given [configure] block.
-     */
-    fun create(environment: KDPEngineEnvironment<TEngine>, configure: TConfiguration.() -> Unit): TEngine
+import dev.cubxity.kdp.engine.KDPEngineEnvironment
+import dev.cubxity.kdp.engine.KDPEngineFactory
+
+object JDA : KDPEngineFactory<JDAEngine, JDAEngine.Configuration> {
+    override fun create(
+        environment: KDPEngineEnvironment<JDAEngine>,
+        configure: JDAEngine.Configuration.() -> Unit
+    ): JDAEngine = JDAEngine(environment, configure)
 }

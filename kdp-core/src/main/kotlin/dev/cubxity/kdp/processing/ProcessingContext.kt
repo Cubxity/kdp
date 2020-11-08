@@ -16,14 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.engine
+package dev.cubxity.kdp.processing
 
-/**
- * Factory interface for creating [KDPEngine] instances.
- */
-interface KDPEngineFactory<TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> {
-    /**
-     * Creates an engine from the given [configure] block.
-     */
-    fun create(environment: KDPEngineEnvironment<TEngine>, configure: TConfiguration.() -> Unit): TEngine
+interface ProcessingContext {
 }
