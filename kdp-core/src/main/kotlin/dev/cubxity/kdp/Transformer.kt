@@ -16,22 +16,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp
 
-/**
- * A unique identifier for entities [used by discord](https://discord.com/developers/docs/reference#snowflakes).
- */
-inline class Snowflake(val value: Long) : Comparable<Snowflake> {
-    constructor(value: String) : this(value.toLong())
+import dev.cubxity.kdp.engine.KDPEngine
 
-    override fun compareTo(other: Snowflake): Int =
-        value.shr(22).compareTo(other.value.shr(22))
+fun interface Transformer<TEngine : KDPEngine<TEngine>, TInput, TResult : KDPObject<TEngine>> {
+    fun transform(kdp: KDP<TEngine>, input: TInput): TResult
 }
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun Long.asSnowflake(): Snowflake =
-    Snowflake(this)
+interface TransformDelegate {
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun String.asSnowflake(): Snowflake =
-    Snowflake(this)
+}

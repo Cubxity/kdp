@@ -59,7 +59,7 @@ interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
 
     val applicationId: Snowflake?
 
-    val systemChannelId: Snowflake
+    val systemChannelId: Snowflake?
 
     val systemChannelFlags: SystemChannelFlags
 

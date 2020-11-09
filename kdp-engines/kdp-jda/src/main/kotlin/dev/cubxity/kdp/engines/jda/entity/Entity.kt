@@ -16,22 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.engines.jda.entity
 
-/**
- * A unique identifier for entities [used by discord](https://discord.com/developers/docs/reference#snowflakes).
- */
-inline class Snowflake(val value: Long) : Comparable<Snowflake> {
-    constructor(value: String) : this(value.toLong())
+import dev.cubxity.kdp.entity.Snowflake
+import dev.cubxity.kdp.entity.asSnowflake
+import net.dv8tion.jda.api.entities.ISnowflake
 
-    override fun compareTo(other: Snowflake): Int =
-        value.shr(22).compareTo(other.value.shr(22))
-}
-
-@Suppress("NOTHING_TO_INLINE")
-inline fun Long.asSnowflake(): Snowflake =
-    Snowflake(this)
-
-@Suppress("NOTHING_TO_INLINE")
-inline fun String.asSnowflake(): Snowflake =
-    Snowflake(this)
+inline val ISnowflake.snowflake: Snowflake
+    get() = idLong.asSnowflake()
