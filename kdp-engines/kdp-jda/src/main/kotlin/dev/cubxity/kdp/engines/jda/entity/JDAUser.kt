@@ -32,7 +32,7 @@ import dev.cubxity.kdp.entity.User as KDPUser
 
 class JDAUser(override val kdp: KDP<JDAEngine>, private val user: User) : KDPUser<JDAEngine> {
     override val id: Snowflake
-        get() = user.idLong.asSnowflake()
+        get() = user.snowflake
 
     @KDPUnsafe
     override val unsafe: User
@@ -47,20 +47,14 @@ class JDAUser(override val kdp: KDP<JDAEngine>, private val user: User) : KDPUse
     override val avatar: KDPUser.Avatar<JDAEngine>
         get() = KDPUser.Avatar(kdp, this, user.avatarId)
 
-    override val isBot: Boolean?
+    override val isBot: Boolean
         get() = user.isBot
 
     override val isMfaEnabled: Boolean?
         get() = (user as? SelfUser)?.isMfaEnabled
 
-    override val locale: String?
-        get() = null // Not supported
-
-    override val flags: UserFlags?
+    override val flags: UserFlags
         get() = UserFlags(user.flagsRaw)
-
-    override val premiumType: PremiumType?
-        get() = null // Not supported
 
     companion object Transformer : KDPTransformer<JDAEngine, User, JDAUser> {
         override fun transform(kdp: KDP<JDAEngine>, input: User): JDAUser =

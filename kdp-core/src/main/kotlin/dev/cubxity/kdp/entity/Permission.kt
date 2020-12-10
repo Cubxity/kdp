@@ -18,7 +18,7 @@
 
 package dev.cubxity.kdp.entity
 
-enum class Permission(val code: Int) {
+enum class Permission(val code: Long) {
     CreateInstantInvite(0x00000001),
     KickMembers(0x00000002),
     BanMembers(0x00000004),
@@ -54,12 +54,12 @@ enum class Permission(val code: Int) {
 /**
  * A set of [permissions][Permission] in a guild.
  */
-inline class Permissions(val code: Int) {
+inline class Permissions(val code: Long) {
     val permissions: List<Permission>
         get() = Permission.values().filter { it in this }
 
     operator fun contains(permission: Permission): Boolean =
-        code and permission.code != 0
+        code and permission.code != 0L
 
     operator fun plus(permission: Permission): Permissions =
         Permissions(code or permission.code)

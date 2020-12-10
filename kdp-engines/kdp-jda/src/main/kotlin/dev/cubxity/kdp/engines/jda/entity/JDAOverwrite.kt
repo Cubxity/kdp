@@ -16,27 +16,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.engines.jda.entity
 
-import dev.cubxity.kdp.engine.KDPEngine
-import kotlinx.coroutines.flow.Flow
-import java.time.OffsetDateTime
+import dev.cubxity.kdp.KDP
+import dev.cubxity.kdp.engines.jda.JDAEngine
+import dev.cubxity.kdp.entity.Overwrite
+import dev.cubxity.kdp.entity.OverwriteType
+import dev.cubxity.kdp.entity.Permissions
+import dev.cubxity.kdp.entity.Snowflake
+import net.dv8tion.jda.api.entities.PermissionOverride
 
-interface Member<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+class JDAOverwrite(override val kdp: KDP<JDAEngine>, private val overwrite: PermissionOverride) : Overwrite<JDAEngine> {
     override val id: Snowflake
-        get() = user.id
+        get() = overwrite.snowflake
 
-    val user: User<TEngine>
+    override val type: OverwriteType
+        get() = if (overwrite.isMemberOverride) OverwriteType.Member else OverwriteType.Role
 
-    val nick: String?
+    override val allow: Permissions
+        get() = Permissions(overwrite.allowedRaw)
 
-    val roles: Flow<Role<TEngine>>
-
-    val joinedAt: OffsetDateTime
-
-    val premiumSince: String?
-
-    val isDeaf: Boolean
-
-    val isMute: Boolean
+    override val deny: Permissions
+        get() = Permissions(overwrite.deniedRaw)
 }

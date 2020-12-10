@@ -16,31 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+dependencies {
+    api(project(":kdp-core"))
+    api("dev.kord:kord-core:0.7.0-RC")
+}
 
-import dev.cubxity.kdp.KDPObject
-import dev.cubxity.kdp.engine.KDPEngine
-
-interface VoiceState<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
-    val guild: Guild<TEngine>?
-
-    val channel: GuildChannel<TEngine>?
-
-    val member: Member<TEngine>?
-
-    val sessionId: String?
-
-    val isDeaf: Boolean
-
-    val isMute: Boolean
-
-    val isSelfDeaf: Boolean
-
-    val isSelfMute: Boolean
-
-    val isSelfStream: Boolean?
-
-    val isSelfVideo: Boolean
-
-    val isSuppress: Boolean
+repositories {
+    maven("https://dl.bintray.com/kordlib/Kord")
 }

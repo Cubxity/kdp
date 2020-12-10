@@ -16,31 +16,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.engines.kord
 
-import dev.cubxity.kdp.KDPObject
-import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.engine.KDPEngineEnvironment
+import dev.cubxity.kdp.engine.KDPEngineFactory
 
-interface VoiceState<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
-    val guild: Guild<TEngine>?
-
-    val channel: GuildChannel<TEngine>?
-
-    val member: Member<TEngine>?
-
-    val sessionId: String?
-
-    val isDeaf: Boolean
-
-    val isMute: Boolean
-
-    val isSelfDeaf: Boolean
-
-    val isSelfMute: Boolean
-
-    val isSelfStream: Boolean?
-
-    val isSelfVideo: Boolean
-
-    val isSuppress: Boolean
+object Kord : KDPEngineFactory<KordEngine, KordEngine.Configuration> {
+    override fun create(
+        environment: KDPEngineEnvironment<KordEngine>,
+        configure: KordEngine.Configuration.() -> Unit
+    ): KordEngine = KordEngine(environment, configure)
 }

@@ -69,7 +69,7 @@ class JDAEngine(
             Intent.Guild -> null // Not supported
             Intent.GuildMembers -> GatewayIntent.GUILD_MEMBERS
             Intent.GuildBans -> GatewayIntent.GUILD_BANS
-            Intent.GuildEmoji -> GatewayIntent.GUILD_EMOJIS
+            Intent.GuildEmojis -> GatewayIntent.GUILD_EMOJIS
             Intent.GuildIntegrations, Intent.GuildWebhooks -> null // Unused
             Intent.GuildInvites -> GatewayIntent.GUILD_INVITES
             Intent.GuildVoiceStates -> GatewayIntent.GUILD_VOICE_STATES

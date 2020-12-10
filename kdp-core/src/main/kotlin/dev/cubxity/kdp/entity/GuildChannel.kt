@@ -20,10 +20,10 @@ package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.engine.KDPEngine
 
-interface Channel<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+interface GuildChannel<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
     val type: ChannelType
 
-    val guildId: Snowflake?
+    val guild: Guild<TEngine>
 
     val position: Int?
 
@@ -33,7 +33,7 @@ interface Channel<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
 
     val topic: String?
 
-    val isNsfw: Boolean?
+    val isNSFW: Boolean?
 
     val lastMessageId: Snowflake?
 
@@ -43,15 +43,9 @@ interface Channel<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
 
     val rateLimitPerUser: Int?
 
-    val recipients: List<User<TEngine>>?
-
-    val icon: Icon<TEngine>?
-
-    val ownerId: Snowflake?
-
     val applicationId: Snowflake?
 
-    val parentId: Snowflake?
+    val parent: GuildChannel<TEngine>?
 
     val lastPinTimestamp: String?
 }

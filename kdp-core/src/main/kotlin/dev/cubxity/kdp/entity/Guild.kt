@@ -21,6 +21,7 @@ package dev.cubxity.kdp.entity
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.engine.KDPEngine
+import kotlinx.coroutines.flow.Flow
 
 interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
     val name: String
@@ -49,11 +50,11 @@ interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
 
     val explicitContentFilter: ExplicitContentFilter
 
-    val roles: List<Role<TEngine>>
+    val roles: Flow<Role<TEngine>>
 
-    val emojis: List<Emoji<TEngine>>
+    val emojis: Flow<Emoji<TEngine>>
 
-    val features: List<GuildFeature>
+    val features: Set<GuildFeature>
 
     val mfaLevel: MFALevel
 
@@ -65,19 +66,15 @@ interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
 
     val rulesChannelId: Snowflake?
 
-    val joinedAt: String
-
-    val isLarge: Boolean?
-
     val isUnavailable: Boolean?
 
     val memberCount: Int?
 
-    val voiceStates: List<VoiceState<TEngine>>?
+    val voiceStates: Flow<VoiceState<TEngine>>
 
-    val members: List<Member<TEngine>>?
+    val members: Flow<Member<TEngine>>
 
-    val channels: List<Channel<TEngine>>?
+    val channels: Flow<GuildChannel<TEngine>>
 
     // presences
 
@@ -100,10 +97,6 @@ interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
     val publicUpdatesChannelId: Snowflake?
 
     val maxVideoChannelUsers: Int?
-
-    val approximateMemberCount: Int?
-
-    val approximatePresenceCount: Int?
 
     data class Splash<TEngine : KDPEngine<TEngine>>(
         override val kdp: KDP<TEngine>,

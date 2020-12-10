@@ -33,11 +33,7 @@ interface User<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
 
     val isMfaEnabled: Boolean?
 
-    val locale: String?
-
     val flags: UserFlags?
-
-    val premiumType: PremiumType?
 
     data class Avatar<TEngine : KDPEngine<TEngine>>(
         override val kdp: KDP<TEngine>,

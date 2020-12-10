@@ -26,7 +26,7 @@ enum class Intent(val code: Int) {
     Guild(1 shl 0),
     GuildMembers(1 shl 1),
     GuildBans(1 shl 2),
-    GuildEmoji(1 shl 3),
+    GuildEmojis(1 shl 3),
     GuildIntegrations(1 shl 4),
     GuildWebhooks(1 shl 5),
     GuildInvites(1 shl 6),

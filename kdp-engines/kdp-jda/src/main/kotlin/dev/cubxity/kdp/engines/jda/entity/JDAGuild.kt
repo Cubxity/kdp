@@ -21,6 +21,9 @@ package dev.cubxity.kdp.engines.jda.entity
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.entity.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
 import net.dv8tion.jda.api.entities.Guild
 import dev.cubxity.kdp.entity.Guild as KDPGuild
 
@@ -67,17 +70,39 @@ class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDP
     override val explicitContentFilter: ExplicitContentFilter
         get() = mapExplicitContentFilter()
 
-    override val roles: List<Role<JDAEngine>>
-        get() = TODO("Not yet implemented")
+    override val roles: Flow<JDARole>
+        get() = guild.roleCache.asFlow().map { JDARole(kdp, it) }
 
-    override val emojis: List<Emoji<JDAEngine>>
-        get() = TODO("Not yet implemented")
+    override val emojis: Flow<JDAEmoji>
+        get() = guild.emoteCache.asFlow().map { JDAEmoji(kdp, it) }
 
-    override val features: List<GuildFeature>
-        get() = TODO("Not yet implemented")
+    override val features: Set<GuildFeature>
+        get() = guild.features.mapNotNull {
+            when (it) {
+                "INVITE_SPLASH" -> GuildFeature.InviteSplash
+                "VIP_REGIONS" -> GuildFeature.VIPRegions
+                "VANITY_URL" -> GuildFeature.VanityUrl
+                "VERIFIED" -> GuildFeature.Verified
+                "PARTNERED" -> GuildFeature.Partnered
+                "PUBLIC" -> GuildFeature.Public
+                "COMMERCE" -> GuildFeature.Commerce
+                "NEWS" -> GuildFeature.News
+                "DISCOVERABLE" -> GuildFeature.Discoverable
+                "FEATURABLE" -> GuildFeature.Featureable
+                "ANIMATED_ICON" -> GuildFeature.AnimatedIcon
+                "BANNER" -> GuildFeature.Banner
+                "PUBLIC_DISABLED" -> GuildFeature.PublicDisabled
+                "WELCOME_SCREEN_ENABLED" -> GuildFeature.WelcomeScreenEnabled
+                else -> null
+            }
+        }.toSet()
 
     override val mfaLevel: MFALevel
-        get() = TODO("Not yet implemented")
+        get() = when (guild.requiredMFALevel) {
+            Guild.MFALevel.NONE -> MFALevel.None
+            Guild.MFALevel.TWO_FACTOR_AUTH -> MFALevel.Elevated
+            Guild.MFALevel.UNKNOWN -> error("Unknown MFA level")
+        }
 
     override val applicationId: Snowflake?
         get() = null // Not supported
@@ -89,45 +114,52 @@ class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDP
         get() = TODO("Not yet implemented")
 
     override val rulesChannelId: Snowflake?
-        get() = TODO("Not yet implemented")
-    override val joinedAt: String
-        get() = TODO("Not yet implemented")
-    override val isLarge: Boolean?
-        get() = TODO("Not yet implemented")
-    override val isUnavailable: Boolean?
-        get() = TODO("Not yet implemented")
-    override val memberCount: Int?
-        get() = TODO("Not yet implemented")
-    override val voiceStates: List<VoiceState<JDAEngine>>?
-        get() = TODO("Not yet implemented")
-    override val members: List<Member<JDAEngine>>?
-        get() = TODO("Not yet implemented")
-    override val channels: List<Channel<JDAEngine>>?
-        get() = TODO("Not yet implemented")
-    override val maxPresences: Int?
-        get() = TODO("Not yet implemented")
-    override val maxMembers: Int?
-        get() = TODO("Not yet implemented")
+        get() = null // Not supported
+
+    override val isUnavailable: Boolean
+        get() = guild.jda.isUnavailable(guild.idLong)
+
+    override val memberCount: Int
+        get() = guild.memberCount
+
+    override val voiceStates: Flow<JDAVoiceState>
+        get() = guild.voiceStates.asFlow().map { JDAVoiceState(kdp, it) }
+
+    override val members: Flow<JDAMember>
+        get() = guild.memberCache.asFlow().map { JDAMember(kdp, it) }
+
+    override val channels: Flow<JDAGuildChannel>
+        get() = guild.channels.asFlow().map { JDAGuildChannel(kdp, it) }
+
+    override val maxPresences: Int
+        get() = guild.maxPresences
+
+    override val maxMembers: Int
+        get() = guild.maxMembers
+
     override val vanityUrlCode: String?
-        get() = TODO("Not yet implemented")
+        get() = guild.vanityCode
+
     override val description: String?
+        get() = guild.description
+
+    override val banner: KDPGuild.Banner<JDAEngine>?
         get() = TODO("Not yet implemented")
-    override val banner: dev.cubxity.kdp.entity.Guild.Banner<JDAEngine>?
-        get() = TODO("Not yet implemented")
+
     override val premiumTier: Int
-        get() = TODO("Not yet implemented")
-    override val premiumSubscriptionCount: Int?
-        get() = TODO("Not yet implemented")
+        get() = guild.boostTier.ordinal
+
+    override val premiumSubscriptionCount: Int
+        get() = guild.boostCount
+
     override val preferredLocale: String
-        get() = TODO("Not yet implemented")
+        get() = guild.locale.toLanguageTag()
+
     override val publicUpdatesChannelId: Snowflake?
-        get() = TODO("Not yet implemented")
+        get() = null // Not supported
+
     override val maxVideoChannelUsers: Int?
-        get() = TODO("Not yet implemented")
-    override val approximateMemberCount: Int?
-        get() = TODO("Not yet implemented")
-    override val approximatePresenceCount: Int?
-        get() = TODO("Not yet implemented")
+        get() = null // Not supported
 
     private fun mapVerificationLevel(): VerificationLevel = when (guild.verificationLevel) {
         Guild.VerificationLevel.NONE -> VerificationLevel.None
