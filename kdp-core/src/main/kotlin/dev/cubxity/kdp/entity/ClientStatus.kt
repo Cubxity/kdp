@@ -21,22 +21,22 @@ package dev.cubxity.kdp.entity
 import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.engine.KDPEngine
 
-/**
- * Represents an entity that's identified by it's [id].
- */
-interface Entity<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine>, Comparable<Entity<*>> {
-    /**
-     * The unique identifier of this entity.
-     */
-    val id: Snowflake
+interface ClientStatus<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
+    val desktop: Client.Desktop?
+    val mobile: Client.Mobile?
+    val web: Client.Web?
 
-    /**
-     * Compares entities on [id].
-     */
-    override operator fun compareTo(other: Entity<*>): Int =
-        comparator.compare(this, other)
-
-    companion object {
-        private val comparator = compareBy<Entity<*>> { it.id }
+    sealed class Client(val status: Status) {
+        class Desktop(status: Status) : Client(status)
+        class Mobile(status: Status) : Client(status)
+        class Web(status: Status) : Client(status)
     }
+}
+
+enum class Status {
+    Online,
+    DnD,
+    Idle,
+    Invisible,
+    Offline
 }

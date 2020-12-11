@@ -16,27 +16,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.event
 
-import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.Member
+import dev.cubxity.kdp.entity.Presence
 
-/**
- * Represents an entity that's identified by it's [id].
- */
-interface Entity<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine>, Comparable<Entity<*>> {
-    /**
-     * The unique identifier of this entity.
-     */
-    val id: Snowflake
+interface UserUpdateEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
+    val member: Member<TEngine>
 
-    /**
-     * Compares entities on [id].
-     */
-    override operator fun compareTo(other: Entity<*>): Int =
-        comparator.compare(this, other)
-
-    companion object {
-        private val comparator = compareBy<Entity<*>> { it.id }
-    }
+    val oldPresence: Presence<TEngine>
 }

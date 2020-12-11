@@ -82,20 +82,20 @@ inline class UserFlags(val code: Int) {
     val flags: List<UserFlag>
         get() = UserFlag.values().filter { it in this }
 
-    operator fun contains(intent: UserFlag): Boolean =
-        code and intent.code != 0
+    operator fun contains(flag: UserFlag): Boolean =
+        code and flag.code != 0
 
-    operator fun plus(intent: UserFlag): UserFlags =
-        UserFlags(code or intent.code)
+    operator fun plus(flag: UserFlag): UserFlags =
+        UserFlags(code or flag.code)
 
-    operator fun plus(intents: UserFlags): UserFlags =
-        UserFlags(code or intents.code)
+    operator fun plus(flags: UserFlags): UserFlags =
+        UserFlags(code or flags.code)
 
-    operator fun minus(intent: UserFlag): UserFlags =
-        UserFlags(code xor intent.code)
+    operator fun minus(flag: UserFlag): UserFlags =
+        UserFlags(code xor flag.code)
 
-    operator fun minus(intents: UserFlags): UserFlags =
-        UserFlags(code xor intents.code)
+    operator fun minus(flags: UserFlags): UserFlags =
+        UserFlags(code xor flags.code)
 }
 
 enum class PremiumType(val code: Int) {
