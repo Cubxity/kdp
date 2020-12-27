@@ -77,32 +77,10 @@ class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDP
         get() = guild.emoteCache.asFlow().map { JDAEmoji(kdp, it) }
 
     override val features: Set<GuildFeature>
-        get() = guild.features.mapNotNull {
-            when (it) {
-                "INVITE_SPLASH" -> GuildFeature.InviteSplash
-                "VIP_REGIONS" -> GuildFeature.VIPRegions
-                "VANITY_URL" -> GuildFeature.VanityUrl
-                "VERIFIED" -> GuildFeature.Verified
-                "PARTNERED" -> GuildFeature.Partnered
-                "PUBLIC" -> GuildFeature.Public
-                "COMMERCE" -> GuildFeature.Commerce
-                "NEWS" -> GuildFeature.News
-                "DISCOVERABLE" -> GuildFeature.Discoverable
-                "FEATURABLE" -> GuildFeature.Featureable
-                "ANIMATED_ICON" -> GuildFeature.AnimatedIcon
-                "BANNER" -> GuildFeature.Banner
-                "PUBLIC_DISABLED" -> GuildFeature.PublicDisabled
-                "WELCOME_SCREEN_ENABLED" -> GuildFeature.WelcomeScreenEnabled
-                else -> null
-            }
-        }.toSet()
+        get() = mapFeatures()
 
     override val mfaLevel: MFALevel
-        get() = when (guild.requiredMFALevel) {
-            Guild.MFALevel.NONE -> MFALevel.None
-            Guild.MFALevel.TWO_FACTOR_AUTH -> MFALevel.Elevated
-            Guild.MFALevel.UNKNOWN -> error("Unknown MFA level")
-        }
+        get() = mapMFALevel()
 
     override val applicationId: Snowflake?
         get() = null // Not supported
@@ -144,7 +122,7 @@ class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDP
         get() = guild.description
 
     override val banner: KDPGuild.Banner<JDAEngine>?
-        get() = TODO("Not yet implemented")
+        get() = guild.bannerId?.let { KDPGuild.Banner(kdp, this, it) }
 
     override val premiumTier: Int
         get() = guild.boostTier.ordinal
@@ -181,5 +159,31 @@ class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDP
         Guild.ExplicitContentLevel.NO_ROLE -> ExplicitContentFilter.MembersWithoutRoles
         Guild.ExplicitContentLevel.ALL -> ExplicitContentFilter.AllMembers
         Guild.ExplicitContentLevel.UNKNOWN -> TODO()
+    }
+
+    private fun mapFeatures(): Set<GuildFeature> = guild.features.mapNotNull {
+        when (it) {
+            "INVITE_SPLASH" -> GuildFeature.InviteSplash
+            "VIP_REGIONS" -> GuildFeature.VIPRegions
+            "VANITY_URL" -> GuildFeature.VanityUrl
+            "VERIFIED" -> GuildFeature.Verified
+            "PARTNERED" -> GuildFeature.Partnered
+            "PUBLIC" -> GuildFeature.Public
+            "COMMERCE" -> GuildFeature.Commerce
+            "NEWS" -> GuildFeature.News
+            "DISCOVERABLE" -> GuildFeature.Discoverable
+            "FEATURABLE" -> GuildFeature.Featureable
+            "ANIMATED_ICON" -> GuildFeature.AnimatedIcon
+            "BANNER" -> GuildFeature.Banner
+            "PUBLIC_DISABLED" -> GuildFeature.PublicDisabled
+            "WELCOME_SCREEN_ENABLED" -> GuildFeature.WelcomeScreenEnabled
+            else -> null
+        }
+    }.toSet()
+
+    private fun mapMFALevel(): MFALevel = when (guild.requiredMFALevel) {
+        Guild.MFALevel.NONE -> MFALevel.None
+        Guild.MFALevel.TWO_FACTOR_AUTH -> MFALevel.Elevated
+        Guild.MFALevel.UNKNOWN -> error("Unknown MFA level")
     }
 }

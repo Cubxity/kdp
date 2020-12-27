@@ -39,7 +39,7 @@ class JDARole(override val kdp: KDP<JDAEngine>, private val role: Role) : KDPRol
         get() = role.isHoisted
 
     override val position: Int
-        get() = role.positionRaw
+        get() = role.position
 
     override val permissions: Permissions
         get() = Permissions(role.permissionsRaw)

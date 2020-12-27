@@ -20,16 +20,15 @@ package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.engines.jda.JDAEngine
-import dev.cubxity.kdp.entity.Emoji
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.entity.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map
 import net.dv8tion.jda.api.entities.Emote
-import net.dv8tion.jda.api.entities.ListedEmote
+import dev.cubxity.kdp.entity.Emoji as KDPEmoji
 
-class JDAEmoji(override val kdp: KDP<JDAEngine>, private val emote: Emote) : Emoji<JDAEngine> {
+class JDAEmoji(override val kdp: KDP<JDAEngine>, private val emote: Emote) : KDPEmoji<JDAEngine> {
     override val id: Snowflake
         get() = emote.snowflake
 
@@ -39,11 +38,11 @@ class JDAEmoji(override val kdp: KDP<JDAEngine>, private val emote: Emote) : Emo
     override val roles: Flow<JDARole>
         get() = emote.roles.asFlow().map { JDARole(kdp, it) }
 
-    override val user: User<JDAEngine>?
-        get() = (emote as? ListedEmote)?.let { JDAUser(kdp, it.user) }
+    override val user: User<JDAEngine>
+        get() = TODO() // Not supported
 
     override val isRequireColons: Boolean
-        get() = true // not supported
+        get() = true // Not supported
 
     override val isManaged: Boolean
         get() = emote.isManaged

@@ -34,15 +34,7 @@ class JDAGuildChannel(override val kdp: KDP<JDAEngine>, private val channel: Gui
         get() = channel.snowflake
 
     override val type: KDPChannelType
-        get() = when (channel.type) {
-            ChannelType.TEXT -> KDPChannelType.GuildText
-            ChannelType.PRIVATE -> KDPChannelType.DM
-            ChannelType.VOICE -> KDPChannelType.GuildVoice
-            ChannelType.GROUP -> KDPChannelType.GroupDm
-            ChannelType.CATEGORY -> KDPChannelType.GuildCategory
-            ChannelType.STORE -> KDPChannelType.GuildStore
-            ChannelType.UNKNOWN -> TODO()
-        }
+        get() = mapType()
 
     override val guild: Guild<JDAEngine>
         get() = JDAGuild(kdp, channel.guild)
@@ -82,4 +74,14 @@ class JDAGuildChannel(override val kdp: KDP<JDAEngine>, private val channel: Gui
 
     override val lastPinTimestamp: String?
         get() = null // Not supported
+
+    private fun mapType(): KDPChannelType = when (channel.type) {
+        ChannelType.TEXT -> KDPChannelType.GuildText
+        ChannelType.PRIVATE -> KDPChannelType.DM
+        ChannelType.VOICE -> KDPChannelType.GuildVoice
+        ChannelType.GROUP -> KDPChannelType.GroupDm
+        ChannelType.CATEGORY -> KDPChannelType.GuildCategory
+        ChannelType.STORE -> KDPChannelType.GuildStore
+        ChannelType.UNKNOWN -> TODO()
+    }
 }

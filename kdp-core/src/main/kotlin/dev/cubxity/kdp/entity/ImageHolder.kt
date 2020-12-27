@@ -24,14 +24,14 @@ package dev.cubxity.kdp.entity
 interface ImageHolder {
     val id: String?
 
-    operator fun get(format: ImageFormat): String
+    operator fun get(format: ImageFormat = ImageFormat.PNG): String
 }
 
 inline val ImageHolder.isAnimated: Boolean
     get() = id?.startsWith("a_") == true
 
 inline val ImageHolder.url: String
-    get() = if (isAnimated) this[ImageFormat.GIF] else this[ImageFormat.PNG]
+    get() = if (isAnimated) this[ImageFormat.GIF] else get()
 
 enum class ImageFormat(val extension: String) {
     JPEG("jpeg"),
