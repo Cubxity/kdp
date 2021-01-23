@@ -22,5 +22,5 @@ dependencies {
 }
 
 repositories {
-    maven("https://dl.bintray.com/kordlib/Kord")
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
