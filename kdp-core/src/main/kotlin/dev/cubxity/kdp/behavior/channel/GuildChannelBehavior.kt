@@ -16,28 +16,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.behavior.channel
 
-import dev.cubxity.kdp.behavior.MemberBehavior
+import dev.cubxity.kdp.behavior.GuildBehavior
 import dev.cubxity.kdp.engine.KDPEngine
-import kotlinx.coroutines.flow.Flow
-import java.time.OffsetDateTime
+import dev.cubxity.kdp.entity.Guild
+import dev.cubxity.kdp.entity.Snowflake
+import dev.cubxity.kdp.entity.channel.GuildChannel
+import dev.cubxity.kdp.exception.channelNotFound
+import dev.cubxity.kdp.exception.guildNotFound
 
-interface Member<TEngine : KDPEngine<TEngine>> : MemberBehavior<TEngine> {
-    override val id: Snowflake
-        get() = user.id
+interface GuildChannelBehavior<TEngine : KDPEngine<TEngine>> : ChannelBehavior<TEngine> {
+    val guildId: Snowflake
 
-    val user: User<TEngine>
+    val guild: GuildBehavior<TEngine>
 
-    val nick: String?
+    override suspend fun asChannel(): GuildChannel<TEngine> =
+        asChannelOrNull() ?: channelNotFound(id)
 
-    val roles: Flow<Role<TEngine>>
+    override suspend fun asChannelOrNull(): GuildChannel<TEngine>?
 
-    val joinedAt: OffsetDateTime
+    suspend fun getGuild(): Guild<TEngine> =
+        getGuildOrNull() ?: guildNotFound(id)
 
-    val premiumSince: String?
-
-    val isDeaf: Boolean
-
-    val isMute: Boolean
+    suspend fun getGuildOrNull(): Guild<TEngine>?
 }

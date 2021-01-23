@@ -20,15 +20,57 @@ package dev.cubxity.kdp.engines.jda.entity.channel
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.engines.jda.JDAEngine
-import dev.cubxity.kdp.entity.Message
-import dev.cubxity.kdp.entity.channel.KDPMessageChannel
+import dev.cubxity.kdp.engines.jda.entity.JDAMessage
+import dev.cubxity.kdp.engines.jda.entity.snowflake
+import dev.cubxity.kdp.engines.jda.util.await
+import dev.cubxity.kdp.engines.jda.util.awaitOrNull
+import dev.cubxity.kdp.entity.Snowflake
+import dev.cubxity.kdp.exception.channelNotFound
+import dev.cubxity.kdp.exception.messageNotFound
 import kotlinx.coroutines.flow.Flow
 import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
+import dev.cubxity.kdp.entity.channel.GuildMessageChannel as KDPGuildMessageChannel
 
 class JDAGuildMessageChannel(
     kdp: KDP<JDAEngine>,
-    channel: TextChannel
-) : JDAGuildChannel(kdp, channel), KDPMessageChannel<JDAEngine> {
-    override val messages: Flow<Message<JDAEngine>>
+    private val channel: TextChannel
+) : JDAGuildChannel(kdp, channel), KDPGuildMessageChannel<JDAEngine> {
+    override val guildId: Snowflake
+        get() = channel.guild.snowflake
+
+    override val messages: Flow<JDAMessage>
         get() = TODO("Not yet implemented")
+
+    override suspend fun getMessage(messageId: Snowflake): JDAMessage {
+        try {
+            return JDAMessage(kdp, channel.retrieveMessageById(messageId.value).await())
+        } catch (exception: ErrorResponseException) {
+            throw when (exception.errorResponse) {
+                ErrorResponse.UNKNOWN_CHANNEL -> channelNotFound(id)
+                ErrorResponse.UNKNOWN_MESSAGE -> messageNotFound(id, messageId)
+                else -> exception
+            }
+        }
+    }
+
+    override suspend fun getMessageOrNull(messageId: Snowflake): JDAMessage? =
+        channel.retrieveMessageById(messageId.value).awaitOrNull()?.let { JDAMessage(kdp, it) }
+
+    override suspend fun deleteMessage(messageId: Snowflake) {
+        try {
+            channel.deleteMessageById(messageId.value).await()
+        } catch (exception: ErrorResponseException) {
+            throw when (exception.errorResponse) {
+                ErrorResponse.UNKNOWN_CHANNEL -> channelNotFound(id)
+                ErrorResponse.UNKNOWN_MESSAGE -> messageNotFound(id, messageId)
+                else -> exception
+            }
+        }
+    }
+
+    override suspend fun triggerTyping() {
+        channel.sendTyping().await()
+    }
 }

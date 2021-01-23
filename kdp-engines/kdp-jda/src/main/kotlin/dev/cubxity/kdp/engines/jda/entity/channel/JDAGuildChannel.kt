@@ -23,7 +23,7 @@ import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.JDAGuild
 import dev.cubxity.kdp.engines.jda.entity.JDAOverwrite
 import dev.cubxity.kdp.engines.jda.entity.snowflake
-import dev.cubxity.kdp.entity.Guild
+import dev.cubxity.kdp.engines.jda.util.await
 import dev.cubxity.kdp.entity.Snowflake
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.GuildChannel
@@ -42,7 +42,10 @@ open class JDAGuildChannel(
     override val type: KDPChannelType
         get() = mapType()
 
-    override val guild: Guild<JDAEngine>
+    override val guildId: Snowflake
+        get() = channel.guild.snowflake
+
+    override val guild: JDAGuild
         get() = JDAGuild(kdp, channel.guild)
 
     override val position: Int
@@ -80,6 +83,14 @@ open class JDAGuildChannel(
 
     override val lastPinTimestamp: String?
         get() = null // Not supported
+
+    override suspend fun getGuild(): JDAGuild = guild
+
+    override suspend fun getGuildOrNull(): JDAGuild = guild
+
+    override suspend fun delete() {
+        channel.delete().await()
+    }
 
     private fun mapType(): KDPChannelType = when (channel.type) {
         ChannelType.TEXT -> KDPChannelType.GuildText

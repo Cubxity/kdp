@@ -16,19 +16,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.demo
+package dev.cubxity.kdp.behavior
 
-import dev.cubxity.kdp.engine.on
-import dev.cubxity.kdp.engines.jda.JDA
-import dev.cubxity.kdp.event.message.MessageCreateEvent
-import dev.cubxity.kdp.kdp
+import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.MentionableEntity
+import dev.cubxity.kdp.entity.User
+import dev.cubxity.kdp.exception.userNotFound
 
-suspend fun main() {
-    val token = System.getenv("TOKEN") ?: error("Please specify TOKEN as an environment variable")
+interface UserBehavior<TEngine : KDPEngine<TEngine>> : MentionableEntity<TEngine> {
+    override val mention: String get() = "<@${id}>"
 
-    kdp(JDA, token) {
-        engine.on<MessageCreateEvent<*>> {
-            println("${message.author.username}: ${message.content}")
-        }
-    }.login()
+    suspend fun asUser(): User<TEngine> =
+        asUserOrNull() ?: userNotFound(id)
+
+    suspend fun asUserOrNull(): User<TEngine>?
 }

@@ -16,19 +16,16 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.demo
+package dev.cubxity.kdp.behavior.channel
 
-import dev.cubxity.kdp.engine.on
-import dev.cubxity.kdp.engines.jda.JDA
-import dev.cubxity.kdp.event.message.MessageCreateEvent
-import dev.cubxity.kdp.kdp
+import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.channel.GuildMessageChannel
+import dev.cubxity.kdp.exception.channelNotFound
 
-suspend fun main() {
-    val token = System.getenv("TOKEN") ?: error("Please specify TOKEN as an environment variable")
+interface GuildMessageChannelBehavior<TEngine : KDPEngine<TEngine>> :
+    GuildChannelBehavior<TEngine>, MessageChannelBehavior<TEngine> {
+    override suspend fun asChannel(): GuildMessageChannel<TEngine> =
+        asChannelOrNull() ?: channelNotFound(id)
 
-    kdp(JDA, token) {
-        engine.on<MessageCreateEvent<*>> {
-            println("${message.author.username}: ${message.content}")
-        }
-    }.login()
+    override suspend fun asChannelOrNull(): GuildMessageChannel<TEngine>?
 }

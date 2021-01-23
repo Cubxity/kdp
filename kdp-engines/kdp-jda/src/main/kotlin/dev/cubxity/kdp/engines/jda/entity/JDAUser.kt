@@ -52,4 +52,8 @@ class JDAUser(override val kdp: KDP<JDAEngine>, private val user: User) : KDPUse
 
     override val flags: UserFlags
         get() = UserFlags(user.flagsRaw)
+
+    override suspend fun asUser(): JDAUser = this
+
+    override suspend fun asUserOrNull(): JDAUser = this
 }

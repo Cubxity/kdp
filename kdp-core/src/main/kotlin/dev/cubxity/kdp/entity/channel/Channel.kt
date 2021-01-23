@@ -18,9 +18,13 @@
 
 package dev.cubxity.kdp.entity.channel
 
+import dev.cubxity.kdp.behavior.channel.ChannelBehavior
 import dev.cubxity.kdp.engine.KDPEngine
-import dev.cubxity.kdp.entity.Entity
 
-interface Channel<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+interface Channel<TEngine : KDPEngine<TEngine>> : ChannelBehavior<TEngine> {
     val type: ChannelType
+
+    override suspend fun asChannel(): Channel<TEngine> = this
+
+    override suspend fun asChannelOrNull(): Channel<TEngine> = this
 }

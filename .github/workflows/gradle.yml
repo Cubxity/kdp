@@ -1,8 +1,8 @@
-name: Java CI
+name: gradle-ci
 on: [ push ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -14,4 +14,4 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon
+        run: ./gradlew test --no-daemon

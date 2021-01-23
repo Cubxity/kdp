@@ -40,3 +40,7 @@ interface Entity<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine>, Comparable<
         private val comparator = compareBy<Entity<*>> { it.id }
     }
 }
+
+interface MentionableEntity<TEngine: KDPEngine<TEngine>> : Entity<TEngine> {
+    val mention: String
+}

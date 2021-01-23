@@ -23,10 +23,9 @@ import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.JDAGuild
 import dev.cubxity.kdp.engines.jda.entity.JDAMember
 import dev.cubxity.kdp.engines.jda.entity.JDAMessage
+import dev.cubxity.kdp.engines.jda.entity.snowflake
 import dev.cubxity.kdp.engines.jda.event.shard
-import dev.cubxity.kdp.entity.Guild
-import dev.cubxity.kdp.entity.Member
-import dev.cubxity.kdp.entity.Message
+import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.event.message.MessageCreateEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 
@@ -37,12 +36,17 @@ class JDAGuildMessageReceivedEvent(
     override val shard: Int
         get() = event.shard
 
-    override val message: Message<JDAEngine>
+    override val message: JDAMessage
         get() = JDAMessage(kdp, event.message)
 
-    override val guild: Guild<JDAEngine>
+    override val guildId: Snowflake
+        get() = event.guild.snowflake
+
+    override val guild: JDAGuild
         get() = JDAGuild(kdp, event.guild)
 
-    override val member: Member<JDAEngine>?
+    override val member: JDAMember?
         get() = event.member?.let { JDAMember(kdp, it) }
+
+    override suspend fun getGuild(): JDAGuild = guild
 }

@@ -23,7 +23,7 @@ import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildMessageChannel
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.entity.User
-import dev.cubxity.kdp.entity.channel.KDPMessageChannel
+import dev.cubxity.kdp.entity.channel.MessageChannel
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import dev.cubxity.kdp.entity.Message as KDPMessage
@@ -32,7 +32,10 @@ class JDAMessage(override val kdp: KDP<JDAEngine>, private val message: Message)
     override val id: Snowflake
         get() = message.snowflake
 
-    override val channel: KDPMessageChannel<JDAEngine>
+    override val channelId: Snowflake
+        get() = message.channel.snowflake
+
+    override val channel: MessageChannel<JDAEngine>
         get() = when (val channel = message.channel) {
             is TextChannel -> JDAGuildMessageChannel(kdp, channel)
             else -> TODO("Not yet implemented")
@@ -43,4 +46,12 @@ class JDAMessage(override val kdp: KDP<JDAEngine>, private val message: Message)
 
     override val content: String
         get() = message.contentRaw
+
+    override suspend fun getChannel() = channel
+
+    override suspend fun getChannelOrNull() = channel
+
+    override suspend fun asMessage(): JDAMessage = this
+
+    override suspend fun asMessageOrNull(): JDAMessage = this
 }

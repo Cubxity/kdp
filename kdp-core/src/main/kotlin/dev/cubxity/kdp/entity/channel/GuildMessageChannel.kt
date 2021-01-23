@@ -18,10 +18,12 @@
 
 package dev.cubxity.kdp.entity.channel
 
+import dev.cubxity.kdp.behavior.channel.GuildMessageChannelBehavior
 import dev.cubxity.kdp.engine.KDPEngine
-import dev.cubxity.kdp.entity.Message
-import kotlinx.coroutines.flow.Flow
 
-interface KDPMessageChannel<TEngine : KDPEngine<TEngine>> : Channel<TEngine> {
-    val messages: Flow<Message<TEngine>>
+interface GuildMessageChannel<TEngine : KDPEngine<TEngine>>
+    : GuildChannel<TEngine>, MessageChannel<TEngine>, GuildMessageChannelBehavior<TEngine> {
+    override suspend fun asChannel(): GuildMessageChannel<TEngine> = this
+
+    override suspend fun asChannelOrNull(): GuildMessageChannel<TEngine> = this
 }

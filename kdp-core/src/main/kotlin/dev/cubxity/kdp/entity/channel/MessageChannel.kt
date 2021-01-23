@@ -16,19 +16,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.demo
+package dev.cubxity.kdp.entity.channel
 
-import dev.cubxity.kdp.engine.on
-import dev.cubxity.kdp.engines.jda.JDA
-import dev.cubxity.kdp.event.message.MessageCreateEvent
-import dev.cubxity.kdp.kdp
+import dev.cubxity.kdp.behavior.channel.MessageChannelBehavior
+import dev.cubxity.kdp.engine.KDPEngine
 
-suspend fun main() {
-    val token = System.getenv("TOKEN") ?: error("Please specify TOKEN as an environment variable")
-
-    kdp(JDA, token) {
-        engine.on<MessageCreateEvent<*>> {
-            println("${message.author.username}: ${message.content}")
-        }
-    }.login()
-}
+interface MessageChannel<TEngine : KDPEngine<TEngine>> : Channel<TEngine>, MessageChannelBehavior<TEngine>

@@ -20,9 +20,10 @@ package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPObject
+import dev.cubxity.kdp.behavior.UserBehavior
 import dev.cubxity.kdp.engine.KDPEngine
 
-interface User<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+interface User<TEngine : KDPEngine<TEngine>> : UserBehavior<TEngine> {
     val username: String
 
     val discriminator: String

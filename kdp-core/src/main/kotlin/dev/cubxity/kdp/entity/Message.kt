@@ -18,12 +18,11 @@
 
 package dev.cubxity.kdp.entity
 
+import dev.cubxity.kdp.behavior.MessageBehavior
 import dev.cubxity.kdp.engine.KDPEngine
-import dev.cubxity.kdp.entity.channel.KDPMessageChannel
+import dev.cubxity.kdp.entity.channel.MessageChannel
 
-interface Message<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
-    val channel: KDPMessageChannel<TEngine>
-
+interface Message<TEngine : KDPEngine<TEngine>> : MessageBehavior<TEngine> {
     val author: User<TEngine>
 
     val content: String

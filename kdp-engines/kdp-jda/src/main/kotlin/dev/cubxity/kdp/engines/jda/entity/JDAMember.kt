@@ -19,8 +19,10 @@
 package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
+import dev.cubxity.kdp.behavior.GuildBehavior
 import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.entity.Role
+import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.entity.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -30,6 +32,12 @@ import java.time.OffsetDateTime
 import dev.cubxity.kdp.entity.Member as KDPMember
 
 class JDAMember(override val kdp: KDP<JDAEngine>, private val member: Member) : KDPMember<JDAEngine> {
+    override val guildId: Snowflake
+        get() = member.guild.snowflake
+
+    override val guild: GuildBehavior<JDAEngine>
+        get() = JDAGuild(kdp, member.guild)
+
     override val user: User<JDAEngine>
         get() = JDAUser(kdp, member.user)
 
@@ -50,4 +58,12 @@ class JDAMember(override val kdp: KDP<JDAEngine>, private val member: Member) : 
 
     override val isMute: Boolean
         get() = member.voiceState?.isMuted == true
+
+    override suspend fun asMember(): JDAMember = this
+
+    override suspend fun asMemberOrNull(): JDAMember = this
+
+    override suspend fun asUser(): JDAUser = JDAUser(kdp, member.user)
+
+    override suspend fun asUserOrNull(): JDAUser = JDAUser(kdp, member.user)
 }

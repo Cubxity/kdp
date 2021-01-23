@@ -16,19 +16,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.demo
+package dev.cubxity.kdp.behavior.channel
 
-import dev.cubxity.kdp.engine.on
-import dev.cubxity.kdp.engines.jda.JDA
-import dev.cubxity.kdp.event.message.MessageCreateEvent
-import dev.cubxity.kdp.kdp
+import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.Message
+import dev.cubxity.kdp.entity.Snowflake
+import dev.cubxity.kdp.exception.messageNotFound
+import kotlinx.coroutines.flow.Flow
 
-suspend fun main() {
-    val token = System.getenv("TOKEN") ?: error("Please specify TOKEN as an environment variable")
+interface MessageChannelBehavior<TEngine : KDPEngine<TEngine>> : ChannelBehavior<TEngine> {
+    val messages: Flow<Message<TEngine>>
 
-    kdp(JDA, token) {
-        engine.on<MessageCreateEvent<*>> {
-            println("${message.author.username}: ${message.content}")
-        }
-    }.login()
+    suspend fun getMessage(messageId: Snowflake): Message<TEngine> =
+        getMessageOrNull(messageId) ?: messageNotFound(id, messageId)
+
+    suspend fun getMessageOrNull(messageId: Snowflake): Message<TEngine>?
+
+    suspend fun deleteMessage(messageId: Snowflake)
+
+    suspend fun triggerTyping()
 }

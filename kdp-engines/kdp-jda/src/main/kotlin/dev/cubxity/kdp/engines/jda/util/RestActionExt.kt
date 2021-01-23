@@ -16,19 +16,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.demo
+package dev.cubxity.kdp.engines.jda.util
 
-import dev.cubxity.kdp.engine.on
-import dev.cubxity.kdp.engines.jda.JDA
-import dev.cubxity.kdp.event.message.MessageCreateEvent
-import dev.cubxity.kdp.kdp
+import kotlinx.coroutines.future.await
+import net.dv8tion.jda.api.requests.RestAction
 
-suspend fun main() {
-    val token = System.getenv("TOKEN") ?: error("Please specify TOKEN as an environment variable")
+suspend inline fun <T> RestAction<T>.await(): T =
+    submit().await()
 
-    kdp(JDA, token) {
-        engine.on<MessageCreateEvent<*>> {
-            println("${message.author.username}: ${message.content}")
-        }
-    }.login()
-}
+suspend inline fun <T> RestAction<T>.awaitOrNull(): T? =
+    runCatching { submit().await() }.getOrNull()

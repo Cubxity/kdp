@@ -21,11 +21,18 @@ package dev.cubxity.kdp.engines.jda.entity
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildChannel
+import dev.cubxity.kdp.engines.jda.util.await
+import dev.cubxity.kdp.engines.jda.util.awaitOrNull
 import dev.cubxity.kdp.entity.*
+import dev.cubxity.kdp.exception.memberNotFound
+import dev.cubxity.kdp.exception.roleNotFound
+import dev.cubxity.kdp.exception.userNotFound
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import dev.cubxity.kdp.entity.Guild as KDPGuild
 
 class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDPGuild<JDAEngine> {
@@ -140,26 +147,51 @@ class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDP
     override val maxVideoChannelUsers: Int?
         get() = null // Not supported
 
+    override suspend fun asGuild(): JDAGuild = this
+
+    override suspend fun asGuildOrNull(): JDAGuild = this
+
+    override suspend fun getMember(userId: Snowflake): JDAMember {
+        try {
+            return guild.retrieveMemberById(userId.value).await().let { JDAMember(kdp, it) }
+        } catch (exception: ErrorResponseException) {
+            throw when (exception.errorResponse) {
+                ErrorResponse.UNKNOWN_MEMBER -> memberNotFound(id, userId)
+                ErrorResponse.UNKNOWN_USER -> userNotFound(userId)
+                else -> exception
+            }
+        }
+    }
+
+    override suspend fun getMemberOrNull(userId: Snowflake): JDAMember? =
+        guild.retrieveMemberById(userId.value).awaitOrNull()?.let { JDAMember(kdp, it) }
+
+    override suspend fun getRole(roleId: Snowflake): JDARole =
+        getRoleOrNull(roleId) ?: roleNotFound(id, roleId)
+
+    override suspend fun getRoleOrNull(roleId: Snowflake): JDARole? =
+        guild.getRoleById(roleId.value)?.let { JDARole(kdp, it) }
+
     private fun mapVerificationLevel(): VerificationLevel = when (guild.verificationLevel) {
         Guild.VerificationLevel.NONE -> VerificationLevel.None
         Guild.VerificationLevel.LOW -> VerificationLevel.Low
         Guild.VerificationLevel.MEDIUM -> VerificationLevel.Medium
         Guild.VerificationLevel.HIGH -> VerificationLevel.High
         Guild.VerificationLevel.VERY_HIGH -> VerificationLevel.VeryHigh
-        Guild.VerificationLevel.UNKNOWN -> TODO()
+        Guild.VerificationLevel.UNKNOWN -> VerificationLevel.Unknown(-1)
     }
 
     private fun mapDefaultMessageNotifications(): DefaultMessageNotifications = when (guild.defaultNotificationLevel) {
         Guild.NotificationLevel.ALL_MESSAGES -> DefaultMessageNotifications.AllMessages
         Guild.NotificationLevel.MENTIONS_ONLY -> DefaultMessageNotifications.OnlyMentions
-        Guild.NotificationLevel.UNKNOWN -> TODO()
+        Guild.NotificationLevel.UNKNOWN -> DefaultMessageNotifications.Unknown(-1)
     }
 
     private fun mapExplicitContentFilter(): ExplicitContentFilter = when (guild.explicitContentLevel) {
         Guild.ExplicitContentLevel.OFF -> ExplicitContentFilter.Disabled
         Guild.ExplicitContentLevel.NO_ROLE -> ExplicitContentFilter.MembersWithoutRoles
         Guild.ExplicitContentLevel.ALL -> ExplicitContentFilter.AllMembers
-        Guild.ExplicitContentLevel.UNKNOWN -> TODO()
+        Guild.ExplicitContentLevel.UNKNOWN -> ExplicitContentFilter.Unknown(-1)
     }
 
     private fun mapFeatures(): Set<GuildFeature> = guild.features.mapNotNull {

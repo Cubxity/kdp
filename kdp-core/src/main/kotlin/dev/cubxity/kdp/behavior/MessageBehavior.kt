@@ -16,24 +16,32 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.event.message
+package dev.cubxity.kdp.behavior
 
-import dev.cubxity.kdp.behavior.GuildBehavior
+import dev.cubxity.kdp.behavior.channel.MessageChannelBehavior
 import dev.cubxity.kdp.engine.KDPEngine
-import dev.cubxity.kdp.entity.Guild
-import dev.cubxity.kdp.entity.Member
+import dev.cubxity.kdp.entity.Entity
 import dev.cubxity.kdp.entity.Message
 import dev.cubxity.kdp.entity.Snowflake
-import dev.cubxity.kdp.event.Event
+import dev.cubxity.kdp.entity.channel.MessageChannel
+import dev.cubxity.kdp.exception.channelNotFound
+import dev.cubxity.kdp.exception.messageNotFound
 
-interface MessageCreateEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
-    val message: Message<TEngine>
+interface MessageBehavior<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+    val channelId: Snowflake
 
-    val guildId: Snowflake?
+    val channel: MessageChannelBehavior<TEngine>
 
-    val guild: GuildBehavior<TEngine>?
+    suspend fun getChannel(): MessageChannel<TEngine> =
+        getChannelOrNull() ?: channelNotFound(id)
 
-    val member: Member<TEngine>?
+    suspend fun getChannelOrNull(): MessageChannel<TEngine>?
 
-    suspend fun getGuild(): Guild<TEngine>?
+    suspend fun asMessage(): Message<TEngine> =
+        asMessageOrNull() ?: messageNotFound(channelId, id)
+
+    suspend fun asMessageOrNull(): Message<TEngine>?
 }
+
+suspend inline fun <TEngine : KDPEngine<TEngine>> MessageBehavior<TEngine>.delete() =
+    channel.deleteMessage(id)

@@ -20,11 +20,10 @@ package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPObject
+import dev.cubxity.kdp.behavior.GuildBehavior
 import dev.cubxity.kdp.engine.KDPEngine
-import dev.cubxity.kdp.entity.channel.GuildChannel
-import kotlinx.coroutines.flow.Flow
 
-interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+interface Guild<TEngine : KDPEngine<TEngine>> : GuildBehavior<TEngine> {
     val name: String
 
     val icon: Icon<TEngine>?
@@ -51,10 +50,6 @@ interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
 
     val explicitContentFilter: ExplicitContentFilter
 
-    val roles: Flow<Role<TEngine>>
-
-    val emojis: Flow<Emoji<TEngine>>
-
     val features: Set<GuildFeature>
 
     val mfaLevel: MFALevel
@@ -70,12 +65,6 @@ interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
     val isUnavailable: Boolean?
 
     val memberCount: Int?
-
-    val voiceStates: Flow<VoiceState<TEngine>>
-
-    val members: Flow<Member<TEngine>>
-
-    val channels: Flow<GuildChannel<TEngine>>
 
     // presences
 
