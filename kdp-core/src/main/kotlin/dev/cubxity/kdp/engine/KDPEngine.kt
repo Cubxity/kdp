@@ -54,13 +54,10 @@ interface KDPEngine<TEngine : KDPEngine<TEngine>> {
     val unsafe: Any
 
     /**
-     * Logs in to the Discord gateway.
+     * Logs in to the Discord gateway. Suspends until engine shutdown.
      * See: https://discord.com/developers/docs/topics/gateway.
-     *
-     * @param await suspends the call until the gateway connection is established.
-     * @return the current instance of [KDPEngine], for convenience.
      */
-    suspend fun login(await: Boolean = true): TEngine
+    suspend fun login()
 
     /**
      * Shuts down the connection and the underlying API.

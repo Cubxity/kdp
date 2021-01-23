@@ -40,15 +40,13 @@ class KordEngine(
     override val unsafe: Kord
         get() = kord ?: error("Kord has not been started")
 
-    override suspend fun login(await: Boolean): KordEngine {
+    override suspend fun login() {
         val kord = Kord(environment.token) {
             intents = mapIntents()
         }
         this.kord = kord
 
         kord.login()
-
-        return this
     }
 
     override suspend fun shutdown() {

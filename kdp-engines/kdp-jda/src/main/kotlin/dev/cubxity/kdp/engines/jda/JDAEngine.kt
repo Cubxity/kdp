@@ -22,11 +22,13 @@ import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.engine.BaseKDPEngine
 import dev.cubxity.kdp.engine.KDPEngineEnvironment
 import dev.cubxity.kdp.gateway.Intent
-import dev.cubxity.kdp.kdp
-import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.events.ShutdownEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class JDAEngine(
     environment: KDPEngineEnvironment<JDAEngine>,
@@ -41,22 +43,17 @@ class JDAEngine(
     override val unsafe: JDA
         get() = jda ?: error("JDA has not been started")
 
-    override suspend fun login(await: Boolean): JDAEngine {
+    override suspend fun login() {
         val jda = JDABuilder.create(environment.token, mapIntents()).build()
         this.jda = jda
 
-        if (await) {
-            if (jda.status === JDA.Status.CONNECTED) return this
-            while (!jda.status.isInit || jda.status < JDA.Status.CONNECTED) {
-                if (jda.status === JDA.Status.SHUTDOWN) {
-                    error("JDA was shutdown trying to await status")
+        suspendCoroutine<Unit> { cont ->
+            jda.addEventListener(object: ListenerAdapter() {
+                override fun onShutdown(event: ShutdownEvent) {
+                    cont.resume(Unit)
                 }
-
-                delay(50)
-            }
+            })
         }
-
-        return this
     }
 
     override suspend fun shutdown() {
