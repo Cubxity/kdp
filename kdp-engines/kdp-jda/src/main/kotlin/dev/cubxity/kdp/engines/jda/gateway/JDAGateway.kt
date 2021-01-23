@@ -19,22 +19,25 @@
 package dev.cubxity.kdp.engines.jda.gateway
 
 import dev.cubxity.kdp.KDP
+import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.engines.jda.JDAEngine
+import dev.cubxity.kdp.engines.jda.event.JDARawEvent
 import dev.cubxity.kdp.engines.jda.event.message.JDAGuildMessageReceivedEvent
 import dev.cubxity.kdp.event.Event
 import dev.cubxity.kdp.gateway.Gateway
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.IEventManager
 import kotlin.coroutines.CoroutineContext
 
-class JDAGateway(private val engine: JDAEngine) : CoroutineScope, Gateway<JDAEngine>, IEventManager {
+@OptIn(KDPUnsafe::class)
+class JDAGateway(private val engine: JDAEngine) : Gateway<JDAEngine>, CoroutineScope, IEventManager {
     private val _eventFlow = MutableSharedFlow<Event<JDAEngine>>(extraBufferCapacity = Int.MAX_VALUE)
 
     override val kdp: KDP<JDAEngine>
@@ -46,25 +49,22 @@ class JDAGateway(private val engine: JDAEngine) : CoroutineScope, Gateway<JDAEng
     override val events: SharedFlow<Event<JDAEngine>>
         get() = _eventFlow
 
-    override fun register(listener: Any) {
-        throw UnsupportedOperationException()
-    }
-
-    override fun unregister(listener: Any) {
-        throw UnsupportedOperationException()
-    }
-
     override fun handle(event: GenericEvent) {
         val mappedEvent = when (event) {
             is GuildMessageReceivedEvent -> JDAGuildMessageReceivedEvent(kdp, event)
-            else -> return
+            else -> JDARawEvent(kdp, event)
         }
         launch {
             _eventFlow.emit(mappedEvent)
         }
     }
 
-    override fun getRegisteredListeners(): MutableList<Any> {
+    override fun register(listener: Any): Unit =
         throw UnsupportedOperationException()
-    }
+
+    override fun unregister(listener: Any): Unit =
+        throw UnsupportedOperationException()
+
+    override fun getRegisteredListeners(): MutableList<Any> =
+        throw UnsupportedOperationException()
 }

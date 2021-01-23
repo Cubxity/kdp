@@ -21,12 +21,18 @@ package dev.cubxity.kdp.engines.jda
 import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.engine.BaseKDPEngine
 import dev.cubxity.kdp.engine.KDPEngineEnvironment
+import dev.cubxity.kdp.engines.jda.event.JDARawEvent
 import dev.cubxity.kdp.engines.jda.gateway.JDAGateway
 import dev.cubxity.kdp.gateway.Intent
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.events.ShutdownEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 
+@OptIn(KDPUnsafe::class)
 class JDAEngine(
     environment: KDPEngineEnvironment<JDAEngine>,
     configure: Configuration.() -> Unit
@@ -48,14 +54,9 @@ class JDAEngine(
             .build()
         this.jda = jda
 
-        // TODO
-//        suspendCoroutine<Unit> { cont ->
-//            jda.addEventListener(object : ListenerAdapter() {
-//                override fun onShutdown(event: ShutdownEvent) {
-//                    cont.resume(Unit)
-//                }
-//            })
-//        }
+        gateway.events.filterIsInstance<JDARawEvent>()
+            .filter { it.event is ShutdownEvent }
+            .first()
     }
 
     override suspend fun shutdown() {
