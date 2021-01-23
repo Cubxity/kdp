@@ -16,26 +16,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.event.message
 
-/**
- * Represents an image, such as [avatar][User.Avatar] and [icon][Guild.Icon].
- */
-interface ImageHolder {
-    val id: String?
+import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.Guild
+import dev.cubxity.kdp.entity.Member
+import dev.cubxity.kdp.entity.Message
+import dev.cubxity.kdp.event.Event
 
-    operator fun get(format: ImageFormat = ImageFormat.PNG): String
-}
+interface MessageCreateEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
+    val message: Message<TEngine>
 
-inline val ImageHolder.isAnimated: Boolean
-    get() = id?.startsWith("a_") == true
+    val guild: Guild<TEngine>?
 
-inline val ImageHolder.url: String
-    get() = if (isAnimated) this[ImageFormat.GIF] else get()
-
-sealed class ImageFormat(val extension: String) {
-    object JPEG : ImageFormat("jpeg")
-    object PNG : ImageFormat("png")
-    object WEBP : ImageFormat("webp")
-    object GIF : ImageFormat("gif")
+    val member: Member<TEngine>?
 }

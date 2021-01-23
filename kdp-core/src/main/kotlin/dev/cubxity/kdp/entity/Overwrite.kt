@@ -20,6 +20,7 @@ package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.channel.OverwriteType
 
 interface Overwrite<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
     val id: Snowflake

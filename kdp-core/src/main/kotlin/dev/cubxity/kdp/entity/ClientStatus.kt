@@ -26,17 +26,18 @@ interface ClientStatus<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
     val mobile: Client.Mobile?
     val web: Client.Web?
 
-    sealed class Client(val status: Status) {
-        class Desktop(status: Status) : Client(status)
-        class Mobile(status: Status) : Client(status)
-        class Web(status: Status) : Client(status)
+    sealed class Client(val status: PresenceStatus) {
+        class Desktop(status: PresenceStatus) : Client(status)
+        class Mobile(status: PresenceStatus) : Client(status)
+        class Web(status: PresenceStatus) : Client(status)
     }
 }
 
-enum class Status {
-    Online,
-    DnD,
-    Idle,
-    Invisible,
-    Offline
+sealed class PresenceStatus(val value: String) {
+    class Unknown(value: String) : PresenceStatus(value)
+    object Online : PresenceStatus("online")
+    object DnD : PresenceStatus("idle")
+    object Idle : PresenceStatus("dnd")
+    object Invisible : PresenceStatus("offline")
+    object Offline : PresenceStatus("invisible")
 }

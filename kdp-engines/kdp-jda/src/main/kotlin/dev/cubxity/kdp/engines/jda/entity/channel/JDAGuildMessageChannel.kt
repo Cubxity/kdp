@@ -16,26 +16,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.engines.jda.entity.channel
 
-/**
- * Represents an image, such as [avatar][User.Avatar] and [icon][Guild.Icon].
- */
-interface ImageHolder {
-    val id: String?
+import dev.cubxity.kdp.KDP
+import dev.cubxity.kdp.engines.jda.JDAEngine
+import dev.cubxity.kdp.entity.Message
+import dev.cubxity.kdp.entity.channel.KDPMessageChannel
+import kotlinx.coroutines.flow.Flow
+import net.dv8tion.jda.api.entities.TextChannel
 
-    operator fun get(format: ImageFormat = ImageFormat.PNG): String
-}
-
-inline val ImageHolder.isAnimated: Boolean
-    get() = id?.startsWith("a_") == true
-
-inline val ImageHolder.url: String
-    get() = if (isAnimated) this[ImageFormat.GIF] else get()
-
-sealed class ImageFormat(val extension: String) {
-    object JPEG : ImageFormat("jpeg")
-    object PNG : ImageFormat("png")
-    object WEBP : ImageFormat("webp")
-    object GIF : ImageFormat("gif")
+class JDAGuildMessageChannel(
+    kdp: KDP<JDAEngine>,
+    channel: TextChannel
+) : JDAGuildChannel(kdp, channel), KDPMessageChannel<JDAEngine> {
+    override val messages: Flow<Message<JDAEngine>>
+        get() = TODO("Not yet implemented")
 }

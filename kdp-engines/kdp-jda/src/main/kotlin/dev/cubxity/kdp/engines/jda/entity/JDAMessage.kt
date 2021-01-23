@@ -20,22 +20,27 @@ package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.engines.jda.JDAEngine
-import dev.cubxity.kdp.entity.Overwrite
-import dev.cubxity.kdp.entity.channel.OverwriteType
-import dev.cubxity.kdp.entity.Permissions
+import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildMessageChannel
 import dev.cubxity.kdp.entity.Snowflake
-import net.dv8tion.jda.api.entities.PermissionOverride
+import dev.cubxity.kdp.entity.User
+import dev.cubxity.kdp.entity.channel.KDPMessageChannel
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.TextChannel
+import dev.cubxity.kdp.entity.Message as KDPMessage
 
-class JDAOverwrite(override val kdp: KDP<JDAEngine>, private val overwrite: PermissionOverride) : Overwrite<JDAEngine> {
+class JDAMessage(override val kdp: KDP<JDAEngine>, private val message: Message) : KDPMessage<JDAEngine> {
     override val id: Snowflake
-        get() = overwrite.snowflake
+        get() = message.snowflake
 
-    override val type: OverwriteType
-        get() = if (overwrite.isMemberOverride) OverwriteType.Member else OverwriteType.Role
+    override val channel: KDPMessageChannel<JDAEngine>
+        get() = when (val channel = message.channel) {
+            is TextChannel -> JDAGuildMessageChannel(kdp, channel)
+            else -> TODO("Not yet implemented")
+        }
 
-    override val allow: Permissions
-        get() = Permissions(overwrite.allowedRaw)
+    override val author: User<JDAEngine>
+        get() = JDAUser(kdp, message.author)
 
-    override val deny: Permissions
-        get() = Permissions(overwrite.deniedRaw)
+    override val content: String
+        get() = message.contentRaw
 }

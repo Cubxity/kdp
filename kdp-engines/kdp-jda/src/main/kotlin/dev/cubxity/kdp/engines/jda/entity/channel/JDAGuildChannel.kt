@@ -16,20 +16,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.engines.jda.entity
+package dev.cubxity.kdp.engines.jda.entity.channel
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.engines.jda.JDAEngine
-import dev.cubxity.kdp.entity.*
-import net.dv8tion.jda.api.entities.GuildChannel
+import dev.cubxity.kdp.engines.jda.entity.JDAGuild
+import dev.cubxity.kdp.engines.jda.entity.JDAOverwrite
+import dev.cubxity.kdp.engines.jda.entity.snowflake
+import dev.cubxity.kdp.entity.Guild
+import dev.cubxity.kdp.entity.Snowflake
 import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
-import dev.cubxity.kdp.entity.ChannelType as KDPChannelType
-import dev.cubxity.kdp.entity.GuildChannel as KDPGuildChannel
+import dev.cubxity.kdp.entity.channel.ChannelType as KDPChannelType
+import dev.cubxity.kdp.entity.channel.GuildChannel as KDPGuildChannel
 
-class JDAGuildChannel(override val kdp: KDP<JDAEngine>, private val channel: GuildChannel) :
-    KDPGuildChannel<JDAEngine> {
+open class JDAGuildChannel(
+    override val kdp: KDP<JDAEngine>,
+    private val channel: GuildChannel
+) : KDPGuildChannel<JDAEngine> {
     override val id: Snowflake
         get() = channel.snowflake
 
@@ -82,6 +88,6 @@ class JDAGuildChannel(override val kdp: KDP<JDAEngine>, private val channel: Gui
         ChannelType.GROUP -> KDPChannelType.GroupDm
         ChannelType.CATEGORY -> KDPChannelType.GuildCategory
         ChannelType.STORE -> KDPChannelType.GuildStore
-        ChannelType.UNKNOWN -> TODO()
+        ChannelType.UNKNOWN -> KDPChannelType.Unknown(-1)
     }
 }

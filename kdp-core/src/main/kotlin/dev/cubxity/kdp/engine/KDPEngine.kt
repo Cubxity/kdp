@@ -20,7 +20,16 @@ package dev.cubxity.kdp.engine
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.annotation.KDPUnsafe
+import dev.cubxity.kdp.event.Event
+import dev.cubxity.kdp.gateway.Gateway
 import dev.cubxity.kdp.gateway.Intents
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Engine which provides Discord API.
@@ -40,6 +49,11 @@ interface KDPEngine<TEngine : KDPEngine<TEngine>> {
      * Environment which this engine is running.
      */
     val environment: KDPEngineEnvironment<TEngine>
+
+    /**
+     * The gateway.
+     */
+    val gateway: Gateway<TEngine>
 
     /**
      * Currently running KDP instance.
@@ -63,4 +77,14 @@ interface KDPEngine<TEngine : KDPEngine<TEngine>> {
      * Shuts down the connection and the underlying API.
      */
     suspend fun shutdown()
+}
+
+inline fun <reified T : Event<*>> KDPEngine<*>.on(
+    scope: CoroutineScope = kdp,
+    noinline block: suspend T.() -> Unit
+): Job {
+    return gateway.events.buffer(Channel.UNLIMITED)
+        .filterIsInstance<T>()
+        .onEach(block)
+        .launchIn(scope)
 }

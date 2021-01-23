@@ -21,6 +21,7 @@ package dev.cubxity.kdp.entity
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.channel.GuildChannel
 import kotlinx.coroutines.flow.Flow
 
 interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
@@ -125,45 +126,50 @@ interface Guild<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
     }
 }
 
-enum class VerificationLevel(val code: Int) {
-    None(0),
-    Low(1),
-    Medium(2),
-    High(3),
-    VeryHigh(4)
+sealed class VerificationLevel(val value: Int) {
+    class Unknown(value: Int) : VerificationLevel(value)
+    object None : VerificationLevel(0)
+    object Low : VerificationLevel(1)
+    object Medium : VerificationLevel(2)
+    object High : VerificationLevel(3)
+    object VeryHigh : VerificationLevel(4)
 }
 
-enum class DefaultMessageNotifications(val code: Int) {
-    AllMessages(0),
-    OnlyMentions(1)
+sealed class DefaultMessageNotifications(val value: Int) {
+    class Unknown(value: Int) : DefaultMessageNotifications(value)
+    object AllMessages : DefaultMessageNotifications(0)
+    object OnlyMentions : DefaultMessageNotifications(1)
 }
 
-enum class ExplicitContentFilter(val code: Int) {
-    Disabled(0),
-    MembersWithoutRoles(1),
-    AllMembers(2)
+sealed class ExplicitContentFilter(val value: Int) {
+    class Unknown(value: Int): ExplicitContentFilter(value)
+    object Disabled : ExplicitContentFilter(0)
+    object MembersWithoutRoles : ExplicitContentFilter(1)
+    object AllMembers : ExplicitContentFilter(2)
 }
 
-enum class GuildFeature(val value: String) {
-    InviteSplash("INVITE_SPLASH"),
-    VIPRegions("VIP_REGIONS"),
-    VanityUrl("VANITY_URL"),
-    Verified("VERIFIED"),
-    Partnered("PARTNERED"),
-    Public("PUBLIC"),
-    Commerce("COMMERCE"),
-    News("NEWS"),
-    Discoverable("DISCOVERABLE"),
-    Featureable("FEATURABLE"),
-    AnimatedIcon("ANIMATED_ICON"),
-    Banner("BANNER"),
-    PublicDisabled("PUBLIC_DISABLED"),
-    WelcomeScreenEnabled("WELCOME_SCREEN_ENABLED")
+sealed class GuildFeature(val value: String) {
+    class Unknown(value: String) : GuildFeature(value)
+    object InviteSplash : GuildFeature("INVITE_SPLASH")
+    object VIPRegions : GuildFeature("VIP_REGIONS")
+    object VanityUrl : GuildFeature("VANITY_URL")
+    object Verified : GuildFeature("VERIFIED")
+    object Partnered : GuildFeature("PARTNERED")
+    object Public : GuildFeature("PUBLIC")
+    object Commerce : GuildFeature("COMMERCE")
+    object News : GuildFeature("NEWS")
+    object Discoverable : GuildFeature("DISCOVERABLE")
+    object Featureable : GuildFeature("FEATURABLE")
+    object AnimatedIcon : GuildFeature("ANIMATED_ICON")
+    object Banner : GuildFeature("BANNER")
+    object PublicDisabled : GuildFeature("PUBLIC_DISABLED")
+    object WelcomeScreenEnabled : GuildFeature("WELCOME_SCREEN_ENABLED")
 }
 
-enum class MFALevel(val code: Int) {
-    None(0),
-    Elevated(1)
+sealed class MFALevel(val value: Int) {
+    class Unknown(value: Int) : MFALevel(value)
+    object None : MFALevel(0)
+    object Elevated : MFALevel(1)
 }
 
 enum class SystemChannelFlag(val code: Int) {

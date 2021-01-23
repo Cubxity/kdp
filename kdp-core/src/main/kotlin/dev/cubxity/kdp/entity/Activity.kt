@@ -86,10 +86,11 @@ inline class ActivityFlags(val code: Int) {
         ActivityFlags(code xor flags.code)
 }
 
-enum class ActivityType(val code: Int) {
-    Game(0),
-    Streaming(1),
-    Listening(2),
-    Watching(3),
-    Custom(4)
+sealed class ActivityType(val value: Int) {
+    class Unknown(value: Int) : ActivityType(value)
+    object Game : ActivityType(0)
+    object Streaming : ActivityType(1)
+    object Listening : ActivityType(2)
+    object Watching : ActivityType(3)
+    object Custom : ActivityType(4)
 }

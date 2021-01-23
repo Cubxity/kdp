@@ -21,6 +21,7 @@ package dev.cubxity.kdp.engines.kord
 import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.engine.BaseKDPEngine
 import dev.cubxity.kdp.engine.KDPEngineEnvironment
+import dev.cubxity.kdp.gateway.Gateway
 import dev.cubxity.kdp.gateway.Intent
 import dev.kord.core.Kord
 import dev.kord.gateway.Intents
@@ -35,6 +36,9 @@ class KordEngine(
 
     private val configuration = Configuration().apply(configure)
     private var kord: Kord? = null
+
+    override val gateway: Gateway<KordEngine>
+        get() = TODO("Not yet implemented")
 
     @KDPUnsafe
     override val unsafe: Kord

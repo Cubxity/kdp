@@ -16,26 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.entity.channel
 
-/**
- * Represents an image, such as [avatar][User.Avatar] and [icon][Guild.Icon].
- */
-interface ImageHolder {
-    val id: String?
+import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.Entity
 
-    operator fun get(format: ImageFormat = ImageFormat.PNG): String
-}
-
-inline val ImageHolder.isAnimated: Boolean
-    get() = id?.startsWith("a_") == true
-
-inline val ImageHolder.url: String
-    get() = if (isAnimated) this[ImageFormat.GIF] else get()
-
-sealed class ImageFormat(val extension: String) {
-    object JPEG : ImageFormat("jpeg")
-    object PNG : ImageFormat("png")
-    object WEBP : ImageFormat("webp")
-    object GIF : ImageFormat("gif")
+interface Channel<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+    val type: ChannelType
 }

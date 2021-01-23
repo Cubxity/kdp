@@ -22,6 +22,7 @@ import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.engine.KDPEngineEnvironment
 import dev.cubxity.kdp.engine.KDPEngineEnvironmentImpl
 import dev.cubxity.kdp.engine.KDPEngineFactory
+import dev.cubxity.kdp.event.Event
 import dev.cubxity.kdp.processing.ProcessingPipeline
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -90,5 +91,8 @@ fun <TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> kdp
     environment: KDPEngineEnvironment<TEngine>,
     configure: TConfiguration.() -> Unit = {}
 ): TEngine {
-    return factory.create(environment, configure)
+    val engine = factory.create(environment, configure)
+    environment.start(engine)
+
+    return engine
 }

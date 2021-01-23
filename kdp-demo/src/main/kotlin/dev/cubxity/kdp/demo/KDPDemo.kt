@@ -18,13 +18,20 @@
 
 package dev.cubxity.kdp.demo
 
+import dev.cubxity.kdp.engine.on
 import dev.cubxity.kdp.engines.jda.JDA
+import dev.cubxity.kdp.event.Event
+import dev.cubxity.kdp.event.message.MessageCreateEvent
 import dev.cubxity.kdp.kdp
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.onEach
 
 suspend fun main() {
     val token = System.getenv("TOKEN") ?: error("Please specify TOKEN as an environment variable")
 
     kdp(JDA, token) {
-
+        engine.on<MessageCreateEvent<*>> {
+            println("${message.author.username}: ${message.content}")
+        }
     }.login()
 }

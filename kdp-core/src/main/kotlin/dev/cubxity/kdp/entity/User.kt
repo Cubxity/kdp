@@ -98,8 +98,9 @@ inline class UserFlags(val code: Int) {
         UserFlags(code xor flags.code)
 }
 
-enum class PremiumType(val code: Int) {
-    None(0),
-    NitroClassic(1),
-    Nitro(2)
+sealed class PremiumType(val value: Int) {
+    class Unknown(value: Int) : PremiumType(value)
+    object None : PremiumType(0)
+    object NitroClassic : PremiumType(1)
+    object Nitro : PremiumType(2)
 }

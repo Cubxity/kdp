@@ -20,6 +20,7 @@ package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.engines.jda.JDAEngine
+import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildChannel
 import dev.cubxity.kdp.entity.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow

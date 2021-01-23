@@ -20,6 +20,7 @@ package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.engines.jda.JDAEngine
+import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildChannel
 import dev.cubxity.kdp.entity.VoiceState
 import net.dv8tion.jda.api.entities.GuildVoiceState
 

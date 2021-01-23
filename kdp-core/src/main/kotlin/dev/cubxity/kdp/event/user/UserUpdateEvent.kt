@@ -16,13 +16,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.event
+package dev.cubxity.kdp.event.user
 
 import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.Member
 import dev.cubxity.kdp.entity.Presence
+import dev.cubxity.kdp.event.Event
 
-interface PresenceUpdateEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
+interface UserUpdateEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
     val member: Member<TEngine>
 
     val oldPresence: Presence<TEngine>

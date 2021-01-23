@@ -16,14 +16,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.event
+package dev.cubxity.kdp.entity.channel
 
 import dev.cubxity.kdp.engine.KDPEngine
-import dev.cubxity.kdp.entity.Member
-import dev.cubxity.kdp.entity.Presence
+import dev.cubxity.kdp.entity.Message
+import kotlinx.coroutines.flow.Flow
 
-interface UserUpdateEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
-    val member: Member<TEngine>
-
-    val oldPresence: Presence<TEngine>
+interface KDPMessageChannel<TEngine : KDPEngine<TEngine>> : Channel<TEngine> {
+    val messages: Flow<Message<TEngine>>
 }

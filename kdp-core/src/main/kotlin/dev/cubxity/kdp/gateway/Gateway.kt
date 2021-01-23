@@ -16,51 +16,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp.entity
+package dev.cubxity.kdp.gateway
 
+import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.event.Event
+import kotlinx.coroutines.flow.SharedFlow
 
-interface GuildChannel<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
-    val type: ChannelType
-
-    val guild: Guild<TEngine>
-
-    val position: Int?
-
-    val permissionOverwrites: List<Overwrite<TEngine>>?
-
-    val name: String?
-
-    val topic: String?
-
-    val isNSFW: Boolean?
-
-    val lastMessageId: Snowflake?
-
-    val bitrate: Int?
-
-    val userLimit: Int?
-
-    val rateLimitPerUser: Int?
-
-    val applicationId: Snowflake?
-
-    val parent: GuildChannel<TEngine>?
-
-    val lastPinTimestamp: String?
-}
-
-enum class ChannelType(val code: Int) {
-    GuildText(0),
-    DM(1),
-    GuildVoice(2),
-    GroupDm(3),
-    GuildCategory(4),
-    GuildNews(5),
-    GuildStore(6)
-}
-
-enum class OverwriteType(val code: Int) {
-    Role(0),
-    Member(1)
+interface Gateway<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
+    val events: SharedFlow<Event<TEngine>>
 }

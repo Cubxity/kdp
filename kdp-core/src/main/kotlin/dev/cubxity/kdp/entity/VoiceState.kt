@@ -20,6 +20,7 @@ package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.entity.channel.GuildChannel
 
 interface VoiceState<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
     val guild: Guild<TEngine>?
