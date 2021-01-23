@@ -1,6 +1,6 @@
 /*
  *  KDP is a modular and customizable Discord command processing library.
- *  Copyright (C) 2020 Cubxity.
+ *  Copyright (C) 2020-2021 Cubxity.
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published
@@ -18,7 +18,7 @@
 
 dependencies {
     api(project(":kdp-core"))
-    api("dev.kord:kord-core:0.7.0-RC")
+    api("dev.kord:kord-core:0.7.0-SNAPSHOT")
 }
 
 repositories {
