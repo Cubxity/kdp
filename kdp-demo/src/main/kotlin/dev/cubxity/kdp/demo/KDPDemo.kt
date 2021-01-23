@@ -16,14 +16,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.cubxity.kdp
+package dev.cubxity.kdp.demo
 
-import dev.cubxity.kdp.engine.KDPEngine
+import dev.cubxity.kdp.engines.jda.JDA
+import dev.cubxity.kdp.kdp
 
-fun interface Transformer<TEngine : KDPEngine<TEngine>, TInput, TResult : KDPObject<TEngine>> {
-    fun transform(kdp: KDP<TEngine>, input: TInput): TResult
-}
+suspend fun main() {
+    val token = System.getenv("TOKEN") ?: error("Please specify TOKEN as an environment variable")
 
-interface TransformDelegate {
+    kdp(JDA, token) {
 
+    }.login()
 }

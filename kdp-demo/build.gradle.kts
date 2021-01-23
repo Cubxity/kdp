@@ -16,16 +16,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = "kdp"
+dependencies {
+    implementation(project(":kdp-core"))
+    implementation(project(":kdp-engines:kdp-jda"))
 
-// Library
-include(
-    ":kdp-core",
-    ":kdp-engines:kdp-jda",
-    ":kdp-engines:kdp-kord"
-)
-
-// Other
-include(
-    ":kdp-demo"
-)
+    implementation("ch.qos.logback:logback-classic:1.3.0-alpha5")
+}

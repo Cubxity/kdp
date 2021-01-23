@@ -83,9 +83,3 @@ class JDAEngine(
         }
     }
 }
-
-suspend fun main() {
-    kdp(JDA, "Joe") {
-        // Your logic here
-    }.login()
-}

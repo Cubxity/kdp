@@ -19,13 +19,10 @@
 package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.Transformer as KDPTransformer
 import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.engines.jda.JDAEngine
-import dev.cubxity.kdp.entity.PremiumType
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.entity.UserFlags
-import dev.cubxity.kdp.entity.asSnowflake
 import net.dv8tion.jda.api.entities.SelfUser
 import net.dv8tion.jda.api.entities.User
 import dev.cubxity.kdp.entity.User as KDPUser
@@ -55,9 +52,4 @@ class JDAUser(override val kdp: KDP<JDAEngine>, private val user: User) : KDPUse
 
     override val flags: UserFlags
         get() = UserFlags(user.flagsRaw)
-
-    companion object Transformer : KDPTransformer<JDAEngine, User, JDAUser> {
-        override fun transform(kdp: KDP<JDAEngine>, input: User): JDAUser =
-            JDAUser(kdp, input)
-    }
 }
