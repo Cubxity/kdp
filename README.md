@@ -1,9 +1,9 @@
 ![KDP Banner](.github/assets/banner.svg)
 
-![Discord](https://img.shields.io/discord/802563482200440874?color=%237883d4&style=flat-square)
-![License](https://img.shields.io/github/license/Cubxity/kdp?style=flat-square)
-![Issues](https://img.shields.io/github/issues/Cubxity/kdp?style=flat-square)
-![Workflow Status](https://img.shields.io/github/workflow/status/Cubxity/kdp/gradle-ci/2.x?style=flat-square)
+[![Discord](https://img.shields.io/discord/802563482200440874?color=%237883d4&style=flat-square)](https://discord.gg/fqdaBkPbQ3)
+[![License](https://img.shields.io/github/license/Cubxity/kdp?style=flat-square)](LICENSE)
+[![Issues](https://img.shields.io/github/issues/Cubxity/kdp?style=flat-square)](https://github.com/Cubxity/kdp/issues)
+[![Workflow Status](https://img.shields.io/github/workflow/status/Cubxity/kdp/gradle-ci/2.x?style=flat-square)](https://github.com/Cubxity/kdp/actions)
 
 KDP is an asynchronous framework for creating Discord bots. Written 100% in [Kotlin](https://kotlinlang.org).
 
@@ -17,7 +17,9 @@ KDP is an asynchronous framework for creating Discord bots. Written 100% in [Kot
 - [Kord](https://github.com/kordlib/kord) **Work-in-progress**
 
 ## Example
+
 See [kdp-demo](kdp-demo) for more examples.
+
 ```kotlin
 import dev.cubxity.kdp.engine.on
 import dev.cubxity.kdp.engines.jda.JDA
