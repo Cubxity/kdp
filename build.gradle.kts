@@ -17,7 +17,7 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.21"
     id("maven-publish")
 }
 
