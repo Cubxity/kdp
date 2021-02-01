@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.onEach
 /**
  * Engine which provides Discord API.
  */
-interface KDPEngine<TEngine : KDPEngine<TEngine>> {
+interface KDPEngine {
     /**
      * Configuration for the [KDPEngine].
      */
@@ -48,17 +48,17 @@ interface KDPEngine<TEngine : KDPEngine<TEngine>> {
     /**
      * Environment which this engine is running.
      */
-    val environment: KDPEngineEnvironment<TEngine>
+    val environment: KDPEngineEnvironment
 
     /**
      * The gateway.
      */
-    val gateway: Gateway<TEngine>
+    val gateway: Gateway
 
     /**
      * Currently running KDP instance.
      */
-    val kdp: KDP<TEngine> get() = environment.kdp
+    val kdp: KDP get() = environment.kdp
 
     /**
      * Retrieve the underlying API used by the engine.
@@ -79,7 +79,7 @@ interface KDPEngine<TEngine : KDPEngine<TEngine>> {
     suspend fun shutdown()
 }
 
-inline fun <reified T : Event<*>> KDPEngine<*>.on(
+inline fun <reified T : Event> KDPEngine.on(
     scope: CoroutineScope = kdp,
     noinline block: suspend T.() -> Unit
 ): Job {

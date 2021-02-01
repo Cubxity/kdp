@@ -18,7 +18,6 @@
 
 package dev.cubxity.kdp.behavior
 
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.*
 import dev.cubxity.kdp.entity.channel.GuildChannel
 import dev.cubxity.kdp.exception.guildNotFound
@@ -26,29 +25,29 @@ import dev.cubxity.kdp.exception.memberNotFound
 import dev.cubxity.kdp.exception.roleNotFound
 import kotlinx.coroutines.flow.Flow
 
-interface GuildBehavior<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
-    val members: Flow<Member<TEngine>>
+interface GuildBehavior : Entity {
+    val members: Flow<Member>
 
-    val channels: Flow<GuildChannel<TEngine>>
+    val channels: Flow<GuildChannel>
 
-    val roles: Flow<Role<TEngine>>
+    val roles: Flow<Role>
 
-    val voiceStates: Flow<VoiceState<TEngine>>
+    val voiceStates: Flow<VoiceState>
 
-    val emojis: Flow<Emoji<TEngine>>
+    val emojis: Flow<Emoji>
 
-    suspend fun asGuild(): Guild<TEngine> =
+    suspend fun asGuild(): Guild =
         asGuildOrNull() ?: guildNotFound(id)
 
-    suspend fun asGuildOrNull(): Guild<TEngine>?
+    suspend fun asGuildOrNull(): Guild?
 
-    suspend fun getMember(userId: Snowflake): Member<TEngine> =
+    suspend fun getMember(userId: Snowflake): Member =
         getMemberOrNull(userId) ?: memberNotFound(id, userId)
 
-    suspend fun getMemberOrNull(userId: Snowflake): Member<TEngine>?
+    suspend fun getMemberOrNull(userId: Snowflake): Member?
 
-    suspend fun getRole(roleId: Snowflake): Role<TEngine> =
+    suspend fun getRole(roleId: Snowflake): Role =
         getRoleOrNull(roleId) ?: roleNotFound(id, roleId)
 
-    suspend fun getRoleOrNull(roleId: Snowflake): Role<TEngine>?
+    suspend fun getRoleOrNull(roleId: Snowflake): Role?
 }

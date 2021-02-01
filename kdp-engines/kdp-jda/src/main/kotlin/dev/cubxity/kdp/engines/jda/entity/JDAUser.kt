@@ -20,14 +20,13 @@ package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.annotation.KDPUnsafe
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.entity.UserFlags
 import net.dv8tion.jda.api.entities.SelfUser
 import net.dv8tion.jda.api.entities.User
 import dev.cubxity.kdp.entity.User as KDPUser
 
-class JDAUser(override val kdp: KDP<JDAEngine>, private val user: User) : KDPUser<JDAEngine> {
+class JDAUser(override val kdp: KDP, private val user: User) : KDPUser {
     override val id: Snowflake
         get() = user.snowflake
 
@@ -41,7 +40,7 @@ class JDAUser(override val kdp: KDP<JDAEngine>, private val user: User) : KDPUse
     override val discriminator: String
         get() = user.discriminator
 
-    override val avatar: KDPUser.Avatar<JDAEngine>
+    override val avatar: KDPUser.Avatar
         get() = KDPUser.Avatar(kdp, this, user.avatarId)
 
     override val isBot: Boolean

@@ -20,7 +20,6 @@ package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.behavior.GuildBehavior
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.entity.Role
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.entity.User
@@ -31,20 +30,20 @@ import net.dv8tion.jda.api.entities.Member
 import java.time.OffsetDateTime
 import dev.cubxity.kdp.entity.Member as KDPMember
 
-class JDAMember(override val kdp: KDP<JDAEngine>, private val member: Member) : KDPMember<JDAEngine> {
+class JDAMember(override val kdp: KDP, private val member: Member) : KDPMember {
     override val guildId: Snowflake
         get() = member.guild.snowflake
 
-    override val guild: GuildBehavior<JDAEngine>
+    override val guild: GuildBehavior
         get() = JDAGuild(kdp, member.guild)
 
-    override val user: User<JDAEngine>
+    override val user: User
         get() = JDAUser(kdp, member.user)
 
     override val nick: String?
         get() = member.nickname
 
-    override val roles: Flow<Role<JDAEngine>>
+    override val roles: Flow<Role>
         get() = member.roles.asFlow().map { JDARole(kdp, it) }
 
     override val joinedAt: OffsetDateTime

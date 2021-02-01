@@ -18,13 +18,12 @@
 
 package dev.cubxity.kdp.event.user
 
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.Member
 import dev.cubxity.kdp.entity.Presence
 import dev.cubxity.kdp.event.Event
 
-interface PresenceUpdateEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
-    val member: Member<TEngine>
+interface PresenceUpdateEvent : Event {
+    val member: Member
 
-    val oldPresence: Presence<TEngine>
+    val oldPresence: Presence
 }

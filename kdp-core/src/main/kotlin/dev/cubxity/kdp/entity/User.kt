@@ -21,14 +21,13 @@ package dev.cubxity.kdp.entity
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.behavior.UserBehavior
-import dev.cubxity.kdp.engine.KDPEngine
 
-interface User<TEngine : KDPEngine<TEngine>> : UserBehavior<TEngine> {
+interface User : UserBehavior {
     val username: String
 
     val discriminator: String
 
-    val avatar: Avatar<TEngine>
+    val avatar: Avatar
 
     val isBot: Boolean?
 
@@ -36,11 +35,11 @@ interface User<TEngine : KDPEngine<TEngine>> : UserBehavior<TEngine> {
 
     val flags: UserFlags?
 
-    data class Avatar<TEngine : KDPEngine<TEngine>>(
-        override val kdp: KDP<TEngine>,
-        val user: User<TEngine>,
+    data class Avatar(
+        override val kdp: KDP,
+        val user: User,
         override val id: String?
-    ) : KDPObject<TEngine>, ImageHolder {
+    ) : KDPObject, ImageHolder {
         inline val isCustom: Boolean
             get() = id !== null
 

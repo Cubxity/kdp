@@ -18,18 +18,17 @@
 
 package dev.cubxity.kdp.behavior
 
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.Member
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.exception.memberNotFound
 
-interface MemberBehavior<TEngine : KDPEngine<TEngine>> : UserBehavior<TEngine> {
+interface MemberBehavior : UserBehavior {
     val guildId: Snowflake
 
-    val guild: GuildBehavior<TEngine>
+    val guild: GuildBehavior
 
-    suspend fun asMember(): Member<TEngine> =
+    suspend fun asMember(): Member =
         asMemberOrNull() ?: memberNotFound(guildId, id)
 
-    suspend fun asMemberOrNull(): Member<TEngine>?
+    suspend fun asMemberOrNull(): Member?
 }

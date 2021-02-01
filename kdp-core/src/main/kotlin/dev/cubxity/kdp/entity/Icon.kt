@@ -20,13 +20,12 @@ package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPObject
-import dev.cubxity.kdp.engine.KDPEngine
 
-data class Icon<TEngine : KDPEngine<TEngine>>(
-    override val kdp: KDP<TEngine>,
-    val guild: Guild<TEngine>,
+data class Icon(
+    override val kdp: KDP,
+    val guild: Guild,
     override val id: String
-) : KDPObject<TEngine>, ImageHolder {
+) : KDPObject, ImageHolder {
     override fun get(format: ImageFormat): String =
         id.let { ICON_URL.format(guild.id, it, format.extension) }
 

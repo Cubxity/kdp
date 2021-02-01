@@ -19,13 +19,12 @@
 package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.entity.Permissions
 import dev.cubxity.kdp.entity.Snowflake
 import net.dv8tion.jda.api.entities.Role
 import dev.cubxity.kdp.entity.Role as KDPRole
 
-class JDARole(override val kdp: KDP<JDAEngine>, private val role: Role) : KDPRole<JDAEngine> {
+class JDARole(override val kdp: KDP, private val role: Role) : KDPRole {
     override val id: Snowflake
         get() = role.snowflake
 

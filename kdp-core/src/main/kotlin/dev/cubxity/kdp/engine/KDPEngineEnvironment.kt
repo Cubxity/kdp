@@ -21,7 +21,7 @@ package dev.cubxity.kdp.engine
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPEnvironment
 
-interface KDPEngineEnvironment<TEngine : KDPEngine<TEngine>> : KDPEnvironment {
+interface KDPEngineEnvironment : KDPEnvironment {
     /**
      * Token used for logging into Discord.
      */
@@ -32,12 +32,12 @@ interface KDPEngineEnvironment<TEngine : KDPEngine<TEngine>> : KDPEnvironment {
      *
      * @throws IllegalStateException if KDP hasn't been initialized.
      */
-    val kdp: KDP<TEngine>
+    val kdp: KDP
 
     /**
      * Starts [KDPEngineEnvironment] and creates KDP.
      */
-    fun start(engine: TEngine)
+    fun start(engine: KDPEngine)
 
     /**
      * Stops [KDPEngineEnvironment] and destroys the running KDP.

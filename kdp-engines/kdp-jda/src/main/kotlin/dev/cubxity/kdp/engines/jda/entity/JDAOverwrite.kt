@@ -19,14 +19,13 @@
 package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.entity.Overwrite
-import dev.cubxity.kdp.entity.channel.OverwriteType
 import dev.cubxity.kdp.entity.Permissions
 import dev.cubxity.kdp.entity.Snowflake
+import dev.cubxity.kdp.entity.channel.OverwriteType
 import net.dv8tion.jda.api.entities.PermissionOverride
 
-class JDAOverwrite(override val kdp: KDP<JDAEngine>, private val overwrite: PermissionOverride) : Overwrite<JDAEngine> {
+class JDAOverwrite(override val kdp: KDP, private val overwrite: PermissionOverride) : Overwrite {
     override val id: Snowflake
         get() = overwrite.snowflake
 

@@ -18,16 +18,15 @@
 
 package dev.cubxity.kdp.behavior
 
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.MentionableEntity
 import dev.cubxity.kdp.entity.User
 import dev.cubxity.kdp.exception.userNotFound
 
-interface UserBehavior<TEngine : KDPEngine<TEngine>> : MentionableEntity<TEngine> {
+interface UserBehavior : MentionableEntity {
     override val mention: String get() = "<@${id}>"
 
-    suspend fun asUser(): User<TEngine> =
+    suspend fun asUser(): User =
         asUserOrNull() ?: userNotFound(id)
 
-    suspend fun asUserOrNull(): User<TEngine>?
+    suspend fun asUserOrNull(): User?
 }

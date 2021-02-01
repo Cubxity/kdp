@@ -18,14 +18,12 @@
 
 package dev.cubxity.kdp.behavior.channel
 
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.channel.GuildMessageChannel
 import dev.cubxity.kdp.exception.channelNotFound
 
-interface GuildMessageChannelBehavior<TEngine : KDPEngine<TEngine>> :
-    GuildChannelBehavior<TEngine>, MessageChannelBehavior<TEngine> {
-    override suspend fun asChannel(): GuildMessageChannel<TEngine> =
+interface GuildMessageChannelBehavior : GuildChannelBehavior, MessageChannelBehavior {
+    override suspend fun asChannel(): GuildMessageChannel =
         asChannelOrNull() ?: channelNotFound(id)
 
-    override suspend fun asChannelOrNull(): GuildMessageChannel<TEngine>?
+    override suspend fun asChannelOrNull(): GuildMessageChannel?
 }

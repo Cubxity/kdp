@@ -19,11 +19,10 @@
 package dev.cubxity.kdp.event
 
 import dev.cubxity.kdp.KDPObject
-import dev.cubxity.kdp.engine.KDPEngine
 
 /**
  * Represents a [gateway](https://discord.com/developers/docs/topics/gateway) event.
  */
-interface Event<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
+interface Event : KDPObject {
     val shard: Int
 }

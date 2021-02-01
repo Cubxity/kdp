@@ -19,7 +19,6 @@
 package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildMessageChannel
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.entity.User
@@ -28,20 +27,20 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import dev.cubxity.kdp.entity.Message as KDPMessage
 
-class JDAMessage(override val kdp: KDP<JDAEngine>, private val message: Message) : KDPMessage<JDAEngine> {
+class JDAMessage(override val kdp: KDP, private val message: Message) : KDPMessage {
     override val id: Snowflake
         get() = message.snowflake
 
     override val channelId: Snowflake
         get() = message.channel.snowflake
 
-    override val channel: MessageChannel<JDAEngine>
+    override val channel: MessageChannel
         get() = when (val channel = message.channel) {
             is TextChannel -> JDAGuildMessageChannel(kdp, channel)
             else -> TODO("Not yet implemented")
         }
 
-    override val author: User<JDAEngine>
+    override val author: User
         get() = JDAUser(kdp, message.author)
 
     override val content: String

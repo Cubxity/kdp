@@ -20,9 +20,21 @@ package dev.cubxity.kdp.engines.jda.util
 
 import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.utils.concurrent.Task
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 suspend inline fun <T> RestAction<T>.await(): T =
     submit().await()
 
 suspend inline fun <T> RestAction<T>.awaitOrNull(): T? =
     runCatching { submit().await() }.getOrNull()
+
+suspend inline fun <T> Task<T>.await(): T = suspendCoroutine { cont ->
+    onSuccess { cont.resume(it) }.onError { cont.resumeWithException(it) }
+}
+
+suspend inline fun <T> Task<T>.awaitOrNull(): T? = suspendCoroutine { cont ->
+    onSuccess { cont.resume(it) }.onError { cont.resume(null) }
+}

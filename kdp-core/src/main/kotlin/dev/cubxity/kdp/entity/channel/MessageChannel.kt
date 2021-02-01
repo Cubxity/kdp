@@ -19,6 +19,5 @@
 package dev.cubxity.kdp.entity.channel
 
 import dev.cubxity.kdp.behavior.channel.MessageChannelBehavior
-import dev.cubxity.kdp.engine.KDPEngine
 
-interface MessageChannel<TEngine : KDPEngine<TEngine>> : Channel<TEngine>, MessageChannelBehavior<TEngine>
+interface MessageChannel : Channel, MessageChannelBehavior

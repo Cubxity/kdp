@@ -19,7 +19,6 @@
 package dev.cubxity.kdp.engines.jda.entity.channel
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.JDAMessage
 import dev.cubxity.kdp.engines.jda.entity.snowflake
 import dev.cubxity.kdp.engines.jda.util.await
@@ -34,9 +33,9 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import dev.cubxity.kdp.entity.channel.GuildMessageChannel as KDPGuildMessageChannel
 
 class JDAGuildMessageChannel(
-    kdp: KDP<JDAEngine>,
+    kdp: KDP,
     private val channel: TextChannel
-) : JDAGuildChannel(kdp, channel), KDPGuildMessageChannel<JDAEngine> {
+) : JDAGuildChannel(kdp, channel), KDPGuildMessageChannel {
     override val guildId: Snowflake
         get() = channel.guild.snowflake
 

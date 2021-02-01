@@ -19,11 +19,9 @@
 package dev.cubxity.kdp.entity.channel
 
 import dev.cubxity.kdp.behavior.channel.GuildMessageChannelBehavior
-import dev.cubxity.kdp.engine.KDPEngine
 
-interface GuildMessageChannel<TEngine : KDPEngine<TEngine>>
-    : GuildChannel<TEngine>, MessageChannel<TEngine>, GuildMessageChannelBehavior<TEngine> {
-    override suspend fun asChannel(): GuildMessageChannel<TEngine> = this
+interface GuildMessageChannel : GuildChannel, MessageChannel, GuildMessageChannelBehavior {
+    override suspend fun asChannel(): GuildMessageChannel = this
 
-    override suspend fun asChannelOrNull(): GuildMessageChannel<TEngine> = this
+    override suspend fun asChannelOrNull(): GuildMessageChannel = this
 }

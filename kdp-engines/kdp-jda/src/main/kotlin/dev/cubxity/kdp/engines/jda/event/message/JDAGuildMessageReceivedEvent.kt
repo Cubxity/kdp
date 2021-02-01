@@ -19,7 +19,6 @@
 package dev.cubxity.kdp.engines.jda.event.message
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.JDAGuild
 import dev.cubxity.kdp.engines.jda.entity.JDAMember
 import dev.cubxity.kdp.engines.jda.entity.JDAMessage
@@ -30,9 +29,9 @@ import dev.cubxity.kdp.event.message.MessageCreateEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 
 class JDAGuildMessageReceivedEvent(
-    override val kdp: KDP<JDAEngine>,
+    override val kdp: KDP,
     private val event: GuildMessageReceivedEvent
-) : MessageCreateEvent<JDAEngine> {
+) : MessageCreateEvent {
     override val shard: Int
         get() = event.shard
 

@@ -19,21 +19,20 @@
 package dev.cubxity.kdp.event.message
 
 import dev.cubxity.kdp.behavior.GuildBehavior
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.Guild
 import dev.cubxity.kdp.entity.Member
 import dev.cubxity.kdp.entity.Message
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.event.Event
 
-interface MessageCreateEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
-    val message: Message<TEngine>
+interface MessageCreateEvent : Event {
+    val message: Message
 
     val guildId: Snowflake?
 
-    val guild: GuildBehavior<TEngine>?
+    val guild: GuildBehavior?
 
-    val member: Member<TEngine>?
+    val member: Member?
 
-    suspend fun getGuild(): Guild<TEngine>?
+    suspend fun getGuild(): Guild?
 }

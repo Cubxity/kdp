@@ -19,9 +19,8 @@
 package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.KDPObject
-import dev.cubxity.kdp.engine.KDPEngine
 
-interface ClientStatus<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
+interface ClientStatus : KDPObject {
     val desktop: Client.Desktop?
     val mobile: Client.Mobile?
     val web: Client.Web?

@@ -19,7 +19,6 @@
 package dev.cubxity.kdp.engines.jda.entity.channel
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.JDAGuild
 import dev.cubxity.kdp.engines.jda.entity.JDAOverwrite
 import dev.cubxity.kdp.engines.jda.entity.snowflake
@@ -33,9 +32,9 @@ import dev.cubxity.kdp.entity.channel.ChannelType as KDPChannelType
 import dev.cubxity.kdp.entity.channel.GuildChannel as KDPGuildChannel
 
 open class JDAGuildChannel(
-    override val kdp: KDP<JDAEngine>,
+    override val kdp: KDP,
     private val channel: GuildChannel
-) : KDPGuildChannel<JDAEngine> {
+) : KDPGuildChannel {
     override val id: Snowflake
         get() = channel.snowflake
 
@@ -78,7 +77,7 @@ open class JDAGuildChannel(
     override val applicationId: Snowflake?
         get() = null // Not supported
 
-    override val parent: KDPGuildChannel<JDAEngine>?
+    override val parent: KDPGuildChannel?
         get() = channel.parent?.let { JDAGuildChannel(kdp, it) }
 
     override val lastPinTimestamp: String?

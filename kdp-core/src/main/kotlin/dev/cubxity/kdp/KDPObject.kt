@@ -19,13 +19,12 @@
 package dev.cubxity.kdp
 
 import dev.cubxity.kdp.annotation.KDPUnsafe
-import dev.cubxity.kdp.engine.KDPEngine
 
 /**
  * An instance that contains reference to [KDP].
  */
-interface KDPObject<TEngine : KDPEngine<TEngine>> {
-    val kdp: KDP<TEngine>
+interface KDPObject {
+    val kdp: KDP
 
     /**
      * Retrieve the underlying object.

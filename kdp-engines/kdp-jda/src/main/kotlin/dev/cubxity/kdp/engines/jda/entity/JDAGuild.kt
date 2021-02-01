@@ -19,7 +19,6 @@
 package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildChannel
 import dev.cubxity.kdp.engines.jda.util.await
 import dev.cubxity.kdp.engines.jda.util.awaitOrNull
@@ -35,17 +34,17 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import dev.cubxity.kdp.entity.Guild as KDPGuild
 
-class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDPGuild<JDAEngine> {
+class JDAGuild(override val kdp: KDP, private val guild: Guild) : KDPGuild {
     override val id: Snowflake
         get() = guild.snowflake
 
     override val name: String
         get() = guild.name
 
-    override val icon: Icon<JDAEngine>?
+    override val icon: Icon?
         get() = guild.iconId?.let { Icon(kdp, this, it) }
 
-    override val splash: KDPGuild.Splash<JDAEngine>?
+    override val splash: KDPGuild.Splash?
         get() = guild.splashId?.let { KDPGuild.Splash(kdp, this, it) }
 
     override val isOwner: Boolean
@@ -129,7 +128,7 @@ class JDAGuild(override val kdp: KDP<JDAEngine>, private val guild: Guild) : KDP
     override val description: String?
         get() = guild.description
 
-    override val banner: KDPGuild.Banner<JDAEngine>?
+    override val banner: KDPGuild.Banner?
         get() = guild.bannerId?.let { KDPGuild.Banner(kdp, this, it) }
 
     override val premiumTier: Int

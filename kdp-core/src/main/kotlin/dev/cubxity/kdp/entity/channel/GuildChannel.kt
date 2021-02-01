@@ -19,14 +19,13 @@
 package dev.cubxity.kdp.entity.channel
 
 import dev.cubxity.kdp.behavior.channel.GuildChannelBehavior
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.Overwrite
 import dev.cubxity.kdp.entity.Snowflake
 
-interface GuildChannel<TEngine : KDPEngine<TEngine>> : Channel<TEngine>, GuildChannelBehavior<TEngine> {
+interface GuildChannel : Channel, GuildChannelBehavior {
     val position: Int?
 
-    val permissionOverwrites: List<Overwrite<TEngine>>?
+    val permissionOverwrites: List<Overwrite>?
 
     val name: String?
 
@@ -44,13 +43,13 @@ interface GuildChannel<TEngine : KDPEngine<TEngine>> : Channel<TEngine>, GuildCh
 
     val applicationId: Snowflake?
 
-    val parent: GuildChannel<TEngine>?
+    val parent: GuildChannel?
 
     val lastPinTimestamp: String?
 
-    override suspend fun asChannel(): GuildChannel<TEngine> = this
+    override suspend fun asChannel(): GuildChannel = this
 
-    override suspend fun asChannelOrNull(): GuildChannel<TEngine> = this
+    override suspend fun asChannelOrNull(): GuildChannel = this
 }
 
 sealed class ChannelType(val value: Int) {

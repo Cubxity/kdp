@@ -27,7 +27,7 @@ suspend fun main() {
     val token = System.getenv("TOKEN") ?: error("Please specify TOKEN as an environment variable")
 
     kdp(JDA, token) {
-        engine.on<MessageCreateEvent<*>> {
+        engine.on<MessageCreateEvent> {
             println("${message.author.username}: ${message.content}")
         }
     }.login()

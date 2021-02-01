@@ -22,22 +22,22 @@ import dev.cubxity.kdp.KDP
 import mu.KLogger
 import kotlin.coroutines.CoroutineContext
 
-class KDPEngineEnvironmentImpl<TEngine : KDPEngine<TEngine>>(
+class KDPEngineEnvironmentImpl(
     override val parentCoroutineContext: CoroutineContext,
     override val log: KLogger,
     override val token: String,
-    private val modules: List<KDP<TEngine>.() -> Unit>
-) : KDPEngineEnvironment<TEngine> {
-    private var _kdp: KDP<TEngine>? = null
+    private val modules: List<KDP.() -> Unit>
+) : KDPEngineEnvironment {
+    private var _kdp: KDP? = null
 
-    override val kdp: KDP<TEngine>
+    override val kdp: KDP
         get() = _kdp ?: error("KDP has not been initialized")
 
-    override fun start(engine: TEngine) {
+    override fun start(engine: KDPEngine) {
         if (_kdp !== null) {
             error("KDP has already been initialized")
         }
-        val kdp = KDP<TEngine>(parentCoroutineContext)
+        val kdp = KDP(parentCoroutineContext)
         kdp.start(engine)
         _kdp = kdp
 

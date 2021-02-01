@@ -18,8 +18,8 @@
 
 package dev.cubxity.kdp.engine
 
-abstract class BaseKDPEngine<TEngine : KDPEngine<TEngine>>(
-    override val environment: KDPEngineEnvironment<TEngine>
-) : KDPEngine<TEngine> {
+abstract class BaseKDPEngine(
+    override val environment: KDPEngineEnvironment
+) : KDPEngine {
     open class Configuration : KDPEngine.Configuration()
 }

@@ -20,7 +20,6 @@ package dev.cubxity.kdp.event.message
 
 import dev.cubxity.kdp.behavior.GuildBehavior
 import dev.cubxity.kdp.behavior.channel.MessageChannelBehavior
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.Guild
 import dev.cubxity.kdp.entity.Message
 import dev.cubxity.kdp.entity.Snowflake
@@ -28,23 +27,23 @@ import dev.cubxity.kdp.entity.channel.MessageChannel
 import dev.cubxity.kdp.event.Event
 import dev.cubxity.kdp.exception.channelNotFound
 
-interface MessageDeleteEvent<TEngine : KDPEngine<TEngine>> : Event<TEngine> {
+interface MessageDeleteEvent : Event {
     val messageId: Snowflake
 
     val channelId: Snowflake
 
     val guildId: Snowflake?
 
-    val message: Message<TEngine>?
+    val message: Message?
 
-    val channel: MessageChannelBehavior<TEngine>?
+    val channel: MessageChannelBehavior?
 
-    val guild: GuildBehavior<TEngine>?
+    val guild: GuildBehavior?
 
-    suspend fun getChannel(): MessageChannel<TEngine> =
+    suspend fun getChannel(): MessageChannel =
         getChannelOrNull() ?: channelNotFound(channelId)
 
-    suspend fun getChannelOrNull(): MessageChannel<TEngine>?
+    suspend fun getChannelOrNull(): MessageChannel?
 
-    suspend fun getGuild(): Guild<TEngine>?
+    suspend fun getGuild(): Guild?
 }

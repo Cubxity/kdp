@@ -34,9 +34,9 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 
 @OptIn(KDPUnsafe::class)
 class JDAEngine(
-    environment: KDPEngineEnvironment<JDAEngine>,
+    environment: KDPEngineEnvironment,
     configure: Configuration.() -> Unit
-) : BaseKDPEngine<JDAEngine>(environment) {
+) : BaseKDPEngine(environment) {
     class Configuration : BaseKDPEngine.Configuration()
 
     private val configuration = Configuration().apply(configure)

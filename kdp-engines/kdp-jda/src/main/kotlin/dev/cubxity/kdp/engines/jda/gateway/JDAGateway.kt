@@ -37,16 +37,16 @@ import net.dv8tion.jda.api.hooks.IEventManager
 import kotlin.coroutines.CoroutineContext
 
 @OptIn(KDPUnsafe::class)
-class JDAGateway(private val engine: JDAEngine) : Gateway<JDAEngine>, CoroutineScope, IEventManager {
-    private val _eventFlow = MutableSharedFlow<Event<JDAEngine>>(extraBufferCapacity = Int.MAX_VALUE)
+class JDAGateway(private val engine: JDAEngine) : Gateway, CoroutineScope, IEventManager {
+    private val _eventFlow = MutableSharedFlow<Event>(extraBufferCapacity = Int.MAX_VALUE)
 
-    override val kdp: KDP<JDAEngine>
+    override val kdp: KDP
         get() = engine.kdp
 
     override val coroutineContext: CoroutineContext =
         Dispatchers.Default + SupervisorJob()
 
-    override val events: SharedFlow<Event<JDAEngine>>
+    override val events: SharedFlow<Event>
         get() = _eventFlow
 
     override fun handle(event: GenericEvent) {

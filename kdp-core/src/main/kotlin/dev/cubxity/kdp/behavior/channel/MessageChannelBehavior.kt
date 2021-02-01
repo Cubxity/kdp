@@ -18,19 +18,18 @@
 
 package dev.cubxity.kdp.behavior.channel
 
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.entity.Message
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.exception.messageNotFound
 import kotlinx.coroutines.flow.Flow
 
-interface MessageChannelBehavior<TEngine : KDPEngine<TEngine>> : ChannelBehavior<TEngine> {
-    val messages: Flow<Message<TEngine>>
+interface MessageChannelBehavior : ChannelBehavior {
+    val messages: Flow<Message>
 
-    suspend fun getMessage(messageId: Snowflake): Message<TEngine> =
+    suspend fun getMessage(messageId: Snowflake): Message =
         getMessageOrNull(messageId) ?: messageNotFound(id, messageId)
 
-    suspend fun getMessageOrNull(messageId: Snowflake): Message<TEngine>?
+    suspend fun getMessageOrNull(messageId: Snowflake): Message?
 
     suspend fun deleteMessage(messageId: Snowflake)
 

@@ -19,10 +19,9 @@
 package dev.cubxity.kdp.gateway
 
 import dev.cubxity.kdp.KDPObject
-import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.event.Event
 import kotlinx.coroutines.flow.SharedFlow
 
-interface Gateway<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
-    val events: SharedFlow<Event<TEngine>>
+interface Gateway : KDPObject {
+    val events: SharedFlow<Event>
 }

@@ -20,12 +20,11 @@ package dev.cubxity.kdp.engines.jda.event
 
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.annotation.KDPUnsafe
-import dev.cubxity.kdp.engines.jda.JDAEngine
 import net.dv8tion.jda.api.events.GenericEvent
 import dev.cubxity.kdp.event.Event as KDPEvent
 
 @KDPUnsafe
-class JDARawEvent(override val kdp: KDP<JDAEngine>, val event: GenericEvent) : KDPEvent<JDAEngine> {
+class JDARawEvent(override val kdp: KDP, val event: GenericEvent) : KDPEvent {
     override val shard: Int
         get() = event.shard
 }

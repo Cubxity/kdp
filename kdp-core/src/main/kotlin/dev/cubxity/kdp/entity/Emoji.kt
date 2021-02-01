@@ -18,15 +18,14 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.engine.KDPEngine
 import kotlinx.coroutines.flow.Flow
 
-interface Emoji<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+interface Emoji : Entity {
     val name: String?
 
-    val roles: Flow<Role<TEngine>>
+    val roles: Flow<Role>
 
-    val user: User<TEngine>?
+    val user: User?
 
     val isRequireColons: Boolean
 

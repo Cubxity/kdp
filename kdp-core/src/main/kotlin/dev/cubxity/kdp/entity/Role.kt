@@ -18,9 +18,7 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.engine.KDPEngine
-
-interface Role<TEngine : KDPEngine<TEngine>> : Entity<TEngine> {
+interface Role : Entity {
     val name: String
 
     val color: Int

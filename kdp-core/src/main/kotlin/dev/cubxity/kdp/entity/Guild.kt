@@ -21,14 +21,13 @@ package dev.cubxity.kdp.entity
 import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.behavior.GuildBehavior
-import dev.cubxity.kdp.engine.KDPEngine
 
-interface Guild<TEngine : KDPEngine<TEngine>> : GuildBehavior<TEngine> {
+interface Guild : GuildBehavior {
     val name: String
 
-    val icon: Icon<TEngine>?
+    val icon: Icon?
 
-    val splash: Splash<TEngine>?
+    val splash: Splash?
 
     val isOwner: Boolean
 
@@ -76,7 +75,7 @@ interface Guild<TEngine : KDPEngine<TEngine>> : GuildBehavior<TEngine> {
 
     val description: String?
 
-    val banner: Banner<TEngine>?
+    val banner: Banner?
 
     val premiumTier: Int
 
@@ -88,11 +87,11 @@ interface Guild<TEngine : KDPEngine<TEngine>> : GuildBehavior<TEngine> {
 
     val maxVideoChannelUsers: Int?
 
-    data class Splash<TEngine : KDPEngine<TEngine>>(
-        override val kdp: KDP<TEngine>,
-        val guild: Guild<TEngine>,
+    data class Splash(
+        override val kdp: KDP,
+        val guild: Guild,
         override val id: String
-    ) : KDPObject<TEngine>, ImageHolder {
+    ) : KDPObject, ImageHolder {
         override fun get(format: ImageFormat): String =
             id.let { SPLASH_URL.format(guild.id, it, format.extension) }
 
@@ -101,11 +100,11 @@ interface Guild<TEngine : KDPEngine<TEngine>> : GuildBehavior<TEngine> {
         }
     }
 
-    data class Banner<TEngine : KDPEngine<TEngine>>(
-        override val kdp: KDP<TEngine>,
-        val guild: Guild<TEngine>,
+    data class Banner(
+        override val kdp: KDP,
+        val guild: Guild,
         override val id: String
-    ) : KDPObject<TEngine>, ImageHolder {
+    ) : KDPObject, ImageHolder {
         override fun get(format: ImageFormat): String =
             id.let { BANNER_URL.format(guild.id, it, format.extension) }
 
@@ -131,7 +130,7 @@ sealed class DefaultMessageNotifications(val value: Int) {
 }
 
 sealed class ExplicitContentFilter(val value: Int) {
-    class Unknown(value: Int): ExplicitContentFilter(value)
+    class Unknown(value: Int) : ExplicitContentFilter(value)
     object Disabled : ExplicitContentFilter(0)
     object MembersWithoutRoles : ExplicitContentFilter(1)
     object AllMembers : ExplicitContentFilter(2)

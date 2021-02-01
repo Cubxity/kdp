@@ -19,10 +19,9 @@
 package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.KDPObject
-import dev.cubxity.kdp.engine.KDPEngine
 import java.time.Instant
 
-interface Activity<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
+interface Activity : KDPObject {
     val name: String
 
     val activityType: ActivityType
@@ -37,7 +36,7 @@ interface Activity<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine> {
 
     val details: String?
 
-    val emoji: Emoji<TEngine>?
+    val emoji: Emoji?
 
     val state: String?
 

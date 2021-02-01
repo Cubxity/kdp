@@ -23,7 +23,7 @@ import dev.cubxity.kdp.engine.KDPEngineFactory
 
 object JDA : KDPEngineFactory<JDAEngine, JDAEngine.Configuration> {
     override fun create(
-        environment: KDPEngineEnvironment<JDAEngine>,
+        environment: KDPEngineEnvironment,
         configure: JDAEngine.Configuration.() -> Unit
     ): JDAEngine = JDAEngine(environment, configure)
 }

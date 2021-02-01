@@ -22,24 +22,23 @@ import dev.cubxity.kdp.engine.KDPEngine
 import dev.cubxity.kdp.engine.KDPEngineEnvironment
 import dev.cubxity.kdp.engine.KDPEngineEnvironmentImpl
 import dev.cubxity.kdp.engine.KDPEngineFactory
-import dev.cubxity.kdp.event.Event
 import dev.cubxity.kdp.processing.ProcessingPipeline
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import kotlin.coroutines.CoroutineContext
 
-class KDP<TEngine : KDPEngine<TEngine>>(
+class KDP(
     parentCoroutineContext: CoroutineContext = Dispatchers.Default
 ) : ProcessingPipeline(), CoroutineScope {
     private val job = SupervisorJob(parentCoroutineContext[Job])
-    private var _engine: TEngine? = null
+    private var _engine: KDPEngine? = null
 
     override val coroutineContext: CoroutineContext = parentCoroutineContext + job
 
-    val engine: TEngine
+    val engine: KDPEngine
         get() = _engine ?: error("KDP has not been started")
 
-    fun start(engine: TEngine) {
+    fun start(engine: KDPEngine) {
         if (!isActive) error("KDP has already been disposed")
 
         if (_engine !== null) {
@@ -66,12 +65,12 @@ class KDP<TEngine : KDPEngine<TEngine>>(
  * @param configure configuration block for the engine.
  * @param module KDP module block.
  */
-fun <TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> kdp(
+fun <TEngine : KDPEngine, TConfiguration : KDPEngine.Configuration> kdp(
     factory: KDPEngineFactory<TEngine, TConfiguration>,
     token: String,
     parentCoroutineContext: CoroutineContext = Dispatchers.Default,
     configure: TConfiguration.() -> Unit = {},
-    module: KDP<TEngine>.() -> Unit = {}
+    module: KDP.() -> Unit = {}
 ): TEngine {
     val environment = KDPEngineEnvironmentImpl(
         parentCoroutineContext,
@@ -86,9 +85,9 @@ fun <TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> kdp
 /**
  * Creates [KDP] with the given [factory], [environment] and [configure] block.
  */
-fun <TEngine : KDPEngine<TEngine>, TConfiguration : KDPEngine.Configuration> kdp(
+fun <TEngine : KDPEngine, TConfiguration : KDPEngine.Configuration> kdp(
     factory: KDPEngineFactory<TEngine, TConfiguration>,
-    environment: KDPEngineEnvironment<TEngine>,
+    environment: KDPEngineEnvironment,
     configure: TConfiguration.() -> Unit = {}
 ): TEngine {
     val engine = factory.create(environment, configure)

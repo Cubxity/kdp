@@ -19,12 +19,11 @@
 package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.KDPObject
-import dev.cubxity.kdp.engine.KDPEngine
 
 /**
  * Represents an entity that's identified by it's [id].
  */
-interface Entity<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine>, Comparable<Entity<*>> {
+interface Entity : KDPObject, Comparable<Entity> {
     /**
      * The unique identifier of this entity.
      */
@@ -33,14 +32,14 @@ interface Entity<TEngine : KDPEngine<TEngine>> : KDPObject<TEngine>, Comparable<
     /**
      * Compares entities on [id].
      */
-    override operator fun compareTo(other: Entity<*>): Int =
+    override operator fun compareTo(other: Entity): Int =
         comparator.compare(this, other)
 
     companion object {
-        private val comparator = compareBy<Entity<*>> { it.id }
+        private val comparator = compareBy<Entity> { it.id }
     }
 }
 
-interface MentionableEntity<TEngine: KDPEngine<TEngine>> : Entity<TEngine> {
+interface MentionableEntity : Entity {
     val mention: String
 }
