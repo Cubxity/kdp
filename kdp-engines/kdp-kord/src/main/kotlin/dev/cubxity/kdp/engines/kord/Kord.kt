@@ -23,7 +23,7 @@ import dev.cubxity.kdp.engine.KDPEngineFactory
 
 object Kord : KDPEngineFactory<KordEngine, KordEngine.Configuration> {
     override fun create(
-        environment: KDPEngineEnvironment<KordEngine>,
+        environment: KDPEngineEnvironment,
         configure: KordEngine.Configuration.() -> Unit
     ): KordEngine = KordEngine(environment, configure)
 }

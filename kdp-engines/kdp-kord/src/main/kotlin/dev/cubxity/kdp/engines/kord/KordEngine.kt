@@ -29,15 +29,15 @@ import dev.kord.gateway.PrivilegedIntent
 import dev.kord.gateway.Intent as KordIntent
 
 class KordEngine(
-    environment: KDPEngineEnvironment<KordEngine>,
+    environment: KDPEngineEnvironment,
     configure: Configuration.() -> Unit
-) : BaseKDPEngine<KordEngine>(environment) {
+) : BaseKDPEngine(environment) {
     class Configuration : BaseKDPEngine.Configuration()
 
     private val configuration = Configuration().apply(configure)
     private var kord: Kord? = null
 
-    override val gateway: Gateway<KordEngine>
+    override val gateway: Gateway
         get() = TODO("Not yet implemented")
 
     @KDPUnsafe
