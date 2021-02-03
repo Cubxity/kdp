@@ -18,30 +18,26 @@
 
 package dev.cubxity.kdp.entity
 
+import dev.cubxity.kdp.KDP
 import dev.cubxity.kdp.KDPObject
 
-/**
- * Represents an entity that's identified by it's [id].
- */
-interface Entity : KDPObject, Comparable<Entity> {
-    /**
-     * The unique identifier of this entity.
-     */
-    val id: Snowflake
+sealed class ReactionEmoji : KDPObject, Mentionable {
+    abstract val name: String
 
-    /**
-     * Compares entities on [id].
-     */
-    override operator fun compareTo(other: Entity): Int =
-        comparator.compare(this, other)
+    data class Custom(
+        override val kdp: KDP,
+        override val id: Snowflake,
+        override val name: String,
+        val isAnimated: Boolean
+    ) : ReactionEmoji(), Entity {
+        override val mention: String
+            get() = if (isAnimated) "<a:$name:$id>" else "<:$name:$id>"
+    }
 
-    companion object {
-        private val comparator = compareBy<Entity> { it.id }
+    data class Unicode(
+        override val kdp: KDP,
+        override val name: String
+    ) : ReactionEmoji() {
+        override val mention: String get() = name
     }
 }
-
-interface Mentionable {
-    val mention: String
-}
-
-interface MentionableEntity : Entity, Mentionable

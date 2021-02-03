@@ -26,6 +26,8 @@ inline class Snowflake(val value: Long) : Comparable<Snowflake> {
 
     override fun compareTo(other: Snowflake): Int =
         value.shr(22).compareTo(other.value.shr(22))
+
+    override fun toString(): String = "$value"
 }
 
 @Suppress("NOTHING_TO_INLINE")

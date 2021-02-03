@@ -19,7 +19,7 @@
 package dev.cubxity.kdp.engines.jda.entity
 
 import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildMessageChannel
+import dev.cubxity.kdp.engines.jda.entity.channel.JDAGuildTextChannel
 import dev.cubxity.kdp.entity.Snowflake
 import dev.cubxity.kdp.entity.User
 import dev.cubxity.kdp.entity.channel.MessageChannel
@@ -36,7 +36,7 @@ class JDAMessage(override val kdp: KDP, private val message: Message) : KDPMessa
 
     override val channel: MessageChannel
         get() = when (val channel = message.channel) {
-            is TextChannel -> JDAGuildMessageChannel(kdp, channel)
+            is TextChannel -> JDAGuildTextChannel(kdp, channel)
             else -> TODO("Not yet implemented")
         }
 

@@ -21,6 +21,8 @@ package dev.cubxity.kdp.demo
 import dev.cubxity.kdp.engine.on
 import dev.cubxity.kdp.engines.jda.JDA
 import dev.cubxity.kdp.event.message.MessageCreateEvent
+import dev.cubxity.kdp.event.message.ReactionAddEvent
+import dev.cubxity.kdp.event.message.ReactionRemoveEvent
 import dev.cubxity.kdp.kdp
 
 suspend fun main() {
@@ -29,6 +31,12 @@ suspend fun main() {
     kdp(JDA, token) {
         engine.on<MessageCreateEvent> {
             println("${message.author.username}: ${message.content}")
+        }
+        engine.on<ReactionAddEvent> {
+            println("${message.id}: +$emoji")
+        }
+        engine.on<ReactionRemoveEvent> {
+            println("${message.id}: +$emoji")
         }
     }.login()
 }

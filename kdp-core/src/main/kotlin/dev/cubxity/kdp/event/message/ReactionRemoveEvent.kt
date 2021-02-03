@@ -19,31 +19,54 @@
 package dev.cubxity.kdp.event.message
 
 import dev.cubxity.kdp.behavior.GuildBehavior
+import dev.cubxity.kdp.behavior.MemberBehavior
+import dev.cubxity.kdp.behavior.MessageBehavior
+import dev.cubxity.kdp.behavior.UserBehavior
 import dev.cubxity.kdp.behavior.channel.MessageChannelBehavior
-import dev.cubxity.kdp.entity.Guild
-import dev.cubxity.kdp.entity.Message
-import dev.cubxity.kdp.entity.Snowflake
+import dev.cubxity.kdp.entity.*
 import dev.cubxity.kdp.entity.channel.MessageChannel
 import dev.cubxity.kdp.event.Event
 import dev.cubxity.kdp.exception.channelNotFound
+import dev.cubxity.kdp.exception.messageNotFound
+import dev.cubxity.kdp.exception.userNotFound
 
-interface MessageDeleteEvent : Event {
-    val messageId: Snowflake
+interface ReactionRemoveEvent : Event {
+    val userId: Snowflake
 
     val channelId: Snowflake
 
+    val messageId: Snowflake
+
     val guildId: Snowflake?
 
-    val message: Message?
+    val user: UserBehavior
+
+    val userAsMember: MemberBehavior?
 
     val channel: MessageChannelBehavior
 
+    val message: MessageBehavior
+
     val guild: GuildBehavior?
+
+    val emoji: ReactionEmoji
+
+    suspend fun getUser(): User =
+        getUserOrNull() ?: userNotFound(userId)
+
+    suspend fun getUserOrNull(): User?
+
+    suspend fun getUserAsMember(): Member?
 
     suspend fun getChannel(): MessageChannel =
         getChannelOrNull() ?: channelNotFound(channelId)
 
     suspend fun getChannelOrNull(): MessageChannel?
+
+    suspend fun getMessage(): Message =
+        getMessageOrNull() ?: messageNotFound(channelId, messageId)
+
+    suspend fun getMessageOrNull(): Message?
 
     suspend fun getGuild(): Guild?
 }
