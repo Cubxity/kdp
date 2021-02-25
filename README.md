@@ -12,7 +12,7 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
     init {
         example {
             handler {
-                val user: User = args["user"] ?: error("User not found")
+                val user: User = args.receive("user")
                 send("You are referring to ${user.asTag}! \uD83E\uDD80")
             }
         }

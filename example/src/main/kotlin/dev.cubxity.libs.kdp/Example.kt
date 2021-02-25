@@ -54,20 +54,20 @@ class ExampleModule(kdp: KDP) : Module(kdp, "example") {
     init {
         example {
             handler {
-                val user: User = args["user"] ?: error("User not found")
+                val user: User = args.receive("user")
                 send("You are referring to ${user.asTag}!")
             }
         }
         sanitize {
             handler {
-                val msg: String = args["msg"]!!
+                val msg: String = args.receive("msg")
                 val sanitized = msg.sanitize(this)
                 send("You said $sanitized!")
             }
         }
         embedCommand {
             handler {
-                val msg: String = args["msg"]!!
+                val msg: String = args.receive("msg")
                 val embed = embed {
                     title = "Echo"
 

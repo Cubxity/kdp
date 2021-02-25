@@ -17,12 +17,12 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.4.30"
     id("maven-publish")
 }
 
 group = "dev.cubxity.libs.kdp"
-version = "1.1.2"
+version = "1.2.0"
 
 repositories {
     mavenCentral()

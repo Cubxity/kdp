@@ -21,6 +21,7 @@ package dev.cubxity.libs.kdp.serialization.serializers
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import dev.cubxity.libs.kdp.serialization.ArgumentSerializer
 import dev.cubxity.libs.kdp.utils.FuzzyUtils
+import dev.cubxity.libs.kdp.utils.await
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.Role
@@ -33,25 +34,25 @@ class MemberSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSeriali
         const val DEFAULT_FLAGS = FUZZY
 
         private val REGEX =
-                "(\\d{1,19})|<@(!?)(\\d{1,19})>|@?(?<name>[^#]{2,32})(?:#(?<discriminator>\\d{4}))?".toRegex()
+            "(\\d{1,19})|<@(!?)(\\d{1,19})>|@?(?<name>[^#]{2,32})(?:#(?<discriminator>\\d{4}))?".toRegex()
     }
 
     private val isFuzzy
         get() = flags and FUZZY != 0
 
-    override fun serialize(ctx: CommandProcessingContext, s: String): Member? {
+    override suspend fun serialize(ctx: CommandProcessingContext, s: String): Member? {
         val match = REGEX.matchEntire(s)?.groupValues ?: return null
 
         val id = match.getOrNull(1)?.takeIf { it.isNotEmpty() } ?: match.getOrNull(3)?.takeIf { it.isNotEmpty() }
         return if (id != null)
-            ctx.guild?.getMemberById(id.toLongOrNull() ?: return null)
+            ctx.guild?.retrieveMemberById(id.toLongOrNull() ?: return null)?.await()
         else {
             val n = match[4]
             val d = match.getOrNull(5)?.takeIf { it.isNotEmpty() }
             ctx.guild?.memberCache?.let {
                 it.find { m -> m.user.name == n && (d == null || m.user.discriminator == d) }
-                        ?: if (isFuzzy) FuzzyUtils.extract(n, it.asList(), Member::getEffectiveName)?.item
-                        else null
+                    ?: if (isFuzzy) FuzzyUtils.extract(n, it.asList(), Member::getEffectiveName)?.item
+                    else null
             }
         }
     }
@@ -64,25 +65,25 @@ class UserSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
         const val DEFAULT_FLAGS = FUZZY
 
         private val REGEX =
-                "(\\d{1,19})|<@(!?)(\\d{1,19})>|@?(?<name>[^#]{2,32})(?:#(?<discriminator>\\d{4}))?".toRegex()
+            "(\\d{1,19})|<@(!?)(\\d{1,19})>|@?(?<name>[^#]{2,32})(?:#(?<discriminator>\\d{4}))?".toRegex()
     }
 
     private val isFuzzy
         get() = flags and MemberSerializer.FUZZY != 0
 
-    override fun serialize(ctx: CommandProcessingContext, s: String): User? {
+    override suspend fun serialize(ctx: CommandProcessingContext, s: String): User? {
         val match = REGEX.matchEntire(s)?.groupValues ?: return null
 
         val id = match.getOrNull(1)?.takeIf { it.isNotEmpty() } ?: match.getOrNull(3)?.takeIf { it.isNotEmpty() }
         return if (id != null)
-            ctx.event.jda.getUserById(id.toLongOrNull() ?: return null)
+            ctx.event.jda.retrieveUserById(id.toLongOrNull() ?: return null).await()
         else {
             val n = match[4]
             val d = match.getOrNull(5)?.takeIf { it.isNotEmpty() }
             val users = ctx.guild?.memberCache?.mapNotNull { it.user }
             users?.find { it.name == n && (d == null || it.discriminator == d) }
-                    ?: if (isFuzzy) FuzzyUtils.extract(n, users ?: listOf(), User::getName)?.item
-                    else null
+                ?: if (isFuzzy) FuzzyUtils.extract(n, users ?: listOf(), User::getName)?.item
+                else null
         }
     }
 }
@@ -98,7 +99,7 @@ class ChannelSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerial
     private val isFuzzy
         get() = flags and FUZZY != 0
 
-    override fun serialize(ctx: CommandProcessingContext, s: String): MessageChannel? {
+    override suspend fun serialize(ctx: CommandProcessingContext, s: String): MessageChannel? {
         val match = REGEX.matchEntire(s)?.groups ?: return null
 
         val id = match["id"] ?: match["tag"]
@@ -108,8 +109,8 @@ class ChannelSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerial
             val name = match["name"]?.value ?: return null
             val channels = ctx.guild?.textChannels
             channels?.find { it.name.equals(name, true) }
-                    ?: if (isFuzzy) FuzzyUtils.extract(name, channels ?: listOf(), MessageChannel::getName)?.item
-                    else null
+                ?: if (isFuzzy) FuzzyUtils.extract(name, channels ?: listOf(), MessageChannel::getName)?.item
+                else null
         }
     }
 }
@@ -125,7 +126,7 @@ class RoleSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
     private val isFuzzy
         get() = flags and FUZZY != 0
 
-    override fun serialize(ctx: CommandProcessingContext, s: String): Role? {
+    override suspend fun serialize(ctx: CommandProcessingContext, s: String): Role? {
         val match = REGEX.matchEntire(s)?.groups ?: return null
 
         val id = match["id"]?.value?.toLongOrNull() ?: match["tag"]?.value?.toLongOrNull()
@@ -135,8 +136,8 @@ class RoleSerializer(private val flags: Int = DEFAULT_FLAGS) : ArgumentSerialize
             val name = match["name"]?.value ?: return null
             val roles = ctx.guild?.roles
             roles?.find { it.name.equals(name, true) }
-                    ?: if (isFuzzy) FuzzyUtils.extract(name, roles ?: listOf(), Role::getName)?.item
-                    else null
+                ?: if (isFuzzy) FuzzyUtils.extract(name, roles ?: listOf(), Role::getName)?.item
+                else null
         }
     }
 }

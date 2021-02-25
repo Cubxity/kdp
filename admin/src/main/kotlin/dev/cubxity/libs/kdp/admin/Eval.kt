@@ -52,7 +52,7 @@ fun AdminModule.eval() = AdminModule.eval {
     System.setProperty("idea.use.native.fs.for.win", "false")
 
     handler {
-        val code: String = args["code"]!!
+        val code: String = args.receive("code")
         val bindings = engine.createBindings()
         val header = buildString {
             append(imports.joinToString(separator = "\n") { "import $it" })

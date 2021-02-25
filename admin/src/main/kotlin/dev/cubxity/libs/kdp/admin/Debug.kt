@@ -24,7 +24,7 @@ import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 fun AdminModule.debug() = AdminModule.debug {
     botAdmin = true
     handler {
-        val command: String = args["command"]!!
+        val command: String = args.receive("command")
         val startTime = System.currentTimeMillis()
         kdp.execute(
             createContext(executor, command),

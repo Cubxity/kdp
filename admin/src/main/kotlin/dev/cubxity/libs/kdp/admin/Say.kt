@@ -5,7 +5,7 @@ import dev.cubxity.libs.kdp.perms.botAdmin
 fun AdminModule.say() = AdminModule.say {
     botAdmin = true
     handler {
-        val message: String = args["message"]!!
+        val message: String = args.receive("message")
         send(message)
     }
 }

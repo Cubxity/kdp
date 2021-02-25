@@ -21,5 +21,5 @@ package dev.cubxity.libs.kdp.serialization
 import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 
 interface ArgumentSerializer<T> {
-    fun serialize(ctx: CommandProcessingContext, s: String): T?
+    suspend fun serialize(ctx: CommandProcessingContext, s: String): T?
 }

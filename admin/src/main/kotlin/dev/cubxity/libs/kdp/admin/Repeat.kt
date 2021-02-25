@@ -24,9 +24,9 @@ import dev.cubxity.libs.kdp.processing.CommandProcessingPipeline
 fun AdminModule.repeat() = AdminModule.repeat {
     botAdmin = true
     handler {
-        repeat(args["amount"]!!) {
+        repeat(args.receive("amount")) {
             kdp.execute(
-                createContext(executor, args["command"]!!),
+                createContext(executor, args.receive("command")),
                 CommandProcessingPipeline.POST_FILTER,
                 CommandProcessingPipeline.MONITORING,
                 CommandProcessingPipeline.PROCESS

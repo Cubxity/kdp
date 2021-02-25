@@ -22,17 +22,17 @@ import dev.cubxity.libs.kdp.processing.CommandProcessingContext
 import dev.cubxity.libs.kdp.serialization.ArgumentSerializer
 
 class IntSerializer : ArgumentSerializer<Int> {
-    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toIntOrNull()
+    override suspend fun serialize(ctx: CommandProcessingContext, s: String) = s.toIntOrNull()
 }
 
 class DoubleSerializer : ArgumentSerializer<Double> {
-    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toDoubleOrNull()?.takeIf { it.isFinite() }
+    override suspend fun serialize(ctx: CommandProcessingContext, s: String) = s.toDoubleOrNull()?.takeIf { it.isFinite() }
 }
 
 class LongSerializer : ArgumentSerializer<Long> {
-    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toLongOrNull()
+    override suspend fun serialize(ctx: CommandProcessingContext, s: String) = s.toLongOrNull()
 }
 
 class FloatSerializer : ArgumentSerializer<Float> {
-    override fun serialize(ctx: CommandProcessingContext, s: String) = s.toFloatOrNull()?.takeIf { it.isFinite() }
+    override suspend fun serialize(ctx: CommandProcessingContext, s: String) = s.toFloatOrNull()?.takeIf { it.isFinite() }
 }

@@ -34,7 +34,7 @@ fun AdminModule.su() = AdminModule.su {
     botAdmin = true
     handler {
         kdp.execute(
-            createContext(args["user"] ?: error("User not found"), args["command"]!!),
+            createContext(args.receive("user"), args.receive("command")),
             CommandProcessingPipeline.POST_FILTER,
             CommandProcessingPipeline.MONITORING,
             CommandProcessingPipeline.PROCESS
