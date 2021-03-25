@@ -41,7 +41,7 @@ class PermsFeature(kdp: KDP) {
     init {
         kdp.intercept(CommandProcessingPipeline.POST_FILTER) {
             val cmd = context.command ?: return@intercept finish()
-            val g = context.guild
+            val guild = context.guild
             val isAdmin = context.executor.id in admins
             val botAdmin = cmd.botAdmin
             if (botAdmin && !isAdmin) {
@@ -52,13 +52,13 @@ class PermsFeature(kdp: KDP) {
             }
 
             val guildPerms = cmd.guildPermissions
-            if (g != null && (!adminBypassFactory.invoke(context) || !isAdmin)) {
-                val m = g.getMember(context.executor)
-                if (m == null) {
+            if (guildPerms.isNotEmpty() && (!adminBypassFactory.invoke(context) || !isAdmin)) {
+                val member = guild?.getMember(context.executor)
+                if (member == null) {
                     finish()
                     return@intercept
                 }
-                val missingPermissions = guildPerms.filter { it !in m.permissions }
+                val missingPermissions = guildPerms.filter { it !in member.permissions }
                 if (missingPermissions.isNotEmpty()) {
                     finish()
                     context.exception = PermissionDeniedException(missingPermissions)
@@ -85,6 +85,6 @@ class PermsFeature(kdp: KDP) {
 fun KDP.perms(opt: PermsFeature.() -> Unit = {}): PermsFeature = (features[PermsFeature.key] as PermsFeature?
     ?: install(PermsFeature)).apply(opt)
 
-var Command.guildPermissions: List<Permission> by flag(PermsFeature.FLAG_GUILD_PERMISSIONS) { emptyList<Permission>() }
+var Command.guildPermissions: List<Permission> by flag(PermsFeature.FLAG_GUILD_PERMISSIONS) { emptyList() }
 
 var Command.botAdmin: Boolean by flag(PermsFeature.FLAG_BOT_ADMIN, false)
