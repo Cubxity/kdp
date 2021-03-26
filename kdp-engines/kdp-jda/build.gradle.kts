@@ -18,7 +18,7 @@
 
 dependencies {
     api(project(":kdp-core"))
-    api("net.dv8tion:JDA:4.2.0_227") {
+    api("net.dv8tion:JDA:4.2.0_247") {
         exclude(module = "opus-java")
     }
 }

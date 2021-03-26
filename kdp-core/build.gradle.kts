@@ -18,6 +18,6 @@
 
 dependencies {
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx", "kotlinx-coroutines-jdk8", "1.4.2")
-    api("io.github.microutils", "kotlin-logging", "2.0.4")
+    api("org.jetbrains.kotlinx", "kotlinx-coroutines-jdk8", "1.4.3")
+    api("io.github.microutils", "kotlin-logging", "2.0.6")
 }
