@@ -21,13 +21,13 @@ package dev.cubxity.kdp.engine.jda.event.message.guild
 import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.engine.jda.entity.JDAMessage
 import dev.cubxity.kdp.entity.Message
-import dev.cubxity.kdp.event.message.MessageCreateEvent
+import dev.cubxity.kdp.event.message.guild.GuildMessageCreateEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 
 @KDPUnsafe
 inline class JDAGuildMessageCreateEvent(
     override val event: GuildMessageReceivedEvent
-) : JDAGuildMessageEvent, MessageCreateEvent {
+) : JDAGuildMessageEvent, GuildMessageCreateEvent {
     override val message: Message
         get() = JDAMessage(event.message)
 }
