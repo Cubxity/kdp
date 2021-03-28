@@ -21,6 +21,7 @@ package dev.cubxity.kdp.engine.jda.gateway
 import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.engine.jda.event.JDARawEvent
 import dev.cubxity.kdp.engine.jda.event.message.guild.JDAGuildMessageCreateEvent
+import dev.cubxity.kdp.engine.jda.event.message.guild.JDAGuildMessageDeleteEvent
 import dev.cubxity.kdp.engine.jda.event.message.guild.react.JDAGuildMessageReactionAddEvent
 import dev.cubxity.kdp.engine.jda.event.message.guild.react.JDAGuildMessageReactionRemoveEvent
 import dev.cubxity.kdp.event.Event
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent
@@ -53,6 +55,7 @@ class JDAGateway : Gateway, CoroutineScope, IEventManager {
             is GuildMessageReactionAddEvent -> JDAGuildMessageReactionAddEvent(event)
             is GuildMessageReactionRemoveEvent -> JDAGuildMessageReactionRemoveEvent(event)
             is GuildMessageReceivedEvent -> JDAGuildMessageCreateEvent(event)
+            is GuildMessageDeleteEvent -> JDAGuildMessageDeleteEvent(event)
             else -> JDARawEvent(event)
         }
         launch {
