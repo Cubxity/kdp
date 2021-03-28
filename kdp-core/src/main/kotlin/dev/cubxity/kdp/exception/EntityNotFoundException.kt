@@ -27,6 +27,9 @@ class EntityNotFoundException(message: String) : IllegalStateException(message)
 inline fun userNotFound(userId: Snowflake): Nothing =
     entityNotFound("User", userId)
 
+inline fun selfNotFound(): Nothing =
+    throw EntityNotFoundException("Self user was not found")
+
 inline fun guildNotFound(guildId: Snowflake): Nothing =
     entityNotFound("Guild", guildId)
 

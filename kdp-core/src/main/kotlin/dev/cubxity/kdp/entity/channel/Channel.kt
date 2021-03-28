@@ -22,8 +22,4 @@ import dev.cubxity.kdp.behavior.channel.ChannelBehavior
 
 interface Channel : ChannelBehavior {
     val type: ChannelType
-
-    override suspend fun asChannel(): Channel = this
-
-    override suspend fun asChannelOrNull(): Channel = this
 }

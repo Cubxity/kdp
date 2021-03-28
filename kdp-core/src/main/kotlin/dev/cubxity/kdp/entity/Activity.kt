@@ -18,10 +18,9 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.KDPObject
 import java.time.Instant
 
-interface Activity : KDPObject {
+interface Activity {
     val name: String
 
     val activityType: ActivityType

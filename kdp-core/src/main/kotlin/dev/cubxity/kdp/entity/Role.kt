@@ -18,7 +18,9 @@
 
 package dev.cubxity.kdp.entity
 
-interface Role : Entity {
+import dev.cubxity.kdp.behavior.RoleBehavior
+
+interface Role : RoleBehavior {
     val name: String
 
     val color: Int

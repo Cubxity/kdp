@@ -18,9 +18,7 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.KDPObject
-
-interface Presence : KDPObject {
+interface Presence {
     val activities: List<Activity>
 
     val clientStatus: ClientStatus

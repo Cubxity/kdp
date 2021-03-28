@@ -18,25 +18,6 @@
 
 package dev.cubxity.kdp.behavior.channel
 
-import dev.cubxity.kdp.behavior.GuildBehavior
-import dev.cubxity.kdp.entity.Guild
-import dev.cubxity.kdp.entity.Snowflake
-import dev.cubxity.kdp.entity.channel.GuildChannel
-import dev.cubxity.kdp.exception.channelNotFound
-import dev.cubxity.kdp.exception.guildNotFound
+import dev.cubxity.kdp.behavior.holder.GuildBehaviorHolder
 
-interface GuildChannelBehavior : ChannelBehavior {
-    val guildId: Snowflake
-
-    val guild: GuildBehavior
-
-    override suspend fun asChannel(): GuildChannel =
-        asChannelOrNull() ?: channelNotFound(id)
-
-    override suspend fun asChannelOrNull(): GuildChannel?
-
-    suspend fun getGuild(): Guild =
-        getGuildOrNull() ?: guildNotFound(id)
-
-    suspend fun getGuildOrNull(): Guild?
-}
+interface GuildChannelBehavior : ChannelBehavior, GuildBehaviorHolder

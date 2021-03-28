@@ -18,17 +18,8 @@
 
 package dev.cubxity.kdp.behavior
 
-import dev.cubxity.kdp.entity.Member
-import dev.cubxity.kdp.entity.Snowflake
-import dev.cubxity.kdp.exception.memberNotFound
-
-interface MemberBehavior : UserBehavior {
-    val guildId: Snowflake
-
+interface MemberBehavior {
     val guild: GuildBehavior
 
-    suspend fun asMember(): Member =
-        asMemberOrNull() ?: memberNotFound(guildId, id)
-
-    suspend fun asMemberOrNull(): Member?
+    val user: UserBehavior
 }

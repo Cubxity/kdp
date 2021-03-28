@@ -18,14 +18,10 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.KDPObject
-
-sealed class ReactionEmoji : KDPObject, Mentionable {
+sealed class ReactionEmoji : Mentionable {
     abstract val name: String
 
     data class Custom(
-        override val kdp: KDP,
         override val id: Snowflake,
         override val name: String,
         val isAnimated: Boolean
@@ -35,7 +31,6 @@ sealed class ReactionEmoji : KDPObject, Mentionable {
     }
 
     data class Unicode(
-        override val kdp: KDP,
         override val name: String
     ) : ReactionEmoji() {
         override val mention: String get() = name

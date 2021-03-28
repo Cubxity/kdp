@@ -18,8 +18,6 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.behavior.UserBehavior
 
 interface User : UserBehavior {
@@ -36,10 +34,9 @@ interface User : UserBehavior {
     val flags: UserFlags?
 
     data class Avatar(
-        override val kdp: KDP,
         val user: User,
         override val id: String?
-    ) : KDPObject, ImageHolder {
+    ): ImageHolder {
         inline val isCustom: Boolean
             get() = id !== null
 

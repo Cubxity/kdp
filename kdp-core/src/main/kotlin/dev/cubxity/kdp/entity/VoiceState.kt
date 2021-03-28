@@ -18,10 +18,9 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.entity.channel.GuildChannel
 
-interface VoiceState : KDPObject {
+interface VoiceState {
     val guild: Guild?
 
     val channel: GuildChannel?

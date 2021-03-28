@@ -14,7 +14,7 @@ KDP is an asynchronous framework for creating Discord bots. Written 100% in [Kot
 ## Supported engines
 
 - [JDA](https://github.com/DV8FromTheWorld/JDA) **Work-in-progress**
-- [Kord](https://github.com/kordlib/kord) **Work-in-progress**
+- [Kord](https://github.com/kordlib/kord) **Coming soon**
 
 ## Example
 
@@ -22,13 +22,13 @@ See [kdp-demo](kdp-demo) for more examples.
 
 ```kotlin
 import dev.cubxity.kdp.engine.on
-import dev.cubxity.kdp.engines.jda.JDA
+import dev.cubxity.kdp.engine.jda.JDA
 import dev.cubxity.kdp.event.message.MessageCreateEvent
 import dev.cubxity.kdp.kdp
 
 suspend fun main() {
     kdp(JDA, "Your token here") {
-        engine.on<MessageCreateEvent<*>> {
+        engine.on<MessageCreateEvent> {
             println("${message.author.username}: ${message.content}")
         }
     }.login()

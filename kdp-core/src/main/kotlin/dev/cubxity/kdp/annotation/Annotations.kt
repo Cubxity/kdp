@@ -26,3 +26,13 @@ package dev.cubxity.kdp.annotation
 @RequiresOptIn(level = RequiresOptIn.Level.WARNING)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY)
 annotation class KDPUnsafe
+
+
+/**
+ * Marks an engine-related API as potentially unsafe.
+ */
+@MustBeDocumented
+@Retention(value = AnnotationRetention.BINARY)
+@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY)
+annotation class EngineApi

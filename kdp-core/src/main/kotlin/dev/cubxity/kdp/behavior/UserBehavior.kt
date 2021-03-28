@@ -19,14 +19,12 @@
 package dev.cubxity.kdp.behavior
 
 import dev.cubxity.kdp.entity.MentionableEntity
-import dev.cubxity.kdp.entity.User
-import dev.cubxity.kdp.exception.userNotFound
+import dev.cubxity.kdp.entity.Snowflake
 
 interface UserBehavior : MentionableEntity {
     override val mention: String get() = "<@${id}>"
-
-    suspend fun asUser(): User =
-        asUserOrNull() ?: userNotFound(id)
-
-    suspend fun asUserOrNull(): User?
 }
+
+private inline class UserBehaviorImpl(override val id: Snowflake) : UserBehavior
+
+fun UserBehavior(id: Snowflake): UserBehavior = UserBehaviorImpl(id)

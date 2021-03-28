@@ -18,6 +18,12 @@
 
 dependencies {
     api(project(":kdp-core"))
+    api(project(":kdp-supplier"))
+    api(project(":kdp-rest"))
+    api(project(":kdp-gateway"))
+    api(project(":kdp-engines:kdp-engine-core"))
+    api(project(":kdp-engines:kdp-engine-gateway"))
+
     api("net.dv8tion:JDA:4.2.0_247") {
         exclude(module = "opus-java")
     }

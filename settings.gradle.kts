@@ -21,8 +21,17 @@ rootProject.name = "kdp"
 // Library
 include(
     ":kdp-core",
-    ":kdp-engines:kdp-jda",
-    ":kdp-engines:kdp-kord"
+    ":kdp-supplier",
+    ":kdp-rest",
+    ":kdp-gateway"
+)
+
+// Engines
+include(
+    ":kdp-engines:kdp-engine-core",
+    ":kdp-engines:kdp-engine-rest",
+    ":kdp-engines:kdp-engine-gateway",
+    ":kdp-engines:kdp-jda"
 )
 
 // Other

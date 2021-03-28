@@ -18,36 +18,6 @@
 
 package dev.cubxity.kdp.behavior
 
-import dev.cubxity.kdp.entity.*
-import dev.cubxity.kdp.entity.channel.GuildChannel
-import dev.cubxity.kdp.exception.guildNotFound
-import dev.cubxity.kdp.exception.memberNotFound
-import dev.cubxity.kdp.exception.roleNotFound
-import kotlinx.coroutines.flow.Flow
+import dev.cubxity.kdp.entity.Entity
 
-interface GuildBehavior : Entity {
-    val members: Flow<Member>
-
-    val channels: Flow<GuildChannel>
-
-    val roles: Flow<Role>
-
-    val voiceStates: Flow<VoiceState>
-
-    val emojis: Flow<Emoji>
-
-    suspend fun asGuild(): Guild =
-        asGuildOrNull() ?: guildNotFound(id)
-
-    suspend fun asGuildOrNull(): Guild?
-
-    suspend fun getMember(userId: Snowflake): Member =
-        getMemberOrNull(userId) ?: memberNotFound(id, userId)
-
-    suspend fun getMemberOrNull(userId: Snowflake): Member?
-
-    suspend fun getRole(roleId: Snowflake): Role =
-        getRoleOrNull(roleId) ?: roleNotFound(id, roleId)
-
-    suspend fun getRoleOrNull(roleId: Snowflake): Role?
-}
+interface GuildBehavior : Entity

@@ -18,14 +18,13 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.KDPObject
-
 /**
- * Represents an entity that's identified by it's [id].
+ * Represents an entity that's identified by its [id].
  */
-interface Entity : KDPObject, Comparable<Entity> {
+interface Entity : Comparable<Entity> {
     /**
      * The unique identifier of this entity.
+     * See [snowflakes documentation](https://discord.com/developers/docs/reference#snowflakes).
      */
     val id: Snowflake
 

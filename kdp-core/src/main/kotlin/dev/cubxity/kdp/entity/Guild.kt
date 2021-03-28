@@ -18,8 +18,6 @@
 
 package dev.cubxity.kdp.entity
 
-import dev.cubxity.kdp.KDP
-import dev.cubxity.kdp.KDPObject
 import dev.cubxity.kdp.behavior.GuildBehavior
 
 interface Guild : GuildBehavior {
@@ -88,10 +86,9 @@ interface Guild : GuildBehavior {
     val maxVideoChannelUsers: Int?
 
     data class Splash(
-        override val kdp: KDP,
         val guild: Guild,
         override val id: String
-    ) : KDPObject, ImageHolder {
+    ) : ImageHolder {
         override fun get(format: ImageFormat): String =
             id.let { SPLASH_URL.format(guild.id, it, format.extension) }
 
@@ -101,10 +98,9 @@ interface Guild : GuildBehavior {
     }
 
     data class Banner(
-        override val kdp: KDP,
         val guild: Guild,
         override val id: String
-    ) : KDPObject, ImageHolder {
+    ) : ImageHolder {
         override fun get(format: ImageFormat): String =
             id.let { BANNER_URL.format(guild.id, it, format.extension) }
 

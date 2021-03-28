@@ -20,27 +20,7 @@ package dev.cubxity.kdp.behavior
 
 import dev.cubxity.kdp.behavior.channel.MessageChannelBehavior
 import dev.cubxity.kdp.entity.Entity
-import dev.cubxity.kdp.entity.Message
-import dev.cubxity.kdp.entity.Snowflake
-import dev.cubxity.kdp.entity.channel.MessageChannel
-import dev.cubxity.kdp.exception.channelNotFound
-import dev.cubxity.kdp.exception.messageNotFound
 
 interface MessageBehavior : Entity {
-    val channelId: Snowflake
-
     val channel: MessageChannelBehavior
-
-    suspend fun getChannel(): MessageChannel =
-        getChannelOrNull() ?: channelNotFound(id)
-
-    suspend fun getChannelOrNull(): MessageChannel?
-
-    suspend fun asMessage(): Message =
-        asMessageOrNull() ?: messageNotFound(channelId, id)
-
-    suspend fun asMessageOrNull(): Message?
 }
-
-suspend inline fun MessageBehavior.delete() =
-    channel.deleteMessage(id)

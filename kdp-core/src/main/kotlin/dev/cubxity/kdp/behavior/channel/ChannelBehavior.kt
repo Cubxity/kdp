@@ -19,16 +19,7 @@
 package dev.cubxity.kdp.behavior.channel
 
 import dev.cubxity.kdp.entity.MentionableEntity
-import dev.cubxity.kdp.entity.channel.Channel
-import dev.cubxity.kdp.exception.channelNotFound
 
 interface ChannelBehavior : MentionableEntity {
     override val mention: String get() = "<#$id>"
-
-    suspend fun asChannel(): Channel =
-        asChannelOrNull() ?: channelNotFound(id)
-
-    suspend fun asChannelOrNull(): Channel?
-
-    suspend fun delete()
 }

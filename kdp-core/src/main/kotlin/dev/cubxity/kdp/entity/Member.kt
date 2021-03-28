@@ -19,18 +19,14 @@
 package dev.cubxity.kdp.entity
 
 import dev.cubxity.kdp.behavior.MemberBehavior
+import dev.cubxity.kdp.behavior.RoleBehavior
 import kotlinx.coroutines.flow.Flow
 import java.time.OffsetDateTime
 
 interface Member : MemberBehavior {
-    override val id: Snowflake
-        get() = user.id
-
-    val user: User
-
     val nick: String?
 
-    val roles: Flow<Role>
+    val roles: Flow<RoleBehavior>
 
     val joinedAt: OffsetDateTime
 

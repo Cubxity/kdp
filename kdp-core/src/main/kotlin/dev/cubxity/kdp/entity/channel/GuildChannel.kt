@@ -46,10 +46,6 @@ interface GuildChannel : Channel, GuildChannelBehavior {
     val parent: GuildChannel?
 
     val lastPinTimestamp: String?
-
-    override suspend fun asChannel(): GuildChannel = this
-
-    override suspend fun asChannelOrNull(): GuildChannel = this
 }
 
 sealed class ChannelType(val value: Int) {
