@@ -23,20 +23,24 @@ import dev.cubxity.kdp.engine.KDPEngineEnvironment
 import dev.cubxity.kdp.engine.KDPEngineEnvironmentImpl
 import dev.cubxity.kdp.engine.KDPEngineFactory
 import dev.cubxity.kdp.processing.ProcessingPipeline
+import dev.cubxity.kdp.supplier.EntitySupplier
+import dev.cubxity.kdp.supplier.EntitySupplierScope
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import kotlin.coroutines.CoroutineContext
 
 class KDP<TEngine : KDPEngine<TEngine>>(
     parentCoroutineContext: CoroutineContext = Dispatchers.Default
-) : ProcessingPipeline(), CoroutineScope {
+) : ProcessingPipeline(), EntitySupplierScope, CoroutineScope {
     private val job = SupervisorJob(parentCoroutineContext[Job])
     private var _engine: TEngine? = null
 
-    override val coroutineContext: CoroutineContext = parentCoroutineContext + job
-
     val engine: TEngine
         get() = _engine ?: error("KDP has not been started")
+
+    override val coroutineContext: CoroutineContext = parentCoroutineContext + job
+    override val supplier: EntitySupplier
+        get() = engine.supplier
 
     fun start(engine: TEngine) {
         if (!isActive) error("KDP has already been disposed")

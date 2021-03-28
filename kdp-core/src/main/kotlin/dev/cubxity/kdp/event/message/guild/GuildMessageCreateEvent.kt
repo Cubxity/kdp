@@ -18,7 +18,6 @@
 
 package dev.cubxity.kdp.event.message.guild
 
-import dev.cubxity.kdp.behavior.holder.GuildBehaviorHolder
 import dev.cubxity.kdp.event.message.MessageCreateEvent
 
-interface GuildMessageCreateEvent : MessageCreateEvent, GuildBehaviorHolder
+interface GuildMessageCreateEvent : GuildMessageEvent, MessageCreateEvent

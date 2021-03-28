@@ -21,6 +21,7 @@ package dev.cubxity.kdp.engine.jda.event.message.guild
 import dev.cubxity.kdp.annotation.KDPUnsafe
 import dev.cubxity.kdp.behavior.GuildBehavior
 import dev.cubxity.kdp.behavior.MessageBehavior
+import dev.cubxity.kdp.behavior.channel.GuildMessageChannelBehavior
 import dev.cubxity.kdp.behavior.channel.MessageChannelBehavior
 import dev.cubxity.kdp.engine.jda.entity.JDAGuild
 import dev.cubxity.kdp.engine.jda.entity.channel.JDAGuildMessageChannel
@@ -40,7 +41,7 @@ interface JDAGuildMessageEvent : JDAGuildEvent, GuildMessageEvent {
     override val message: MessageBehavior
         get() = MessageBehaviorImpl(event)
 
-    override val channel: MessageChannelBehavior
+    override val channel: GuildMessageChannelBehavior
         get() = JDAGuildMessageChannel(event.channel)
 
     private inline class MessageBehaviorImpl(private val event: GenericGuildMessageEvent) : MessageBehavior {

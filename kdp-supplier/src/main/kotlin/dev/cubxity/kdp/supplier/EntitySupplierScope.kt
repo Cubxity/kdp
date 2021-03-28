@@ -140,7 +140,7 @@ interface EntitySupplierScope {
     suspend fun GuildMessageChannelBehavior.asChannelOrNull(): GuildMessageChannelBehavior? =
         this as? GuildMessageChannelBehavior ?: supplier.getChannelOrNull(id) as? GuildMessageChannelBehavior
 
-    suspend fun GuildMessageChannelBehavior.getChannel(): GuildMessageChannelBehavior =
+    suspend fun GuildMessageChannelBehavior.asChannel(): GuildMessageChannelBehavior =
         this as? GuildMessageChannelBehavior ?: supplier.getChannel(id) as GuildMessageChannelBehavior
 
     suspend fun GuildMessageChannelBehaviorHolder.getChannelOrNull(): GuildMessageChannel? =

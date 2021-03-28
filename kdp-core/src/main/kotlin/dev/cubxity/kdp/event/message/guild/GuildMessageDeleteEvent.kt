@@ -18,5 +18,6 @@
 
 package dev.cubxity.kdp.event.message.guild
 
-interface GuildMessageDeleteEvent {
-}
+import dev.cubxity.kdp.event.message.MessageDeleteEvent
+
+interface GuildMessageDeleteEvent : GuildMessageEvent, MessageDeleteEvent

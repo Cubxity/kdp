@@ -19,10 +19,10 @@
 package dev.cubxity.kdp.engine.jda.event.message.guild
 
 import dev.cubxity.kdp.annotation.KDPUnsafe
-import dev.cubxity.kdp.event.message.MessageDeleteEvent
+import dev.cubxity.kdp.event.message.guild.GuildMessageDeleteEvent
 import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent
 
 @KDPUnsafe
 inline class JDAGuildMessageDeleteEvent(
     override val event: GenericGuildMessageEvent
-) : JDAGuildMessageEvent, MessageDeleteEvent
+) : JDAGuildMessageEvent, GuildMessageDeleteEvent
