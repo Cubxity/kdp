@@ -17,17 +17,17 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.5.32"
     id("maven-publish")
 }
 
 group = "dev.cubxity.libs.kdp"
-version = "1.2.1"
+version = "1.3.0"
 
 repositories {
     mavenCentral()
     jcenter()
-    maven { url = uri("https://jitpack.io") }
+    maven("https://jitpack.io")
 }
 
 subprojects {
