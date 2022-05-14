@@ -18,11 +18,11 @@
 
 dependencies {
     api(kotlin("stdlib-jdk8"))
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.2")
-    api("net.dv8tion:JDA:5.0.0-alpha.2")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.1")
+    api("net.dv8tion:JDA:5.0.0-alpha.11")
     api("com.github.MinnDevelopment:jda-reactor:1.5.0")
     api("org.apache.commons:commons-text:1.9")
-    api("me.xdrop:fuzzywuzzy:1.3.1")
+    api("me.xdrop:fuzzywuzzy:1.4.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
